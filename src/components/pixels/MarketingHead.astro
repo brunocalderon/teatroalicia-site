@@ -1,5 +1,9 @@
 ---
-import { FACEBOOK_PIXEL_ID, UMAMI_PIXEL_ID } from "astro:env/client"
+import {
+  FACEBOOK_PIXEL_ID,
+  MARKETING_INTERACTION_IDLE_TIMEOUT_MS,
+  UMAMI_PIXEL_ID,
+} from "astro:env/client"
 import type { MarketingPageTracking } from "@/lib/marketing-page-tracking"
 import {
   MARKETING_TRACKING_CITY,
@@ -12,9 +16,11 @@ import {
 
 interface Props {
   tracking?: MarketingPageTracking
+  /** After full page load, wait this many ms then load pixels (0 = first interaction). */
+  engageAfterLoadMs?: number
 }
 
-const { tracking } = Astro.props
+const { tracking, engageAfterLoadMs = 0 } = Astro.props
 
 const facebookPixelId = isConfiguredFacebookPixelId(FACEBOOK_PIXEL_ID)
   ? FACEBOOK_PIXEL_ID.trim()
@@ -44,6 +50,8 @@ const marketingConfig = JSON.stringify({
   metaPayload,
   umamiEventName,
   trackContent: Boolean(tracking),
+  engageAfterLoadMs,
+  interactionIdleTimeoutMs: MARKETING_INTERACTION_IDLE_TIMEOUT_MS,
 })
 ---
 
@@ -129,31 +137,40 @@ const marketingConfig = JSON.stringify({
     document.head.appendChild(script);
   }
 
+  function runMarketingLoads() {
+    if (config.facebookPixelId) {
+      loadFacebookPixel(
+        config.facebookPixelId,
+        config.trackContent,
+        config.metaEvent,
+        config.metaPayload === "null" ? "" : config.metaPayload,
+      );
+    }
+    if (config.umamiWebsiteId) {
+      loadUmami(config.umamiWebsiteId);
+    }
+  }
+
   function engageMarketing() {
     if (engaged) return;
     engaged = true;
-    var run = function () {
-      if (config.facebookPixelId) {
-        loadFacebookPixel(
-          config.facebookPixelId,
-          config.trackContent,
-          config.metaEvent,
-          config.metaPayload === "null" ? "" : config.metaPayload,
-        );
-      }
-      if (config.umamiWebsiteId) {
-        loadUmami(config.umamiWebsiteId);
-      }
-    };
+    if (config.engageAfterLoadMs > 0) {
+      runMarketingLoads();
+      return;
+    }
+    var idleTimeout =
+      typeof config.interactionIdleTimeoutMs === "number"
+        ? config.interactionIdleTimeoutMs
+        : 2000;
     if ("requestIdleCallback" in window) {
-      requestIdleCallback(run, { timeout: 2000 });
+      requestIdleCallback(runMarketingLoads, { timeout: idleTimeout });
     } else {
-      setTimeout(run, 0);
+      setTimeout(runMarketingLoads, 0);
     }
   }
 
   var signals = ["pointerdown", "keydown", "touchstart", "scroll"];
-  function arm() {
+  function armOnInteraction() {
     for (var i = 0; i < signals.length; i++) {
       window.addEventListener(signals[i], engageMarketing, {
         once: true,
@@ -162,12 +179,25 @@ const marketingConfig = JSON.stringify({
     }
   }
 
+  function armAfterFullLoad(delayMs) {
+    function schedule() {
+      setTimeout(engageMarketing, delayMs);
+    }
+    if (document.readyState === "complete") {
+      schedule();
+    } else {
+      window.addEventListener("load", schedule, { once: true });
+    }
+  }
+
   window.engageMarketingPixels = engageMarketing;
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", arm);
+  if (config.engageAfterLoadMs > 0) {
+    armAfterFullLoad(config.engageAfterLoadMs);
+  } else if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", armOnInteraction);
   } else {
-    arm();
+    armOnInteraction();
   }
 })();`}
       />

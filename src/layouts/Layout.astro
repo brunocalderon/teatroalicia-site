@@ -15,6 +15,8 @@ interface Props {
 		srcSet: string;
 		sizes: string;
 	};
+	/** Meta/Umami: ms after `load` to engage (0 = first user interaction). */
+	marketingEngageAfterLoadMs?: number;
 }
 
 const {
@@ -24,6 +26,7 @@ const {
 	tracking,
 	formThirdPartyHints = false,
 	lcpImage,
+	marketingEngageAfterLoadMs = 0,
 } = Astro.props;
 ---
 
@@ -64,7 +67,10 @@ const {
 				/>
 			) : null
 		}
-		<MarketingHead tracking={tracking} />
+		<MarketingHead
+			tracking={tracking}
+			engageAfterLoadMs={marketingEngageAfterLoadMs}
+		/>
 	</head>
 	<body>
 		{

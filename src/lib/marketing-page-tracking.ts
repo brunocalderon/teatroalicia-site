@@ -1,6 +1,6 @@
 /** Shared Meta / Umami page-view parameters (islaconcierge-site pattern). */
 
-import { FACEBOOK_PIXEL_ID } from "astro:env/client"
+import { FACEBOOK_PIXEL_ID, MARKETING_TRACKING_CITY } from "astro:env/client"
 
 import type { MetaPixelUserData } from "@/lib/meta-pixel-user-data"
 import {
@@ -8,7 +8,7 @@ import {
   persistMetaPixelUserData,
 } from "@/lib/meta-pixel-pending-storage"
 
-export const MARKETING_TRACKING_CITY = "Santiago"
+export { MARKETING_TRACKING_CITY }
 
 export type MarketingPageTracking = {
   contentName: string

@@ -40,6 +40,31 @@ export default defineConfig({
         optional: true,
         default: "",
       }),
+      /** Ms after `window` `load` before Meta/Umami on invitation form routes (`/i/...`). */
+      INVITATION_FORM_MARKETING_ENGAGE_MS: envField.number({
+        context: "client",
+        access: "public",
+        optional: true,
+        default: 1000,
+        min: 0,
+        int: true,
+      }),
+      /** `requestIdleCallback` timeout when pixels load after first user interaction. */
+      MARKETING_INTERACTION_IDLE_TIMEOUT_MS: envField.number({
+        context: "client",
+        access: "public",
+        optional: true,
+        default: 2000,
+        min: 0,
+        int: true,
+      }),
+      /** City sent in Meta `content` payloads (`city` custom parameter). */
+      MARKETING_TRACKING_CITY: envField.string({
+        context: "client",
+        access: "public",
+        optional: true,
+        default: "Santiago",
+      }),
       /** Public origin (e.g. https://teatroalicia.cl) for referral CSV links at build time. */
       SITE_URL: envField.string({
         context: "server",

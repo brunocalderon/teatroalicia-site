@@ -18,6 +18,8 @@ import {
   FORM_PAGE_BACKGROUND_HD,
   FORM_PAGE_BACKGROUND_LQIP_DATA_URI,
 } from "@/lib/form-page-background"
+import { INVITATION_FORM_MARKETING_ENGAGE_MS } from "astro:env/client"
+
 import {
   invitationFormTracking,
   marketingPageTracking,
@@ -104,6 +106,7 @@ const formPageBackdropCss = `body:has(.form-page){position:relative;background-c
     tracking={tracking}
     formThirdPartyHints
     lcpImage={formLcpImage}
+    marketingEngageAfterLoadMs={INVITATION_FORM_MARKETING_ENGAGE_MS}
   >
     <main class:list={["form-page", data.image && "form-page--split"]}>
       <div class:list={[data.image ? "form-page__split" : "form-page__stack"]}>
