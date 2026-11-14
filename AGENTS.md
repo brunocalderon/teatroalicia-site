@@ -31,6 +31,10 @@ Before adding or changing forms, read `docs/astro-formgong-request-forms.md` and
 - Set `CLOUDFLARE_TURNSTILE_SITE_KEY` in env for all public Formgong forms (widget + token gate in production builds)
 - During submit: keep fields in the DOM (`sr-only`), use `inert` on the fieldset (not `disabled`), call `refreshFormgongPowFieldBeforePost` (via `postFormgongForm`) before POST
 
+## Lighthouse
+
+After changes that affect performance, accessibility, SEO, or third-party scripts, run `npm run lighthouse` (build + Vitest audits). See `docs/lighthouse.md`; thresholds and paths live in `lighthouse.config.ts` and `src/lib/lighthouse-targets.ts`.
+
 ## Learned User Preferences
 
 - Prefer new public forms as markdown under `content/forms/` rather than bespoke React form components unless custom UI logic is required.

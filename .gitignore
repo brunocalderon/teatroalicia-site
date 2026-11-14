@@ -1,6 +1,9 @@
 # build output
 dist/
 
+# lighthouse vitest reports
+tests/lighthouse/reports/
+
 # generated types
 .astro/
 
