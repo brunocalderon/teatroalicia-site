@@ -96,7 +96,7 @@ export function TurnstileField({
         sitekey: turnstileSiteKey,
         theme: "light",
         size: "flexible",
-        appearance: "always",
+        appearance: "interaction-only",
         callback: (token) => {
           onTokenChangeRef.current?.(token)
         },

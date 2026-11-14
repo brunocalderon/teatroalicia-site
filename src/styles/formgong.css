@@ -38,7 +38,7 @@
 }
 
 .formgong-turnstile-widget {
-  min-height: 4rem;
+  min-height: 0;
   width: 100%;
   max-width: 100%;
 }

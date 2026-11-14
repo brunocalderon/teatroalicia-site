@@ -130,7 +130,7 @@ import Layout from "@/layouts/Layout.astro"
 ```
 
 - Prefer `client:only="react"` for browser-only APIs.
-- Load Turnstile with `?render=explicit` when using `TurnstileField`.
+- Load Turnstile with `?render=explicit` when using `TurnstileField` (`appearance: interaction-only` in production so the widget stays hidden unless Cloudflare requires a challenge).
 - Keep `fg.js` on the form page only, not on thank-you routes.
 
 ## 4. Form markup
