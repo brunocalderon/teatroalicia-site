@@ -12,7 +12,7 @@ messages:
   turnstileRequired: Completa la verificación de seguridad antes de enviar.
   connectionFailed: No pudimos enviar tu solicitud. Intenta de nuevo.
   thankYouBody: |
-    Hemos recibido correctamente tu solicitud de accesos de cortesía.
+    Hemos recibido correctamente tu solicitud de tickets de cortesía.
 
     Si tu solicitud es aprobada, recibirás un correo electrónico con los tickets en un plazo máximo de 24 horas.
 
