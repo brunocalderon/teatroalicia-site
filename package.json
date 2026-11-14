@@ -7,7 +7,8 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "node --experimental-strip-types scripts/generate-promoters-public.mjs && astro build",
+    "prebuild": "npm run generate:promoters",
+    "build": "astro build",
     "generate:promoters": "node --experimental-strip-types scripts/generate-promoters-public.mjs",
     "preview": "astro preview",
     "astro": "astro",
