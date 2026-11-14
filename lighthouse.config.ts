@@ -8,12 +8,7 @@ export const lighthouseConfig = {
     "best-practices",
     "seo",
   ] as const,
-  chromeFlags: [
-    "--headless=new",
-    "--disable-gpu",
-    "--no-sandbox",
-    "--ignore-certificate-errors",
-  ] as const,
+  chromeFlags: ["--headless=new", "--disable-gpu", "--no-sandbox"] as const,
   saveReports: true,
   reportsDir: "tests/lighthouse/reports",
 } as const

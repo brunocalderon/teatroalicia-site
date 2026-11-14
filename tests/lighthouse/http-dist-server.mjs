@@ -1,12 +1,10 @@
-import { createServer } from "node:https"
+import { createServer } from "node:http"
 import { createReadStream, existsSync, statSync } from "node:fs"
 import { join, extname } from "node:path"
 
 const distDir = process.env.LIGHTHOUSE_DIST_DIR
 const host = process.env.LIGHTHOUSE_PREVIEW_HOST ?? "127.0.0.1"
 const port = Number(process.env.LIGHTHOUSE_PREVIEW_PORT ?? "0")
-const cert = Buffer.from(process.env.LIGHTHOUSE_TLS_CERT ?? "", "base64")
-const key = Buffer.from(process.env.LIGHTHOUSE_TLS_KEY ?? "", "base64")
 
 if (!distDir) {
   throw new Error("LIGHTHOUSE_DIST_DIR is required")
@@ -48,7 +46,7 @@ function resolveFilePath(urlPath) {
   return undefined
 }
 
-const server = createServer({ cert, key }, (req, res) => {
+const server = createServer((req, res) => {
   const filePath = resolveFilePath(req.url ?? "/")
   if (!filePath) {
     res.writeHead(404)

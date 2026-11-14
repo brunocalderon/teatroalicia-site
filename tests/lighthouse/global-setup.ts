@@ -8,42 +8,29 @@ import type { TestProject } from "vitest/node"
 import {
   getAvailablePort,
   previewBaseUrl,
-  spawnHttpsDistPreview,
+  spawnHttpDistPreview,
 } from "./preview-server.ts"
 
 const moduleDir = path.dirname(fileURLToPath(import.meta.url))
 const projectRoot = path.resolve(moduleDir, "../..")
 const distDir = path.join(projectRoot, "dist")
 
-async function waitForHttpsOk(
-  url: string,
-  timeoutMs = 120_000,
-): Promise<void> {
-  const previousTls = process.env.NODE_TLS_REJECT_UNAUTHORIZED
-  process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"
+async function waitForHttpOk(url: string, timeoutMs = 120_000): Promise<void> {
   const deadline = Date.now() + timeoutMs
 
-  try {
-    while (Date.now() < deadline) {
-      try {
-        const response = await fetch(url, { redirect: "follow" })
-        if (response.ok) {
-          return
-        }
-      } catch {
-        // preview still starting
+  while (Date.now() < deadline) {
+    try {
+      const response = await fetch(url, { redirect: "follow" })
+      if (response.ok) {
+        return
       }
-      await new Promise((resolve) => setTimeout(resolve, 400))
+    } catch {
+      // preview still starting
     }
-
-    throw new Error(`Timed out waiting for ${url}`)
-  } finally {
-    if (previousTls === undefined) {
-      delete process.env.NODE_TLS_REJECT_UNAUTHORIZED
-    } else {
-      process.env.NODE_TLS_REJECT_UNAUTHORIZED = previousTls
-    }
+    await new Promise((resolve) => setTimeout(resolve, 400))
   }
+
+  throw new Error(`Timed out waiting for ${url}`)
 }
 
 export default async function setup(project: TestProject) {
@@ -62,7 +49,7 @@ export default async function setup(project: TestProject) {
 
   const port = await getAvailablePort()
   const baseUrl = previewBaseUrl(port)
-  const preview = spawnHttpsDistPreview(distDir, port)
+  const preview = spawnHttpDistPreview(distDir, port)
 
   let previewLog = ""
   preview.stdout?.on("data", (chunk: Buffer) => {
@@ -73,11 +60,11 @@ export default async function setup(project: TestProject) {
   })
 
   try {
-    await waitForHttpsOk(`${baseUrl}/`)
+    await waitForHttpOk(`${baseUrl}/`)
   } catch (error) {
     preview.kill("SIGTERM")
     const message = error instanceof Error ? error.message : String(error)
-    throw new Error(`${message}\n\nHTTPS preview output:\n${previewLog}`)
+    throw new Error(`${message}\n\nHTTP preview output:\n${previewLog}`)
   }
 
   project.provide("lighthouseBaseUrl", baseUrl)
