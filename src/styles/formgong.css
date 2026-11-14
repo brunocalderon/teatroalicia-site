@@ -40,6 +40,11 @@
 .formgong-turnstile-widget {
   min-height: 4rem;
   width: 100%;
+  max-width: 100%;
+}
+
+.formgong-turnstile-widget :where(.cf-turnstile, iframe) {
+  max-width: 100%;
 }
 
 .formgong-alert,

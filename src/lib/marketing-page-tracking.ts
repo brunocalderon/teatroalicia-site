@@ -1,5 +1,7 @@
 /** Shared Meta / Umami page-view parameters (islaconcierge-site pattern). */
 
+import type { MetaPixelUserData } from "@/lib/meta-pixel-user-data"
+
 export const MARKETING_TRACKING_CITY = "Santiago"
 
 export type MarketingPageTracking = {
@@ -56,13 +58,24 @@ function getMetaFbq(): Fbq | undefined {
   return typeof fbq === "function" ? fbq : undefined
 }
 
+export type TrackMetaCompleteRegistrationOptions = {
+  userData?: MetaPixelUserData
+}
+
 /** Fires before Formgong POST so conversion is recorded even if navigation follows. */
 export function trackMetaCompleteRegistration(
-  tracking: MarketingPageTracking
+  tracking: MarketingPageTracking,
+  options: TrackMetaCompleteRegistrationOptions = {}
 ): void {
   const fbq = getMetaFbq()
   if (!fbq) {
     return
   }
+
+  const userData = options.userData
+  if (userData && Object.keys(userData).length > 0) {
+    fbq("set", "userData", userData)
+  }
+
   fbq("track", "CompleteRegistration", buildMetaTrackingPayload(tracking))
 }

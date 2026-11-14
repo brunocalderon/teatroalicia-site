@@ -40,6 +40,7 @@ import {
   trackMetaCompleteRegistration,
   type MarketingPageTracking,
 } from "@/lib/marketing-page-tracking"
+import { buildMetaPixelUserDataFromForm } from "@/lib/meta-pixel-user-data"
 
 import "@/styles/formgong.css"
 import "@/styles/global.css"
@@ -227,7 +228,12 @@ export function ConfigurableForm({
           }
           try {
             if (marketingTracking) {
-              trackMetaCompleteRegistration(marketingTracking)
+              trackMetaCompleteRegistration(marketingTracking, {
+                userData: buildMetaPixelUserDataFromForm(currentForm, fields, {
+                  nameFields,
+                  city: marketingTracking.city,
+                }),
+              })
             }
             const res = await postFormgongForm(currentForm, {
               accessKey,
