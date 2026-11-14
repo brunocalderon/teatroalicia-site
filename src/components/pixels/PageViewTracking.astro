@@ -1,7 +1,10 @@
 ---
 import { FACEBOOK_PIXEL_ID, UMAMI_PIXEL_ID } from 'astro:env/client';
 import type { MarketingPageTracking } from '@/lib/marketing-page-tracking';
-import { MARKETING_TRACKING_CITY } from '@/lib/marketing-page-tracking';
+import {
+  MARKETING_TRACKING_CITY,
+  buildMetaTrackingPayload,
+} from '@/lib/marketing-page-tracking';
 
 interface Props extends MarketingPageTracking {}
 
@@ -14,12 +17,14 @@ const {
   umamiEventName = contentName,
 } = Astro.props;
 
-const metaPayload = JSON.stringify({
-  content_name: contentName,
-  content_category: contentCategory,
-  city,
-  page_type: pageType,
-});
+const metaPayload = JSON.stringify(
+  buildMetaTrackingPayload({
+    contentName,
+    contentCategory,
+    pageType,
+    city,
+  })
+);
 
 const facebookPageViewTracking = `fbq('track', ${JSON.stringify(metaEvent)}, ${metaPayload});`;
 

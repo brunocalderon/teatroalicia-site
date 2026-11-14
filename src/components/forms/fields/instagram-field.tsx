@@ -41,7 +41,7 @@ export function InstagramField({
       className="formgong-input"
       required={field.required}
       placeholder={field.placeholder}
-      autoComplete="username"
+      autoComplete="nickname"
       spellCheck={false}
       aria-invalid={invalid || undefined}
       aria-describedby={describedBy}

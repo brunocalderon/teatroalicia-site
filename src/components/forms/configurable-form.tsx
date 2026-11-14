@@ -36,6 +36,10 @@ import {
   buildThankYouRedirectUrl,
   normalizeFormNameFields,
 } from "@/lib/formgong-thank-you"
+import {
+  trackMetaCompleteRegistration,
+  type MarketingPageTracking,
+} from "@/lib/marketing-page-tracking"
 
 import "@/styles/formgong.css"
 import "@/styles/global.css"
@@ -50,6 +54,7 @@ export type ConfigurableFormProps = {
   thankYouPath: string
   nameFields?: string[]
   messages?: FormMessages
+  marketingTracking?: MarketingPageTracking
 }
 
 function mergeMessages(messages?: FormMessages) {
@@ -73,6 +78,7 @@ export function ConfigurableForm({
   thankYouPath,
   nameFields: nameFieldsProp,
   messages: messagesProp,
+  marketingTracking,
 }: ConfigurableFormProps) {
   const formRef = useRef<HTMLFormElement>(null)
   const [configError, setConfigError] = useState<string | null>(null)
@@ -220,6 +226,9 @@ export function ConfigurableForm({
             return
           }
           try {
+            if (marketingTracking) {
+              trackMetaCompleteRegistration(marketingTracking)
+            }
             const res = await postFormgongForm(currentForm, {
               accessKey,
               beforePost: (target) => {
@@ -270,7 +279,14 @@ export function ConfigurableForm({
     return () => {
       form.removeEventListener("submit", handleSubmitBubble)
     }
-  }, [accessKey, copy.connectionFailed, fields, nameFields, thankYouPath])
+  }, [
+    accessKey,
+    copy.connectionFailed,
+    fields,
+    marketingTracking,
+    nameFields,
+    thankYouPath,
+  ])
 
   return (
     <form
