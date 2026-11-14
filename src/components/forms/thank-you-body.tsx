@@ -1,17 +1,29 @@
-import { useMemo } from "react"
+import { useEffect, useMemo } from "react"
 
 import {
   THANK_YOU_NAME_QUERY_PARAM,
   formatThankYouFirstName,
   prefixThankYouFirstParagraph,
 } from "@/lib/formgong-thank-you"
+import {
+  trackMetaCompleteRegistrationFromPendingStorage,
+  type MarketingPageTracking,
+} from "@/lib/marketing-page-tracking"
 
 export type ThankYouBodyProps = {
   paragraphs: string[]
   locale: string
+  marketingTracking: MarketingPageTracking
 }
 
-export function ThankYouBody({ paragraphs, locale }: ThankYouBodyProps) {
+export function ThankYouBody({
+  paragraphs,
+  locale,
+  marketingTracking,
+}: ThankYouBodyProps) {
+  useEffect(() => {
+    trackMetaCompleteRegistrationFromPendingStorage(marketingTracking)
+  }, [marketingTracking])
   const displayedParagraphs = useMemo(() => {
     const params = new URLSearchParams(window.location.search)
     const firstName = formatThankYouFirstName(

@@ -37,7 +37,7 @@ import {
   normalizeFormNameFields,
 } from "@/lib/formgong-thank-you"
 import {
-  trackMetaCompleteRegistration,
+  trackMetaLead,
   type MarketingPageTracking,
 } from "@/lib/marketing-page-tracking"
 import { buildMetaPixelUserDataFromForm } from "@/lib/meta-pixel-user-data"
@@ -228,12 +228,13 @@ export function ConfigurableForm({
           }
           try {
             if (marketingTracking) {
-              trackMetaCompleteRegistration(marketingTracking, {
-                userData: buildMetaPixelUserDataFromForm(currentForm, fields, {
+              trackMetaLead(
+                marketingTracking,
+                buildMetaPixelUserDataFromForm(currentForm, fields, {
                   nameFields,
                   city: marketingTracking.city,
-                }),
-              })
+                })
+              )
             }
             const res = await postFormgongForm(currentForm, {
               accessKey,

@@ -3,6 +3,10 @@
 import { FACEBOOK_PIXEL_ID } from "astro:env/client"
 
 import type { MetaPixelUserData } from "@/lib/meta-pixel-user-data"
+import {
+  consumePendingMetaPixelUserData,
+  persistMetaPixelUserData,
+} from "@/lib/meta-pixel-pending-storage"
 
 export const MARKETING_TRACKING_CITY = "Santiago"
 
@@ -60,27 +64,40 @@ function getMetaFbq(): Fbq | undefined {
   return typeof fbq === "function" ? fbq : undefined
 }
 
-export type TrackMetaCompleteRegistrationOptions = {
-  userData?: MetaPixelUserData
-}
-
-/** Fires before Formgong POST so conversion is recorded even if navigation follows. */
-export function trackMetaCompleteRegistration(
-  tracking: MarketingPageTracking,
-  options: TrackMetaCompleteRegistrationOptions = {}
-): void {
+function attachMetaAdvancedMatching(userData: MetaPixelUserData | undefined): void {
   const fbq = getMetaFbq()
   const pixelId = FACEBOOK_PIXEL_ID.trim()
-  if (!fbq || !pixelId) {
+  if (!fbq || !pixelId || !userData || Object.keys(userData).length === 0) {
     return
   }
+  fbq("init", pixelId, userData)
+}
 
-  const userData = options.userData
-  if (userData && Object.keys(userData).length > 0) {
-    // Manual advanced matching is attached via fbq("init") (not fbq("set", "userData")).
-    // A second init updates matching for subsequent track calls.
-    fbq("init", pixelId, userData)
+/** Form submit: persist PII and fire Lead before Formgong POST. */
+export function trackMetaLead(
+  tracking: MarketingPageTracking,
+  userData: MetaPixelUserData
+): void {
+  const fbq = getMetaFbq()
+  if (!fbq) {
+    return
   }
+  persistMetaPixelUserData(userData)
+  fbq("track", "Lead", buildMetaTrackingPayload(tracking))
+}
 
+/** Thank-you page: init advanced matching from storage and fire CompleteRegistration once. */
+export function trackMetaCompleteRegistrationFromPendingStorage(
+  tracking: MarketingPageTracking
+): void {
+  const fbq = getMetaFbq()
+  if (!fbq) {
+    return
+  }
+  const userData = consumePendingMetaPixelUserData()
+  if (!userData) {
+    return
+  }
+  attachMetaAdvancedMatching(userData)
   fbq("track", "CompleteRegistration", buildMetaTrackingPayload(tracking))
 }
