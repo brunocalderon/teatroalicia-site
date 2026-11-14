@@ -87,7 +87,7 @@ export function DateOfBirthField({
     }
   }
 
-  function schedulePadDayMonthSegments() {
+  function scheduleBirthdayLeaveSideEffects() {
     const container = containerRef.current
     if (!container) {
       return
@@ -98,17 +98,18 @@ export function DateOfBirthField({
         return
       }
 
-      setParts((current) => ({
-        ...current,
-        day: padBirthdayDayMonthSegment(current.day),
-        month: padBirthdayDayMonthSegment(current.month),
-      }))
-      handleBlurValidate()
+      setParts((current) => {
+        const next = {
+          ...current,
+          day: padBirthdayDayMonthSegment(current.day),
+          month: padBirthdayDayMonthSegment(current.month),
+        }
+        queueMicrotask(() => {
+          onBlurValidate?.(resolveBirthdaySubmitValue(next))
+        })
+        return next
+      })
     })
-  }
-
-  function handleBlurValidate() {
-    onBlurValidate?.(hiddenRef.current?.value ?? "")
   }
 
   return (
@@ -124,7 +125,7 @@ export function DateOfBirthField({
         if (next instanceof Node && containerRef.current?.contains(next)) {
           return
         }
-        schedulePadDayMonthSegments()
+        scheduleBirthdayLeaveSideEffects()
       }}
     >
       <input
@@ -154,7 +155,6 @@ export function DateOfBirthField({
           const next = normalizeBirthdayDayInput(event.target.value)
           updatePart("day", next, { nextFocus: "month" })
         }}
-        onBlur={handleBlurValidate}
       />
       <span className="formgong-birthday__separator" aria-hidden>
         /
@@ -177,7 +177,6 @@ export function DateOfBirthField({
           const next = normalizeBirthdayMonthInput(event.target.value)
           updatePart("month", next, { nextFocus: "year" })
         }}
-        onBlur={handleBlurValidate}
       />
       <span className="formgong-birthday__separator" aria-hidden>
         /
@@ -199,7 +198,6 @@ export function DateOfBirthField({
         onChange={(event) => {
           updatePart("year", normalizeBirthdayYearInput(event.target.value))
         }}
-        onBlur={handleBlurValidate}
       />
     </div>
   )
