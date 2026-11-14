@@ -86,11 +86,11 @@
 }
 
 .formgong-field--full,
-.formgong-fieldset > .formgong-turnstile,
 .formgong-fieldset > .formgong-alert {
   grid-column: 1 / -1;
 }
 
+.formgong-fieldset > .formgong-turnstile,
 .formgong-fieldset > .formgong-submit {
   grid-column: 1;
 }
