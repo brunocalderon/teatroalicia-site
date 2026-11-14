@@ -4,7 +4,7 @@ How this repo wires **Astro pages**, **React islands**, and **Formgong** so agen
 
 Official Formgong agent notes: [formgong.com/agents.md](https://formgong.com/agents.md). Official HTML setup: [formgong.com/en/docs/html/](https://formgong.com/en/docs/html/). Astro env: [docs.astro.build — environment variables](https://docs.astro.build/en/guides/environment-variables/).
 
-Copied from [islaconcierge-site](https://github.com/brunocalderon/islaconcierge-site); shared modules live under `src/lib/formgong-*` and `src/components/forms/`.
+Shared modules live under `src/lib/formgong-*` and `src/components/forms/`.
 
 ## Goal
 
@@ -135,7 +135,7 @@ import Layout from "@/layouts/Layout.astro"
 
 ## 4. Form markup
 
-`ConfigurableForm` already applies this markup. For custom forms, use `FormgongHiddenFields`, set `id={accessKey ? \`fg-${accessKey}\` : undefined}` on the `<form>`, and named inputs for each answer. See `configurable-form.tsx` or islaconcierge `golf-cart-form.tsx` / `beach-club-form.tsx` for submit listener patterns.
+`ConfigurableForm` already applies this markup. For custom forms, use `FormgongHiddenFields`, set `id={accessKey ? \`fg-${accessKey}\` : undefined}` on the `<form>`, and named inputs for each answer. See `configurable-form.tsx` for capture/bubble submit listener patterns.
 
 **Do not** use `data-fg-success` / `data-fg-error` if you want a thank-you redirect — `fg.js` will not navigate in inline mode.
 
@@ -153,6 +153,11 @@ While submitting: keep fields in the DOM (`sr-only` wrapper), lock with **`inert
 
 Call `refreshFormgongPowFieldBeforePost` before `FormData` (handled inside `postFormgongForm`). See `docs/formgong-pow-submit-freeze.md` for a prior main-thread freeze bug — copy `formgong-browser-signals.ts`, do not reimplement bit counting.
 
-## 7. Recreate checklist
+## 7. New form smoke test
 
-See sections 2–7 in the islaconcierge playbook (`docs/astro-formgong-request-forms.md` in that repo) for the full smoke-test checklist when adding a new form.
+Walk through sections 1–6 in this doc, then verify:
+
+- `npm run build` succeeds (`npx astro sync` after schema or new field types).
+- Dev/prod preview: Turnstile renders on form routes; submit posts to Formgong and redirects to `thankYouPath` with `?name=` when configured.
+- Thank-you copy and event title render correctly (`ThankYouBody` reads the name from the query string).
+- If the form has `type: referral`, test `?e=` attribution and `{path}/referrals/csv` after build with `SITE_URL` set.
