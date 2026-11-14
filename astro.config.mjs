@@ -1,5 +1,49 @@
 // @ts-check
-import { defineConfig } from 'astro/config';
+import path from "node:path"
+import { fileURLToPath } from "node:url"
+
+import react from "@astrojs/react"
+import { defineConfig, envField } from "astro/config"
+
+import tailwindcss from "@tailwindcss/vite";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 // https://astro.build/config
-export default defineConfig({});
+export default defineConfig({
+  integrations: [react()],
+
+  env: {
+    schema: {
+      /** Required when any markdown form includes a `file` field. */
+      CLOUDFLARE_TURNSTILE_SITE_KEY: envField.string({
+        context: "client",
+        access: "public",
+        optional: true,
+        default: "",
+      }),
+      FACEBOOK_PIXEL_ID: envField.string({
+        context: "client",
+        access: "public",
+        optional: true,
+        default: "",
+      }),
+      UMAMI_PIXEL_ID: envField.string({
+        context: "client",
+        access: "public",
+        optional: true,
+        default: "",
+      }),
+    },
+  },
+
+  vite: {
+    resolve: {
+      alias: {
+        "@": path.resolve(__dirname, "./src"),
+      },
+    },
+
+    plugins: [tailwindcss()],
+  },
+})

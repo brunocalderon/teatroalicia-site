@@ -1,0 +1,352 @@
+---
+import { getCollection, getEntry, render } from "astro:content"
+
+import { ConfigurableForm } from "@/components/forms/configurable-form"
+import FormSiteBrand from "@/components/forms/form-site-brand.astro"
+import Layout from "@/layouts/Layout.astro"
+import {
+  assertFormsCollectionIntegrity,
+  defaultNameFields,
+} from "@/lib/form-schema"
+import {
+  THANK_YOU_NAME_QUERY_PARAM,
+  formatThankYouFirstName,
+} from "@/lib/formgong-thank-you"
+import {
+  invitationFormTracking,
+  marketingPageTracking,
+} from "@/lib/marketing-page-tracking"
+
+export async function getStaticPaths() {
+  const forms = await getCollection("forms")
+  assertFormsCollectionIntegrity(forms)
+
+  const paths: {
+    params: { formPath: string }
+    props: {
+      kind: "form" | "thankYou"
+      entry: (typeof forms)[number]
+    }
+  }[] = []
+
+  for (const entry of forms) {
+    const formPath = entry.data.path.replace(/^\//, "")
+    const thankYouPath = entry.data.thankYouPath.replace(/^\//, "")
+
+    paths.push({
+      params: { formPath },
+      props: { kind: "form", entry },
+    })
+    paths.push({
+      params: { formPath: thankYouPath },
+      props: { kind: "thankYou", entry },
+    })
+  }
+
+  return paths
+}
+
+type Props = {
+  kind: "form" | "thankYou"
+  entry: Awaited<ReturnType<typeof getCollection<"forms">>>[number]
+}
+
+const { kind, entry: entryFromProps } = Astro.props as Props
+/** Re-fetch so dev picks up new frontmatter (e.g. `image`) without a full server restart. */
+const entry =
+  (await getEntry("forms", entryFromProps.id)) ?? entryFromProps
+const { data } = entry
+
+const renderedBody =
+  kind === "form" ? await render(entry) : null
+
+const thankYouNameRaw =
+  kind === "thankYou"
+    ? Astro.url.searchParams.get(THANK_YOU_NAME_QUERY_PARAM) ?? ""
+    : ""
+const thankYouName = formatThankYouFirstName(thankYouNameRaw)
+const thankYouTitle = (
+  data.messages?.thankYouTitle ?? "Thank you"
+).replace(/\{name\}/g, thankYouName || "there")
+const thankYouBody = (
+  data.messages?.thankYouBody ??
+  "We received your request and will get back to you soon."
+).replace(/\{name\}/g, thankYouName || "there")
+
+const nameFields = data.nameFields ?? defaultNameFields(data.fields)
+const tracking =
+  kind === "form"
+    ? invitationFormTracking(data.title)
+    : marketingPageTracking.thankYou
+---
+
+{kind === "form" ? (
+  <Layout title={data.title} tracking={tracking}>
+    <main class:list={["form-page", data.image && "form-page--split"]}>
+      <div class:list={[data.image ? "form-page__split" : "form-page__stack"]}>
+        {data.image ? (
+          <>
+            <div class="form-page__masthead form-page__split-masthead">
+              <FormSiteBrand align="start" />
+              <header class="form-page__header">
+                <h1>{data.title}</h1>
+              </header>
+            </div>
+            {renderedBody ? (
+              <div class="form-page__intro form-page__split-intro">
+                <renderedBody.Content />
+              </div>
+            ) : null}
+            <figure class="form-page__visual form-page__split-visual">
+              <img
+                src={data.image}
+                alt={data.imageAlt ?? data.title}
+                width="800"
+                height="1067"
+                loading="eager"
+                decoding="async"
+              />
+            </figure>
+          </>
+        ) : (
+          <>
+            <div class="form-page__masthead">
+              <FormSiteBrand align="start" />
+              <header class="form-page__header">
+                <h1>{data.title}</h1>
+              </header>
+            </div>
+            {renderedBody ? (
+              <div class="form-page__intro">
+                <renderedBody.Content />
+              </div>
+            ) : null}
+          </>
+        )}
+        <div
+          class:list={[
+            "form-page__panel",
+            data.image && "form-page__split-panel",
+          ]}
+        >
+          <div class="form-page__form">
+            <ConfigurableForm
+              client:only="react"
+              token={data.token}
+              fields={data.fields}
+              lang={data.lang}
+              submitLabel={data.submitLabel}
+              thankYouPath={data.thankYouPath}
+              nameFields={nameFields}
+              messages={data.messages}
+            />
+          </div>
+        </div>
+      </div>
+    </main>
+    <script
+      src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
+      async
+      defer
+    />
+    <script src="https://formgong.com/fg.js" async />
+  </Layout>
+) : (
+  <Layout title={thankYouTitle} tracking={tracking}>
+    <main class="form-page form-page--thank-you">
+      <div class="form-page__masthead">
+        <FormSiteBrand align="start" />
+        <h1>{thankYouTitle}</h1>
+      </div>
+      <p>{thankYouBody}</p>
+    </main>
+  </Layout>
+)}
+
+<style>
+  :global(body:has(.form-page)) {
+    position: relative;
+    background-color: transparent;
+    min-height: 100dvh;
+  }
+
+  :global(body:has(.form-page)::before) {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background-color: #000;
+    background-image: url("/background.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  .form-page {
+    max-width: 75rem;
+    margin: 2rem auto 0;
+    min-height: calc(100dvh - 2rem);
+    padding: 2rem 1.5rem 3rem;
+    box-sizing: border-box;
+    background-color: color-mix(in srgb, #0a0a0a 90%, transparent);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid color-mix(in srgb, #f5f5f5 10%, transparent);
+    border-radius: 1rem;
+  }
+
+  .form-page__split {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  @media (min-width: 56rem) {
+    .form-page--split .form-page__split {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+      grid-template-rows: auto auto minmax(0, 1fr);
+      column-gap: 3rem;
+      row-gap: 1.25rem;
+      align-items: start;
+    }
+
+    .form-page__split-masthead {
+      grid-column: 1;
+      grid-row: 1;
+    }
+
+    .form-page__split-intro {
+      grid-column: 1;
+      grid-row: 2;
+    }
+
+    .form-page__split-visual {
+      grid-column: 1;
+      grid-row: 3;
+      position: sticky;
+      top: 2rem;
+      max-height: calc(100dvh - 4rem);
+      align-self: start;
+    }
+
+    .form-page__split-visual img {
+      width: 100%;
+      height: 100%;
+      max-height: calc(100dvh - 4rem);
+    }
+
+    .form-page__split-panel {
+      grid-column: 2;
+      grid-row: 3;
+      align-self: start;
+    }
+  }
+
+  @media (max-width: 55.99rem) {
+    .form-page__visual img {
+      width: 100%;
+      height: auto;
+    }
+  }
+
+  .form-page__masthead {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem 1.5rem;
+    min-width: 0;
+    margin-bottom: 0.25rem;
+  }
+
+  .form-page__masthead .form-page__header {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .form-page__masthead h1 {
+    margin: 0;
+    font-size: clamp(1.25rem, 3vw, 1.75rem);
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    line-height: 1.25;
+  }
+
+  .form-page--split .form-page__masthead h1 {
+    margin-bottom: 0;
+  }
+
+  .form-page--split .form-page__intro {
+    margin-bottom: 0;
+  }
+
+  .form-page__visual {
+    margin: 0;
+    display: flex;
+    width: 100%;
+    min-height: 0;
+  }
+
+  .form-page__visual img {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    height: auto;
+    max-height: min(70dvh, 42rem);
+    object-fit: contain;
+    object-position: center;
+    border-radius: 0.75rem;
+    border: 1px solid color-mix(in srgb, #f5f5f5 18%, transparent);
+  }
+
+  .form-page__panel {
+    min-width: 0;
+  }
+
+  .form-page__form {
+    container-type: inline-size;
+    container-name: form-panel;
+  }
+
+  .form-page__stack {
+    display: block;
+  }
+
+  .form-page:not(.form-page--split) {
+    max-width: 52rem;
+  }
+
+  .form-page__header h1 {
+    margin: 0 0 1rem;
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+  }
+
+  .form-page__intro {
+    margin-bottom: 1.5rem;
+    font-size: 1rem;
+    line-height: 1.55;
+    color: color-mix(in srgb, #f5f5f5 85%, transparent);
+  }
+
+  .form-page__intro :global(p:first-child) {
+    margin-top: 0;
+  }
+
+  .form-page__intro :global(p:last-child) {
+    margin-bottom: 0;
+  }
+
+  .form-page--thank-you h1 {
+    margin: 0 0 1rem;
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    font-weight: 500;
+  }
+
+  .form-page--thank-you p {
+    margin: 0;
+    line-height: 1.55;
+    color: color-mix(in srgb, #f5f5f5 85%, transparent);
+  }
+</style>

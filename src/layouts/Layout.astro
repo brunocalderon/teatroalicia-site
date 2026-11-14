@@ -1,21 +1,31 @@
 ---
+import MetaPixel from '@/components/pixels/MetaPixel.astro';
+import PageViewTracking from '@/components/pixels/PageViewTracking.astro';
+import UmamiPixel from '@/components/pixels/UmamiPixel.astro';
+import type { MarketingPageTracking } from '@/lib/marketing-page-tracking';
+
 interface Props {
 	title?: string;
+	tracking?: MarketingPageTracking;
 }
 
-const { title = 'Coming soon' } = Astro.props;
+const { title = 'Coming soon', tracking } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" class="dark">
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="theme-color" content="#000000" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
+		<link rel="icon" type="image/png" href="/favicon.png" sizes="32x32" />
+		<link rel="icon" href="/favicon.ico" sizes="any" />
+		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
+		<MetaPixel />
+		<UmamiPixel />
+		{tracking ? <PageViewTracking {...tracking} /> : null}
 	</head>
 	<body>
 		<slot />

@@ -1,0 +1,45 @@
+---
+/** Teatro Alicia mark shown on generated form + thank-you pages. */
+
+interface Props {
+  align?: "center" | "start"
+}
+
+const { align = "center" } = Astro.props
+---
+
+<a
+  href="/"
+  class:list={["form-page__brand", align === "start" && "form-page__brand--start"]}
+>
+  <img
+    src="/logo.svg"
+    alt="Teatro Alicia"
+    width="147"
+    height="113"
+    decoding="async"
+  />
+</a>
+
+<style>
+  .form-page__brand {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin: 0 0 1.75rem;
+    text-decoration: none;
+  }
+
+  .form-page__brand img {
+    display: block;
+    height: 4.25rem;
+    width: auto;
+  }
+
+  .form-page__brand--start {
+    width: auto;
+    margin-bottom: 0;
+    justify-content: flex-start;
+    flex-shrink: 0;
+  }
+</style>
