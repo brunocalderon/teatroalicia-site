@@ -1,0 +1,209 @@
+---
+import type { FormField, FormFieldType } from "@/lib/form-schema"
+
+import "@/styles/formgong.css"
+
+interface Props {
+  fields: FormField[]
+  lang?: string
+}
+
+const { fields, lang = "es" } = Astro.props
+
+const loadingMessage =
+  lang === "es" ? "Cargando formulario…" : "Loading form…"
+
+const skeletonFields = fields.filter((field) => field.type !== "referral")
+
+function fieldSpansFullWidth(type: FormFieldType): boolean {
+  switch (type) {
+    case "checkbox":
+    case "textarea":
+    case "file":
+      return true
+    default:
+      return false
+  }
+}
+
+function skeletonFieldClassName(type: FormFieldType): string {
+  return fieldSpansFullWidth(type)
+    ? "formgong-field formgong-field--full"
+    : "formgong-field"
+}
+---
+
+<div class="formgong-form formgong-form--skeleton" aria-busy="true">
+  <span class="sr-only">{loadingMessage}</span>
+  <fieldset class="formgong-fieldset" disabled aria-hidden="true">
+    {
+      skeletonFields.map((field) => (
+        <div class={skeletonFieldClassName(field.type)}>
+          <span class="formgong-skeleton formgong-skeleton--label" />
+          {field.type === "tel" ? (
+            <div class="formgong-skeleton formgong-skeleton--phone">
+              <span class="formgong-skeleton formgong-skeleton--phone-country" />
+              <span class="formgong-skeleton formgong-skeleton--phone-number" />
+            </div>
+          ) : field.type === "date" ? (
+            <div class="formgong-skeleton formgong-skeleton--birthday">
+              <span class="formgong-skeleton formgong-skeleton--birthday-segment" />
+              <span class="formgong-skeleton formgong-skeleton--birthday-sep" />
+              <span class="formgong-skeleton formgong-skeleton--birthday-segment" />
+              <span class="formgong-skeleton formgong-skeleton--birthday-sep" />
+              <span class="formgong-skeleton formgong-skeleton--birthday-segment formgong-skeleton--birthday-year" />
+            </div>
+          ) : (
+            <span
+              class:list={[
+                "formgong-skeleton formgong-skeleton--control",
+                field.type === "textarea" && "formgong-skeleton--textarea",
+              ]}
+            />
+          )}
+        </div>
+      ))
+    }
+
+    <div class="formgong-field formgong-field--full">
+      <span class="formgong-skeleton formgong-skeleton--label formgong-skeleton--turnstile-label" />
+      <div class="formgong-skeleton formgong-skeleton--control formgong-skeleton--turnstile" />
+    </div>
+
+    <button
+      type="button"
+      class="formgong-submit formgong-skeleton formgong-skeleton--submit"
+      disabled
+      tabindex="-1"
+    />
+  </fieldset>
+</div>
+
+<style is:global>
+  .formgong-form--skeleton .formgong-fieldset[disabled] {
+    opacity: 1;
+  }
+
+  .formgong-skeleton {
+    display: block;
+    border-radius: 0.5rem;
+    background: linear-gradient(
+      90deg,
+      color-mix(in srgb, #f5f5f5 8%, #000) 0%,
+      color-mix(in srgb, #f5f5f5 16%, #000) 45%,
+      color-mix(in srgb, #f5f5f5 8%, #000) 100%
+    );
+    background-size: 200% 100%;
+    animation: formgong-skeleton-shimmer 1.35s ease-in-out infinite;
+  }
+
+  @keyframes formgong-skeleton-shimmer {
+    0% {
+      background-position: 100% 0;
+    }
+    100% {
+      background-position: -100% 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .formgong-skeleton {
+      animation: none;
+      background: color-mix(in srgb, #f5f5f5 10%, #000);
+    }
+  }
+
+  .formgong-skeleton--label {
+    width: 42%;
+    max-width: 9rem;
+    height: 0.75rem;
+    margin-bottom: 0.375rem;
+  }
+
+  .formgong-skeleton--turnstile-label {
+    width: 7rem;
+    max-width: 55%;
+  }
+
+  .formgong-skeleton--control {
+    width: 100%;
+    height: calc(0.625rem * 2 + 1.25 * var(--formgong-control-font-size, 1rem));
+  }
+
+  .formgong-skeleton--textarea {
+    height: 6rem;
+  }
+
+  .formgong-skeleton--phone {
+    display: flex;
+    gap: 0;
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, #f5f5f5 14%, transparent);
+    background: color-mix(in srgb, #f5f5f5 4%, #000);
+    animation: none;
+  }
+
+  .formgong-skeleton--phone-country,
+  .formgong-skeleton--phone-number {
+    height: calc(0.625rem * 2 + 1.25 * var(--formgong-control-font-size, 1rem));
+    border-radius: 0;
+    animation: formgong-skeleton-shimmer 1.35s ease-in-out infinite;
+    background: linear-gradient(
+      90deg,
+      color-mix(in srgb, #f5f5f5 8%, #000) 0%,
+      color-mix(in srgb, #f5f5f5 16%, #000) 45%,
+      color-mix(in srgb, #f5f5f5 8%, #000) 100%
+    );
+    background-size: 200% 100%;
+  }
+
+  .formgong-skeleton--phone-country {
+    flex: 0 0 5.5rem;
+    border-right: 1px solid color-mix(in srgb, #f5f5f5 14%, transparent);
+  }
+
+  .formgong-skeleton--phone-number {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .formgong-skeleton--birthday {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    animation: none;
+    background: transparent;
+  }
+
+  .formgong-skeleton--birthday-segment {
+    flex: 0 0 3.25rem;
+    height: calc(0.625rem * 2 + 1.25 * var(--formgong-control-font-size, 1rem));
+  }
+
+  .formgong-skeleton--birthday-year {
+    flex: 1 1 4.75rem;
+    min-width: 4.75rem;
+  }
+
+  .formgong-skeleton--birthday-sep {
+    width: 0.35rem;
+    height: 0.75rem;
+    border-radius: 0.15rem;
+    background: color-mix(in srgb, #f5f5f5 20%, transparent);
+    animation: none;
+  }
+
+  .formgong-skeleton--turnstile {
+    min-height: 4rem;
+    height: 4rem;
+  }
+
+  .formgong-skeleton--submit {
+    width: 100%;
+    height: calc(0.65rem * 2 + 1.25rem * 1.25);
+    border: 0;
+    margin-top: 0.5rem;
+    opacity: 0.65;
+    cursor: default;
+  }
+</style>

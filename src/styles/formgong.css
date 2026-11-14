@@ -67,6 +67,9 @@
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .formgong-fieldset {
@@ -74,12 +77,15 @@
   padding: 0;
   border: 0;
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   gap: 1.25rem;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
 }
 
-/* Match form-page split layout: two columns on desktop only, not on phone-wide form panels. */
-@media (min-width: 56rem) {
+/* Two columns only when the form panel is wide enough (not viewport). */
+@container form-panel (min-width: 28rem) {
   .formgong-fieldset {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -99,6 +105,8 @@
   display: flex;
   flex-direction: column;
   gap: 0.375rem;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .formgong-label {
@@ -116,6 +124,8 @@
 .formgong-select,
 .formgong-date-trigger {
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   box-sizing: border-box;
   padding: 0.625rem 0.75rem;
   border-radius: 0.5rem;
