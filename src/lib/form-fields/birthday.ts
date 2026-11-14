@@ -42,12 +42,20 @@ function stripBirthdaySegmentDigits(value: string, maxLength: number): string {
   return value.replace(/\D/g, "").slice(0, maxLength)
 }
 
+function normalizeBirthdayDayOrMonthInput(value: string): string {
+  const digits = stripBirthdaySegmentDigits(value, 2)
+  if (digits.length === 2 && digits.startsWith("0") && digits.endsWith("0")) {
+    return "0"
+  }
+  return digits
+}
+
 export function normalizeBirthdayDayInput(value: string): string {
-  return stripBirthdaySegmentDigits(value, 2)
+  return normalizeBirthdayDayOrMonthInput(value)
 }
 
 export function normalizeBirthdayMonthInput(value: string): string {
-  return stripBirthdaySegmentDigits(value, 2)
+  return normalizeBirthdayDayOrMonthInput(value)
 }
 
 export function normalizeBirthdayYearInput(value: string): string {
@@ -59,7 +67,13 @@ export function padBirthdayDayMonthSegment(value: string): string {
   if (!digits) {
     return ""
   }
-  return digits.length === 1 ? `0${digits}` : digits
+  if (digits.length === 1) {
+    if (digits === "0") {
+      return "0"
+    }
+    return `0${digits}`
+  }
+  return digits
 }
 
 export function splitBirthdayFieldValue(value: string): BirthdayParts {

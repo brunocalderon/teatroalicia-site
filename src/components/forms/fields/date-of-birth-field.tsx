@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState, type RefObject } from "react"
 
 import type { FormFieldControlProps } from "@/components/forms/fields/types"
 import {
@@ -29,9 +29,11 @@ export function DateOfBirthField({
   const [parts, setParts] = useState<BirthdayParts>(() =>
     splitBirthdayFieldValue(defaultValue ?? "")
   )
+  const containerRef = useRef<HTMLDivElement>(null)
   const hiddenRef = useRef<HTMLInputElement>(null)
   const monthRef = useRef<HTMLInputElement>(null)
   const yearRef = useRef<HTMLInputElement>(null)
+  const skipSegmentClearOnFocusRef = useRef(false)
 
   const placeholders = birthdaySegmentPlaceholders(lang)
   const ariaLabels = birthdaySegmentAriaLabels(lang)
@@ -51,18 +53,58 @@ export function DateOfBirthField({
     syncHiddenValue(submitValue)
   }, [submitValue])
 
+  function focusBirthdaySegment(ref: RefObject<HTMLInputElement | null>) {
+    skipSegmentClearOnFocusRef.current = true
+    ref.current?.focus()
+    queueMicrotask(() => {
+      skipSegmentClearOnFocusRef.current = false
+    })
+  }
+
+  function clearSegmentOnUserFocus(key: keyof BirthdayParts) {
+    if (skipSegmentClearOnFocusRef.current) {
+      return
+    }
+    setParts((current) => {
+      if (current[key] === "") {
+        return current
+      }
+      return { ...current, [key]: "" }
+    })
+  }
+
   function updatePart<K extends keyof BirthdayParts>(
     key: K,
     value: BirthdayParts[K],
     options?: { nextFocus?: "month" | "year" }
   ) {
     setParts((current) => ({ ...current, [key]: value }))
-    if (options?.nextFocus === "month" && value.length === 2) {
-      monthRef.current?.focus()
+    if (options?.nextFocus === "month" && value.length === 2 && value !== "00") {
+      queueMicrotask(() => focusBirthdaySegment(monthRef))
     }
-    if (options?.nextFocus === "year" && value.length === 2) {
-      yearRef.current?.focus()
+    if (options?.nextFocus === "year" && value.length === 2 && value !== "00") {
+      queueMicrotask(() => focusBirthdaySegment(yearRef))
     }
+  }
+
+  function schedulePadDayMonthSegments() {
+    const container = containerRef.current
+    if (!container) {
+      return
+    }
+
+    window.requestAnimationFrame(() => {
+      if (container.contains(document.activeElement)) {
+        return
+      }
+
+      setParts((current) => ({
+        ...current,
+        day: padBirthdayDayMonthSegment(current.day),
+        month: padBirthdayDayMonthSegment(current.month),
+      }))
+      handleBlurValidate()
+    })
   }
 
   function handleBlurValidate() {
@@ -71,11 +113,19 @@ export function DateOfBirthField({
 
   return (
     <div
+      ref={containerRef}
       className={
         invalid
           ? "formgong-birthday formgong-birthday--invalid"
           : "formgong-birthday"
       }
+      onFocusOut={(event) => {
+        const next = event.relatedTarget
+        if (next instanceof Node && containerRef.current?.contains(next)) {
+          return
+        }
+        schedulePadDayMonthSegments()
+      }}
     >
       <input
         ref={hiddenRef}
@@ -99,17 +149,12 @@ export function DateOfBirthField({
         aria-describedby={describedBy}
         value={parts.day}
         maxLength={2}
+        onFocus={() => clearSegmentOnUserFocus("day")}
         onChange={(event) => {
           const next = normalizeBirthdayDayInput(event.target.value)
           updatePart("day", next, { nextFocus: "month" })
         }}
-        onBlur={() => {
-          const padded = padBirthdayDayMonthSegment(parts.day)
-          if (padded !== parts.day) {
-            setParts((current) => ({ ...current, day: padded }))
-          }
-          handleBlurValidate()
-        }}
+        onBlur={handleBlurValidate}
       />
       <span className="formgong-birthday__separator" aria-hidden>
         /
@@ -127,17 +172,12 @@ export function DateOfBirthField({
         aria-describedby={describedBy}
         value={parts.month}
         maxLength={2}
+        onFocus={() => clearSegmentOnUserFocus("month")}
         onChange={(event) => {
           const next = normalizeBirthdayMonthInput(event.target.value)
           updatePart("month", next, { nextFocus: "year" })
         }}
-        onBlur={() => {
-          const padded = padBirthdayDayMonthSegment(parts.month)
-          if (padded !== parts.month) {
-            setParts((current) => ({ ...current, month: padded }))
-          }
-          handleBlurValidate()
-        }}
+        onBlur={handleBlurValidate}
       />
       <span className="formgong-birthday__separator" aria-hidden>
         /
@@ -155,6 +195,7 @@ export function DateOfBirthField({
         aria-describedby={describedBy}
         value={parts.year}
         maxLength={4}
+        onFocus={() => clearSegmentOnUserFocus("year")}
         onChange={(event) => {
           updatePart("year", normalizeBirthdayYearInput(event.target.value))
         }}
