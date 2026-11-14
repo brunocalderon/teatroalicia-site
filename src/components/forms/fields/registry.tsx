@@ -10,7 +10,12 @@ import { TextLikeField } from "@/components/forms/fields/text-like-field"
 import { TextareaField } from "@/components/forms/fields/textarea-field"
 import type { FormFieldDefinition, FieldValidationContext } from "@/components/forms/fields/types"
 import type { FormFieldType } from "@/lib/form-schema"
-import { birthdayValidationMessage } from "@/lib/form-fields/birthday"
+import {
+  birthdayRequiredMessage,
+  birthdayValidationMessage,
+  isValidBirthdayFieldValue,
+  normalizeBirthdayForSubmit,
+} from "@/lib/form-fields/birthday"
 import {
   instagramValidationMessage,
   isValidInstagramUsername,
@@ -73,7 +78,10 @@ function textLikeDefinition(
 
 function validateDateOfBirth(ctx: FieldValidationContext): string | null {
   if (!ctx.value.trim()) {
-    return ctx.field.required ? birthdayValidationMessage(ctx.lang) : null
+    return ctx.field.required ? birthdayRequiredMessage(ctx.lang) : null
+  }
+  if (!isValidBirthdayFieldValue(ctx.value)) {
+    return birthdayValidationMessage(ctx.lang)
   }
   return null
 }
@@ -125,6 +133,7 @@ const fieldRegistry = {
   date: {
     Control: DateOfBirthField,
     validate: validateDateOfBirth,
+    normalize: normalizeBirthdayForSubmit,
   },
   textarea: { Control: TextareaField },
   select: { Control: SelectField },

@@ -394,3 +394,40 @@
 .formgong-phone__option--selected {
   font-weight: 500;
 }
+
+.formgong-birthday {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  width: 100%;
+  min-width: 0;
+}
+
+.formgong-birthday__segment {
+  width: auto;
+  min-width: 0;
+  flex-shrink: 0;
+  text-align: center;
+  padding-inline: 0.5rem;
+}
+
+.formgong-birthday__day,
+.formgong-birthday__month {
+  flex: 0 0 3.25rem;
+}
+
+.formgong-birthday__year {
+  flex: 1 1 4.75rem;
+  min-width: 4.75rem;
+  text-align: left;
+}
+
+.formgong-birthday__separator {
+  flex-shrink: 0;
+  color: color-mix(in srgb, #f5f5f5 55%, transparent);
+  user-select: none;
+}
+
+.formgong-birthday--invalid .formgong-birthday__segment {
+  border-color: #f87171;
+}

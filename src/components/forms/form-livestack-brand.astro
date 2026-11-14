@@ -1,0 +1,66 @@
+---
+const livestackHref = "https://withlivestack.com?ref=teatroalicia"
+---
+
+<a
+  href={livestackHref}
+  class="form-page__livestack"
+  target="_blank"
+  rel="noopener noreferrer"
+  aria-label="Powered by Livestack"
+>
+  <span class="form-page__livestack-label" aria-hidden="true">powered by Livestack</span>
+  <img
+    src="/livestack-logo-white.svg"
+    alt=""
+    width="1032"
+    height="129"
+    decoding="async"
+  />
+</a>
+
+<style>
+  .form-page__livestack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: center;
+    width: 100%;
+    margin-top: auto;
+    padding-top: 2rem;
+    text-decoration: none;
+  }
+
+  .form-page__livestack-label {
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    color: color-mix(in srgb, #f5f5f5 42%, transparent);
+    transition: color 0.15s ease;
+  }
+
+  .form-page__livestack:hover .form-page__livestack-label,
+  .form-page__livestack:focus-visible .form-page__livestack-label {
+    color: color-mix(in srgb, #f5f5f5 58%, transparent);
+  }
+
+  .form-page__livestack img {
+    display: block;
+    height: 1rem;
+    width: auto;
+    opacity: 0.88;
+    transition: opacity 0.15s ease;
+  }
+
+  .form-page__livestack:hover img,
+  .form-page__livestack:focus-visible img {
+    opacity: 1;
+  }
+
+  .form-page__livestack:focus-visible {
+    outline: 2px solid color-mix(in srgb, #f5f5f5 45%, transparent);
+    outline-offset: 4px;
+    border-radius: 0.25rem;
+  }
+</style>

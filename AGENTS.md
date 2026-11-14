@@ -38,6 +38,7 @@ Before adding or changing forms, read `docs/astro-formgong-request-forms.md` and
 - Extend existing Formgong field UX and marketing pixel patterns in this repo rather than inventing new flows.
 - Invitation thank-you pages use Spanish cortesía copy and the form/event title as the heading (not generic English).
 - Keep form input and placeholder typography at **16px** base on mobile and desktop (`src/styles/formgong.css`).
+- Keep agent and Formgong documentation scoped to this repo; do not reference external template repositories in `AGENTS.md` or `docs/`.
 
 ## Learned Workspace Facts
 
@@ -47,8 +48,8 @@ Before adding or changing forms, read `docs/astro-formgong-request-forms.md` and
 - Tailwind v4 and shadcn (`src/components/ui/`) back specialized field controls (e.g. date of birth); most form chrome lives in `src/styles/formgong.css`.
 - Schema requires `thankYouPath` to nest under `path` (default `{path}/gracias`); changing `path` without aligning thank-you breaks routes.
 - Optional `image` / `imageAlt` in form markdown enable the split layout (title, intro, and artwork left; two-column form right) on `[...formPath].astro`.
-- Generated form and thank-you pages include Teatro Alicia branding (`form-site-brand.astro`, `/logo.svg`) and the shared page background (`/background.jpg`).
-- Form fields are composable types in `src/components/forms/fields/` (registry + per-type `validate` / `normalize`); add new types in `form-schema.ts` and `registry.tsx` (`tel` → phone + country code, `date` → DOB picker, `instagram` → normalize/validate).
+- Generated form and thank-you pages include Teatro Alicia branding (`form-site-brand.astro`, `/logo.svg`), shared background (`/background.jpg`), and a centered Livestack footer (`form-livestack-brand.astro`, `/livestack-logo-white.svg`, `https://withlivestack.com?ref=teatroalicia`).
+- Form fields are composable types in `src/components/forms/fields/` (registry + per-type `validate` / `normalize`); add new types in `form-schema.ts` and `registry.tsx` (`tel` → phone + country code, `date` → DD/MM/YYYY segments → `YYYY-MM-DD` on POST, `instagram` → normalize/validate).
 - After new `fields[].type` values or form schema changes, run `npx astro sync` or restart the dev server if collection validation looks stale.
 - Marketing pixels: `MetaPixel`, `UmamiPixel`, `PageViewTracking` in `src/components/pixels/`; optional `FACEBOOK_PIXEL_ID` / `UMAMI_PIXEL_ID`; Meta payloads use `MARKETING_TRACKING_CITY` **Santiago** (`src/lib/marketing-page-tracking.ts`).
 - Promoters: full roster in `src/config/promoters.roster.ts`; production uses build-generated `src/config/promoters.public.json` (`id` + `name`, `active` + `guest_pass_enabled` only). Guest-pass links use `?e=`; referral forms post hidden `referral` and `verified_promoter` (visible “Invitado por” only for eligible matches). Build emits `{form path}/referrals/csv`; set server `SITE_URL` for live `form_link` values (`src/lib/site-origin.ts`, `CF_PAGES_URL` fallback).
