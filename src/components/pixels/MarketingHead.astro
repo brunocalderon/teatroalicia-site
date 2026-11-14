@@ -86,8 +86,9 @@ const marketingConfig = JSON.stringify({
     };
   }
 
-  function loadFacebookPixel(pixelId, trackContent, metaEvent, metaPayloadJson) {
-    if (!pixelId || window.fbq) return;
+  function ensureFacebookPixelBootstrap(pixelId) {
+    if (!pixelId) return false;
+    if (window.fbq) return true;
     !function (f, b, e, v, n, t, s) {
       if (f.fbq) return;
       n = f.fbq = function () {
@@ -104,9 +105,12 @@ const marketingConfig = JSON.stringify({
       s = b.getElementsByTagName(e)[0];
       s.parentNode.insertBefore(t, s);
     }(window, document, "script", "https://connect.facebook.net/en_US/fbevents.js");
-    window.fbq("consent", "revoke");
+    return true;
+  }
+
+  function loadFacebookPixel(pixelId, trackContent, metaEvent, metaPayloadJson) {
+    if (!ensureFacebookPixelBootstrap(pixelId)) return;
     window.fbq("init", pixelId);
-    window.fbq("consent", "grant");
     window.fbq("track", "PageView");
     if (trackContent && metaPayloadJson) {
       try {
