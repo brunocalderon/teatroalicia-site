@@ -100,6 +100,8 @@ const tokenSchema = z
 export const formEntrySchema = z
   .object({
     title: z.string().min(1),
+    /** SEO meta description for the invitation form page (`<meta name="description">`). */
+    description: z.string().min(1).max(320).optional(),
     path: sitePathSchema("path"),
     token: tokenSchema,
     lang: z.string().optional().default("en"),
@@ -222,4 +224,18 @@ export function defaultNameFields(fields: readonly FormField[]): string[] {
     result.push("lastName")
   }
   return result
+}
+
+/** `<meta name="description">` for invitation form routes. */
+export function formMetaDescription(
+  data: Pick<FormEntryData, "title" | "lang" | "description">,
+): string {
+  const custom = data.description?.trim()
+  if (custom) {
+    return custom
+  }
+  if (data.lang === "es") {
+    return `Solicita tickets de cortesía para ${data.title} en Teatro Alicia, Santiago.`
+  }
+  return `Request courtesy tickets for ${data.title} at Teatro Alicia, Santiago.`
 }

@@ -1,5 +1,6 @@
 ---
 title: "Murano: One more night"
+description: "Solicita tickets de cortesía para Murano — One More Night en Teatro Alicia. Completa el formulario de invitación."
 path: /i/murano
 token: fk_qyWV9hdtePd2wPQHA5fmi2wC
 lang: es

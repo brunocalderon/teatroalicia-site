@@ -1,2 +1,6 @@
 /_astro/*
   Cache-Control: public, max-age=31536000, immutable
+
+/.well-known/ard.json
+  Content-Type: application/ard+json; charset=utf-8
+  Cache-Control: public, max-age=3600

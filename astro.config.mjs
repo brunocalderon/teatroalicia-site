@@ -7,11 +7,13 @@ import { defineConfig, envField } from "astro/config"
 
 import tailwindcss from "@tailwindcss/vite";
 
+import { deferCssIntegration } from "./src/integrations/defer-css.ts"
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 // https://astro.build/config
 export default defineConfig({
-  integrations: [react()],
+  integrations: [react(), deferCssIntegration()],
 
   devToolbar: {
     enabled: false,

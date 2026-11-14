@@ -1,22 +1,29 @@
 ---
 import MarketingHead from '@/components/pixels/MarketingHead.astro';
+import { FORM_PAGE_BACKGROUND_HD } from '@/lib/form-page-background';
 import type { MarketingPageTracking } from '@/lib/marketing-page-tracking';
 
 interface Props {
 	title?: string;
+	description?: string;
 	lang?: string;
 	tracking?: MarketingPageTracking;
 	/** Preconnect hints for Turnstile / Formgong on invitation form routes. */
 	formThirdPartyHints?: boolean;
-	lcpImageSrc?: string;
+	lcpImage?: {
+		src: string;
+		srcSet: string;
+		sizes: string;
+	};
 }
 
 const {
 	title = 'Coming soon',
+	description,
 	lang = 'en',
 	tracking,
 	formThirdPartyHints = false,
-	lcpImageSrc,
+	lcpImage,
 } = Astro.props;
 ---
 
@@ -30,7 +37,10 @@ const {
 		<link rel="icon" href="/favicon.ico" sizes="any" />
 		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 		<meta name="generator" content={Astro.generator} />
+		<link rel="describedby" href="/llms.txt" type="text/plain" />
+		<link rel="ard" href="/.well-known/ard.json" type="application/ard+json" />
 		<title>{title}</title>
+		{description ? <meta name="description" content={description} /> : null}
 		{
 			formThirdPartyHints ? (
 				<>
@@ -42,12 +52,14 @@ const {
 			) : null
 		}
 		{
-			lcpImageSrc ? (
+			lcpImage ? (
 				<link
 					rel="preload"
 					as="image"
 					type="image/webp"
-					href={lcpImageSrc}
+					href={lcpImage.src}
+					imagesrcset={lcpImage.srcSet}
+					imagesizes={lcpImage.sizes}
 					fetchpriority="high"
 				/>
 			) : null
@@ -59,7 +71,7 @@ const {
 			formThirdPartyHints ? (
 				<script
 					is:inline
-					set:html={`(function(){function r(){document.body.classList.add("form-page-bg-ready")}var a=["pointerdown","keydown","touchstart","scroll"];function arm(){for(var i=0;i<a.length;i++){window.addEventListener(a[i],r,{once:true,passive:true})}}if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",arm)}else{arm()}})();`}
+					set:html={`(function(){var s=${JSON.stringify(FORM_PAGE_BACKGROUND_HD)};function u(){var i=new Image();i.decoding="async";i.onload=function(){document.body.classList.add("form-page-bg-hd")};i.src=s}function n(){if("requestIdleCallback"in window){requestIdleCallback(u,{timeout:2500})}else{setTimeout(u,0)}}if(document.readyState==="complete"){n()}else{window.addEventListener("load",n,{once:true})}})();`}
 				/>
 			) : null
 		}

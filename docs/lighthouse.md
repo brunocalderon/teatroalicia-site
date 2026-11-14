@@ -46,5 +46,6 @@ When `saveReports` is `true`, JSON reports are written under `tests/lighthouse/r
 ## Notes
 
 - Form pages load Formgong, Cloudflare Turnstile, and optional marketing pixels. Meta/Umami load after **first user interaction** (scroll, touch, click) so automated audits stay representative without third-party cookies on the critical path.
+- Production builds run the `deferCssIntegration` hook (`src/integrations/defer-css.ts`), which rewrites page CSS to `rel="preload" as="style"` plus `onload` so bundled Astro stylesheets are not render-blocking.
 - **Performance** and **Best practices** are often the first categories to fall below 90 until those assets are tuned.
 - Strict thresholds are intentional regression guards; lower floors only in `lighthouse.config.ts` if you accept the tradeoff.

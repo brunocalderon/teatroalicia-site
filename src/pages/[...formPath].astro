@@ -1,5 +1,4 @@
 ---
-import { getImage } from "astro:assets"
 import { getCollection, getEntry, render } from "astro:content"
 
 import { ConfigurableForm } from "@/components/forms/configurable-form"
@@ -9,10 +8,16 @@ import FormPageSkeleton from "@/components/forms/form-page-skeleton.astro"
 import FormSiteBrand from "@/components/forms/form-site-brand.astro"
 import Layout from "@/layouts/Layout.astro"
 import { resolveFormEventImageSource } from "@/lib/form-event-image"
+import { buildFormSplitVisualImage } from "@/lib/form-split-visual-image"
 import {
   assertFormsCollectionIntegrity,
   defaultNameFields,
+  formMetaDescription,
 } from "@/lib/form-schema"
+import {
+  FORM_PAGE_BACKGROUND_HD,
+  FORM_PAGE_BACKGROUND_LQIP_DATA_URI,
+} from "@/lib/form-page-background"
 import {
   invitationFormTracking,
   marketingPageTracking,
@@ -72,41 +77,33 @@ const thankYouParagraphs = thankYouBody
 
 const nameFields = data.nameFields ?? defaultNameFields(data.fields)
 
-type FormLcpImage = {
-  src: string
-  width: number
-  height: number
-}
-
-let formLcpImage: FormLcpImage | undefined
+let formLcpImage: Awaited<
+  ReturnType<typeof buildFormSplitVisualImage>
+> | undefined
 if (data.image) {
   const source = resolveFormEventImageSource(data.image)
-  const optimized = await getImage({
-    src: source,
-    width: 480,
-    format: "webp",
-    quality: 72,
-  })
-  formLcpImage = {
-    src: optimized.src,
-    width: optimized.attributes.width ?? 480,
-    height: optimized.attributes.height ?? 640,
-  }
+  formLcpImage = await buildFormSplitVisualImage(source)
 }
 
 const tracking =
   kind === "form"
     ? invitationFormTracking(data.title)
     : marketingPageTracking.thankYou
+
+const formDescription =
+  kind === "form" ? formMetaDescription(data) : undefined
+
+const formPageBackdropCss = `body:has(.form-page){position:relative;background-color:transparent;min-height:100dvh}body:has(.form-page)::before{content:"";position:fixed;inset:0;z-index:-1;background-color:#000;background-image:url(${JSON.stringify(FORM_PAGE_BACKGROUND_LQIP_DATA_URI)});background-size:cover;background-position:center;background-repeat:no-repeat}body.form-page-bg-hd:has(.form-page)::before{background-image:url(${JSON.stringify(FORM_PAGE_BACKGROUND_HD)})}`
 ---
 
 {kind === "form" ? (
   <Layout
     title={data.title}
+    description={formDescription}
     lang={data.lang}
     tracking={tracking}
     formThirdPartyHints
-    lcpImageSrc={formLcpImage?.src}
+    lcpImage={formLcpImage}
   >
     <main class:list={["form-page", data.image && "form-page--split"]}>
       <div class:list={[data.image ? "form-page__split" : "form-page__stack"]}>
@@ -117,6 +114,8 @@ const tracking =
                 formLcpImage ? (
                   <img
                     src={formLcpImage.src}
+                    srcset={formLcpImage.srcSet}
+                    sizes={formLcpImage.sizes}
                     alt={data.imageAlt ?? data.title}
                     width={formLcpImage.width}
                     height={formLcpImage.height}
@@ -189,7 +188,12 @@ const tracking =
     />
   </Layout>
 ) : (
-  <Layout title={data.title} lang={data.lang} tracking={tracking}>
+  <Layout
+    title={data.title}
+    lang={data.lang}
+    tracking={tracking}
+    formThirdPartyHints
+  >
     <main class="form-page form-page--thank-you">
       <div class="form-page__masthead">
         <FormSiteBrand align="start" />
@@ -207,32 +211,14 @@ const tracking =
   </Layout>
 )}
 
+<style is:global set:html={formPageBackdropCss}></style>
+
 <style>
-  :global(body:has(.form-page)) {
-    position: relative;
-    background-color: transparent;
-    min-height: 100dvh;
-  }
-
-  :global(body:has(.form-page)::before) {
-    content: "";
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    background-color: #000;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-  }
-
-  :global(body.form-page-bg-ready:has(.form-page)::before) {
-    background-image: url("/background.jpg");
-  }
-
   .form-page {
-    width: auto;
-    max-width: min(75rem, 100%);
-    margin: 2rem;
+    width: min(75rem, calc(100% - 4rem));
+    max-width: 100%;
+    margin-block: 2rem;
+    margin-inline: auto;
     min-height: calc(100dvh - 4rem);
     padding: 2rem 1.5rem 3rem;
     box-sizing: border-box;
@@ -305,8 +291,9 @@ const tracking =
 
   @media (max-width: 55.99rem) {
     .form-page {
-      margin: 0.75rem;
-      width: auto;
+      width: calc(100% - 1.5rem);
+      margin-block: 0.75rem;
+      margin-inline: auto;
       min-height: calc(100dvh - 1.5rem);
       padding: 1.25rem 1rem 2rem;
     }
