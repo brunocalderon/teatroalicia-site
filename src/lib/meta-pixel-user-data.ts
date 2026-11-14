@@ -17,6 +17,11 @@ export type MetaPixelUserData = Partial<{
 const DEFAULT_META_COUNTRY = "cl"
 
 function readFormControlValue(form: HTMLFormElement, name: string): string {
+  const fromFormData = new FormData(form).get(name)
+  if (typeof fromFormData === "string") {
+    return fromFormData.trim()
+  }
+
   const item = form.elements.namedItem(name)
   if (!item) {
     return ""

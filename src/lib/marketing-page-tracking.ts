@@ -1,5 +1,7 @@
 /** Shared Meta / Umami page-view parameters (islaconcierge-site pattern). */
 
+import { FACEBOOK_PIXEL_ID } from "astro:env/client"
+
 import type { MetaPixelUserData } from "@/lib/meta-pixel-user-data"
 
 export const MARKETING_TRACKING_CITY = "Santiago"
@@ -68,13 +70,16 @@ export function trackMetaCompleteRegistration(
   options: TrackMetaCompleteRegistrationOptions = {}
 ): void {
   const fbq = getMetaFbq()
-  if (!fbq) {
+  const pixelId = FACEBOOK_PIXEL_ID.trim()
+  if (!fbq || !pixelId) {
     return
   }
 
   const userData = options.userData
   if (userData && Object.keys(userData).length > 0) {
-    fbq("set", "userData", userData)
+    // Manual advanced matching is attached via fbq("init") (not fbq("set", "userData")).
+    // A second init updates matching for subsequent track calls.
+    fbq("init", pixelId, userData)
   }
 
   fbq("track", "CompleteRegistration", buildMetaTrackingPayload(tracking))

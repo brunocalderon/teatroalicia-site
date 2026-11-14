@@ -1,6 +1,7 @@
 import type { FormEvent, FocusEvent } from "react"
 
 import type { FormFieldControlProps } from "@/components/forms/fields/types"
+import { instagramFieldAutoComplete } from "@/lib/form-field-autocomplete"
 import { parseInstagramUsername } from "@/lib/form-fields/instagram"
 
 function commitNormalizedValue(
@@ -41,8 +42,11 @@ export function InstagramField({
       className="formgong-input"
       required={field.required}
       placeholder={field.placeholder}
-      autoComplete="nickname"
+      autoComplete={instagramFieldAutoComplete}
       spellCheck={false}
+      data-1p-ignore
+      data-lpignore="true"
+      data-form-type="other"
       aria-invalid={invalid || undefined}
       aria-describedby={describedBy}
       onInput={handleInput}

@@ -15,6 +15,11 @@ export function FormgongHiddenFields({
       <input type="hidden" name="access_key" value={accessKey} />
       <input type="hidden" name="_lang" value={lang} />
       <div aria-hidden className="formgong-honeypot">
+        {/*
+          Chrome maps email + nearby text inputs to saved passwords. A nameless
+          decoy absorbs that autofill without posting to Formgong.
+        */}
+        <input type="password" tabIndex={-1} autoComplete="new-password" />
         <label>
           Leave this field empty
           <input

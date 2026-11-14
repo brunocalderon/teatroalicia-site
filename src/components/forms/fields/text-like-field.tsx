@@ -1,4 +1,5 @@
 import type { FormFieldControlProps } from "@/components/forms/fields/types"
+import { textLikeAutoComplete } from "@/lib/form-field-autocomplete"
 import type { FormFieldType } from "@/lib/form-schema"
 
 type TextLikeFieldProps = FormFieldControlProps & {
@@ -17,6 +18,8 @@ export function TextLikeField({
   onValueChange,
   onBlurValidate,
 }: TextLikeFieldProps) {
+  const autoComplete = textLikeAutoComplete(field)
+
   return (
     <input
       id={`field-${field.name}`}
@@ -25,6 +28,7 @@ export function TextLikeField({
       className="formgong-input"
       required={field.required}
       placeholder={field.placeholder}
+      {...(autoComplete !== undefined ? { autoComplete } : {})}
       defaultValue={defaultValue}
       aria-invalid={invalid || undefined}
       aria-describedby={describedBy}
