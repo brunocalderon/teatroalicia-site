@@ -78,13 +78,8 @@
   gap: 1.25rem;
 }
 
-@container form-panel (min-width: 20rem) {
-  .formgong-fieldset {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (min-width: 40rem) {
+/* Match form-page split layout: two columns on desktop only, not on phone-wide form panels. */
+@media (min-width: 56rem) {
   .formgong-fieldset {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }

@@ -2,16 +2,13 @@
 import { getCollection, getEntry, render } from "astro:content"
 
 import { ConfigurableForm } from "@/components/forms/configurable-form"
+import { ThankYouBody } from "@/components/forms/thank-you-body"
 import FormSiteBrand from "@/components/forms/form-site-brand.astro"
 import Layout from "@/layouts/Layout.astro"
 import {
   assertFormsCollectionIntegrity,
   defaultNameFields,
 } from "@/lib/form-schema"
-import {
-  THANK_YOU_NAME_QUERY_PARAM,
-  formatThankYouFirstName,
-} from "@/lib/formgong-thank-you"
 import {
   invitationFormTracking,
   marketingPageTracking,
@@ -60,18 +57,14 @@ const { data } = entry
 const renderedBody =
   kind === "form" ? await render(entry) : null
 
-const thankYouNameRaw =
-  kind === "thankYou"
-    ? Astro.url.searchParams.get(THANK_YOU_NAME_QUERY_PARAM) ?? ""
-    : ""
-const thankYouName = formatThankYouFirstName(thankYouNameRaw)
-const thankYouTitle = (
-  data.messages?.thankYouTitle ?? "Thank you"
-).replace(/\{name\}/g, thankYouName || "there")
-const thankYouBody = (
+const thankYouBody =
   data.messages?.thankYouBody ??
   "We received your request and will get back to you soon."
-).replace(/\{name\}/g, thankYouName || "there")
+
+const thankYouParagraphs = thankYouBody
+  .split(/\n\n+/)
+  .map((paragraph) => paragraph.trim())
+  .filter((paragraph) => paragraph.length > 0)
 
 const nameFields = data.nameFields ?? defaultNameFields(data.fields)
 const tracking =
@@ -153,13 +146,19 @@ const tracking =
     <script src="https://formgong.com/fg.js" async />
   </Layout>
 ) : (
-  <Layout title={thankYouTitle} tracking={tracking}>
+  <Layout title={data.title} tracking={tracking}>
     <main class="form-page form-page--thank-you">
       <div class="form-page__masthead">
         <FormSiteBrand align="start" />
-        <h1>{thankYouTitle}</h1>
+        <h1>{data.title}</h1>
       </div>
-      <p>{thankYouBody}</p>
+      <div class="form-page__thank-you-content">
+        <ThankYouBody
+          client:only="react"
+          paragraphs={thankYouParagraphs}
+          locale={data.lang}
+        />
+      </div>
     </main>
   </Layout>
 )}
@@ -339,13 +338,32 @@ const tracking =
     margin-bottom: 0;
   }
 
-  .form-page--thank-you h1 {
-    margin: 0 0 1rem;
-    font-size: clamp(1.5rem, 4vw, 2rem);
-    font-weight: 500;
+  .form-page.form-page--thank-you {
+    max-width: min(100%, 36rem);
+    min-height: 0;
+    margin-bottom: 2rem;
+    padding: 1.5rem 1.5rem 2rem;
   }
 
-  .form-page--thank-you p {
+  .form-page--thank-you h1 {
+    margin: 0 0 1rem;
+    font-size: clamp(1.25rem, 3vw, 1.75rem);
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    line-height: 1.25;
+  }
+
+  .form-page--thank-you .form-page__thank-you-content {
+    margin-top: 2rem;
+  }
+
+  .form-page--thank-you .form-page__thank-you-content :global(.form-page__thank-you-body) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .form-page--thank-you .form-page__thank-you-content :global(.form-page__thank-you-body p) {
     margin: 0;
     line-height: 1.55;
     color: color-mix(in srgb, #f5f5f5 85%, transparent);

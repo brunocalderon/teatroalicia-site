@@ -1,3 +1,21 @@
+/** Prefix the opening thank-you sentence with the guest's first name when known. */
+export function prefixThankYouFirstParagraph(
+  paragraph: string,
+  firstName: string,
+  locale = "en"
+): string {
+  const trimmed = paragraph.trim()
+  if (!trimmed) {
+    return trimmed
+  }
+  if (!firstName) {
+    return trimmed
+  }
+  const lowercased =
+    trimmed.charAt(0).toLocaleLowerCase(locale) + trimmed.slice(1)
+  return `${firstName}, ${lowercased}`
+}
+
 /** Title-case a first name for thank-you copy (e.g. `bruno` → `Bruno`). */
 export function formatThankYouFirstName(raw: string): string {
   const trimmed = raw.trim()
