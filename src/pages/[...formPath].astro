@@ -109,6 +109,12 @@ const formPageBackdropCss = `body:has(.form-page){position:relative;background-c
       <div class:list={[data.image ? "form-page__split" : "form-page__stack"]}>
         {data.image ? (
           <>
+            <div class="form-page__masthead form-page__split-masthead">
+              <FormSiteBrand align="start" />
+              <header class="form-page__header">
+                <h1>{data.title}</h1>
+              </header>
+            </div>
             <figure class="form-page__visual form-page__split-visual">
               {
                 formLcpImage ? (
@@ -126,12 +132,6 @@ const formPageBackdropCss = `body:has(.form-page){position:relative;background-c
                 ) : null
               }
             </figure>
-            <div class="form-page__masthead form-page__split-masthead">
-              <FormSiteBrand align="start" />
-              <header class="form-page__header">
-                <h1>{data.title}</h1>
-              </header>
-            </div>
             {renderedBody ? (
               <div class="form-page__intro form-page__split-intro">
                 <renderedBody.Content />
@@ -298,8 +298,13 @@ const formPageBackdropCss = `body:has(.form-page){position:relative;background-c
       padding: 1.25rem 1rem 2rem;
     }
 
+    .form-page.form-page--split {
+      --form-split-masthead-edge: 1.25rem;
+      padding-top: var(--form-split-masthead-edge);
+    }
+
     .form-page--split .form-page__split {
-      gap: 0.5rem;
+      gap: var(--form-split-masthead-edge);
     }
 
     .form-page--split .form-page__split-masthead {
