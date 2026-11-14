@@ -268,16 +268,25 @@ const tracking =
 
   @media (max-width: 55.99rem) {
     .form-page {
-      margin-top: 0.75rem;
-      margin-bottom: 0.75rem;
+      margin: 0.75rem;
+      width: auto;
       min-height: calc(100dvh - 1.5rem);
       padding: 1.25rem 1rem 2rem;
+    }
+
+    .form-page--split .form-page__split {
+      gap: 0.5rem;
     }
 
     .form-page--split .form-page__split-masthead {
       flex-direction: row;
       align-items: center;
       gap: 0.875rem 1rem;
+      margin-bottom: 0;
+    }
+
+    .form-page--split .form-page__split-panel {
+      margin-top: 0.75rem;
     }
 
     .form-page--split .form-page__split-masthead h1 {
