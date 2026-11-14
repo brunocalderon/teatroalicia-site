@@ -4,7 +4,7 @@ export const formgongCopy = {
     siteKeyMissing:
       "Add CLOUDFLARE_TURNSTILE_SITE_KEY to your environment (Cloudflare Turnstile site key). Formgong forms require Turnstile in production.",
     devPlaceholder:
-      "Turnstile is enabled in production builds only. Use `astro build` + `astro preview` to test the widget locally.",
+      "Set CLOUDFLARE_TURNSTILE_SITE_KEY in `.env` to show Turnstile here (Cloudflare dummy site keys work in dev).",
   },
   errors: {
     formNotConfigured:

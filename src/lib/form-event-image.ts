@@ -1,23 +1,25 @@
-const formEventImageModules = import.meta.glob<string>(
+import type { ImageMetadata } from "astro"
+
+const formEventImageModules = import.meta.glob<ImageMetadata>(
   "../assets/images/*.{jpg,jpeg,png,webp}",
-  { eager: true, query: "?url", import: "default" },
+  { eager: true, import: "default" },
 )
 
-const formEventImageUrlByPath = new Map<string, string>()
+const formEventImageByPath = new Map<string, ImageMetadata>()
 
-for (const [modulePath, url] of Object.entries(formEventImageModules)) {
+for (const [modulePath, image] of Object.entries(formEventImageModules)) {
   const fileName = modulePath.split("/").pop()
   if (!fileName) {
     continue
   }
-  formEventImageUrlByPath.set(`/images/${fileName}`, url)
+  formEventImageByPath.set(`/images/${fileName}`, image)
 }
 
 /**
- * Resolves markdown `image` paths (e.g. `/images/poster.jpg`) to a build-hashed URL.
+ * Resolves markdown `image` paths to a bundled `src/assets/images` module.
  */
-export function resolveFormEventImageUrl(publicPath: string): string {
-  const resolved = formEventImageUrlByPath.get(publicPath)
+export function resolveFormEventImageSource(publicPath: string): ImageMetadata {
+  const resolved = formEventImageByPath.get(publicPath)
   if (!resolved) {
     throw new Error(
       `No bundled form event image for "${publicPath}". Add the file under src/assets/images/ using the same filename.`,
@@ -27,5 +29,5 @@ export function resolveFormEventImageUrl(publicPath: string): string {
 }
 
 export function hasBundledFormEventImage(publicPath: string): boolean {
-  return formEventImageUrlByPath.has(publicPath)
+  return formEventImageByPath.has(publicPath)
 }

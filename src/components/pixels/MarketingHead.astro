@@ -1,0 +1,189 @@
+---
+import { FACEBOOK_PIXEL_ID, UMAMI_PIXEL_ID } from "astro:env/client"
+import type { MarketingPageTracking } from "@/lib/marketing-page-tracking"
+import {
+  MARKETING_TRACKING_CITY,
+  buildMetaTrackingPayload,
+} from "@/lib/marketing-page-tracking"
+import {
+  isConfiguredFacebookPixelId,
+  isConfiguredUmamiWebsiteId,
+} from "@/lib/marketing-pixel-ids"
+
+interface Props {
+  tracking?: MarketingPageTracking
+}
+
+const { tracking } = Astro.props
+
+const facebookPixelId = isConfiguredFacebookPixelId(FACEBOOK_PIXEL_ID)
+  ? FACEBOOK_PIXEL_ID.trim()
+  : ""
+const umamiWebsiteId = isConfiguredUmamiWebsiteId(UMAMI_PIXEL_ID)
+  ? UMAMI_PIXEL_ID.trim()
+  : ""
+
+const metaEvent = tracking?.metaEvent ?? "ViewContent"
+const umamiEventName = tracking?.umamiEventName ?? tracking?.contentName ?? ""
+
+const metaPayload = tracking
+  ? JSON.stringify(
+      buildMetaTrackingPayload({
+        contentName: tracking.contentName,
+        contentCategory: tracking.contentCategory,
+        pageType: tracking.pageType,
+        city: tracking.city ?? MARKETING_TRACKING_CITY,
+      }),
+    )
+  : "null"
+
+const marketingConfig = JSON.stringify({
+  facebookPixelId,
+  umamiWebsiteId,
+  metaEvent,
+  metaPayload,
+  umamiEventName,
+  trackContent: Boolean(tracking),
+})
+---
+
+{
+  facebookPixelId || umamiWebsiteId ? (
+    <>
+      <script
+        is:inline
+        type="application/json"
+        id="marketing-head-config"
+        set:html={marketingConfig}
+      />
+      <script
+        is:inline
+        set:html={`(function () {
+  var CONFIG_EL = document.getElementById("marketing-head-config");
+  if (!CONFIG_EL) return;
+  var config;
+  try {
+    config = JSON.parse(CONFIG_EL.textContent || "{}");
+  } catch (e) {
+    return;
+  }
+  var engaged = false;
+
+  function defineUmamiPageView(eventName) {
+    if (!eventName) return;
+    window.customPageViewTracking = function () {
+      if (typeof window.umami !== "undefined" && window.umami.track) {
+        window.umami.track(eventName);
+      }
+    };
+  }
+
+  function loadFacebookPixel(pixelId, trackContent, metaEvent, metaPayloadJson) {
+    if (!pixelId || window.fbq) return;
+    !function (f, b, e, v, n, t, s) {
+      if (f.fbq) return;
+      n = f.fbq = function () {
+        n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
+      };
+      if (!f._fbq) f._fbq = n;
+      n.push = n;
+      n.loaded = !0;
+      n.version = "2.0";
+      n.queue = [];
+      t = b.createElement(e);
+      t.async = !0;
+      t.src = v;
+      s = b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t, s);
+    }(window, document, "script", "https://connect.facebook.net/en_US/fbevents.js");
+    window.fbq("consent", "revoke");
+    window.fbq("init", pixelId);
+    window.fbq("consent", "grant");
+    window.fbq("track", "PageView");
+    if (trackContent && metaPayloadJson) {
+      try {
+        var metaPayload = JSON.parse(metaPayloadJson);
+        window.fbq("track", metaEvent, metaPayload);
+      } catch (err) {
+        window.fbq("track", metaEvent);
+      }
+    }
+  }
+
+  function loadUmami(websiteId) {
+    if (!websiteId || document.querySelector('script[data-marketing-umami="true"]')) {
+      return;
+    }
+    defineUmamiPageView(config.umamiEventName);
+    var script = document.createElement("script");
+    script.async = true;
+    script.defer = true;
+    script.dataset.websiteId = websiteId;
+    script.dataset.marketingUmami = "true";
+    script.src = "https://cloud.umami.is/script.js";
+    script.onload = function () {
+      if (typeof window.customPageViewTracking === "function") {
+        window.customPageViewTracking();
+      }
+    };
+    document.head.appendChild(script);
+  }
+
+  function engageMarketing() {
+    if (engaged) return;
+    engaged = true;
+    var run = function () {
+      if (config.facebookPixelId) {
+        loadFacebookPixel(
+          config.facebookPixelId,
+          config.trackContent,
+          config.metaEvent,
+          config.metaPayload === "null" ? "" : config.metaPayload,
+        );
+      }
+      if (config.umamiWebsiteId) {
+        loadUmami(config.umamiWebsiteId);
+      }
+    };
+    if ("requestIdleCallback" in window) {
+      requestIdleCallback(run, { timeout: 2000 });
+    } else {
+      setTimeout(run, 0);
+    }
+  }
+
+  var signals = ["pointerdown", "keydown", "touchstart", "scroll"];
+  function arm() {
+    for (var i = 0; i < signals.length; i++) {
+      window.addEventListener(signals[i], engageMarketing, {
+        once: true,
+        passive: true,
+      });
+    }
+  }
+
+  window.engageMarketingPixels = engageMarketing;
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", arm);
+  } else {
+    arm();
+  }
+})();`}
+      />
+      {
+        facebookPixelId ? (
+          <noscript>
+            <img
+              height="1"
+              width="1"
+              style="display:none"
+              alt=""
+              src={`https://www.facebook.com/tr?id=${facebookPixelId}&ev=PageView&noscript=1`}
+            />
+          </noscript>
+        ) : null
+      }
+    </>
+  ) : null
+}

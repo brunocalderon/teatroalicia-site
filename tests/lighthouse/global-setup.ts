@@ -1,70 +1,49 @@
-import { spawn, type ChildProcess } from "node:child_process"
+import { type ChildProcess } from "node:child_process"
 import { existsSync } from "node:fs"
-import { createServer } from "node:net"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 
 import type { TestProject } from "vitest/node"
 
+import {
+  getAvailablePort,
+  previewBaseUrl,
+  spawnHttpsDistPreview,
+} from "./preview-server.ts"
+
 const moduleDir = path.dirname(fileURLToPath(import.meta.url))
 const projectRoot = path.resolve(moduleDir, "../..")
 const distDir = path.join(projectRoot, "dist")
-const previewHost = "127.0.0.1"
 
-async function getAvailablePort(): Promise<number> {
-  return await new Promise((resolve, reject) => {
-    const server = createServer()
-    server.listen(0, previewHost, () => {
-      const address = server.address()
-      if (!address || typeof address === "string") {
-        server.close()
-        reject(new Error("Could not allocate preview port"))
-        return
-      }
-      const { port } = address
-      server.close((error) => {
-        if (error) {
-          reject(error)
-          return
-        }
-        resolve(port)
-      })
-    })
-    server.on("error", reject)
-  })
-}
-
-async function waitForHttpOk(
+async function waitForHttpsOk(
   url: string,
   timeoutMs = 120_000,
 ): Promise<void> {
+  const previousTls = process.env.NODE_TLS_REJECT_UNAUTHORIZED
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"
   const deadline = Date.now() + timeoutMs
 
-  while (Date.now() < deadline) {
-    try {
-      const response = await fetch(url, { redirect: "follow" })
-      if (response.ok) {
-        return
+  try {
+    while (Date.now() < deadline) {
+      try {
+        const response = await fetch(url, { redirect: "follow" })
+        if (response.ok) {
+          return
+        }
+      } catch {
+        // preview still starting
       }
-    } catch {
-      // preview still starting
+      await new Promise((resolve) => setTimeout(resolve, 400))
     }
-    await new Promise((resolve) => setTimeout(resolve, 400))
+
+    throw new Error(`Timed out waiting for ${url}`)
+  } finally {
+    if (previousTls === undefined) {
+      delete process.env.NODE_TLS_REJECT_UNAUTHORIZED
+    } else {
+      process.env.NODE_TLS_REJECT_UNAUTHORIZED = previousTls
+    }
   }
-
-  throw new Error(`Timed out waiting for ${url}`)
-}
-
-function spawnPreview(port: number): ChildProcess {
-  return spawn(
-    "npx",
-    ["astro", "preview", "--host", previewHost, "--port", String(port)],
-    {
-      cwd: projectRoot,
-      stdio: ["ignore", "pipe", "pipe"],
-      env: process.env,
-    },
-  )
 }
 
 export default async function setup(project: TestProject) {
@@ -75,15 +54,15 @@ export default async function setup(project: TestProject) {
     return async () => {}
   }
 
-  if (!existsDist()) {
+  if (!existsSync(distDir)) {
     throw new Error(
       `Missing ${distDir}. Run \`npm run build\` before Lighthouse tests.`,
     )
   }
 
   const port = await getAvailablePort()
-  const baseUrl = `http://${previewHost}:${port}`
-  const preview = spawnPreview(port)
+  const baseUrl = previewBaseUrl(port)
+  const preview = spawnHttpsDistPreview(distDir, port)
 
   let previewLog = ""
   preview.stdout?.on("data", (chunk: Buffer) => {
@@ -94,31 +73,31 @@ export default async function setup(project: TestProject) {
   })
 
   try {
-    await waitForHttpOk(`${baseUrl}/`)
+    await waitForHttpsOk(`${baseUrl}/`)
   } catch (error) {
     preview.kill("SIGTERM")
     const message = error instanceof Error ? error.message : String(error)
-    throw new Error(`${message}\n\nastro preview output:\n${previewLog}`)
+    throw new Error(`${message}\n\nHTTPS preview output:\n${previewLog}`)
   }
 
   project.provide("lighthouseBaseUrl", baseUrl)
 
   return async () => {
-    if (!preview.killed) {
-      preview.kill("SIGTERM")
-      await new Promise((resolve) => {
-        preview.once("exit", () => resolve(undefined))
-        setTimeout(() => {
-          if (!preview.killed) {
-            preview.kill("SIGKILL")
-          }
-          resolve(undefined)
-        }, 5_000)
-      })
-    }
+    await stopPreview(preview)
   }
 }
 
-function existsDist(): boolean {
-  return existsSync(distDir)
+async function stopPreview(preview: ChildProcess): Promise<void> {
+  if (!preview.killed) {
+    preview.kill("SIGTERM")
+    await new Promise((resolve) => {
+      preview.once("exit", () => resolve(undefined))
+      setTimeout(() => {
+        if (!preview.killed) {
+          preview.kill("SIGKILL")
+        }
+        resolve(undefined)
+      }, 5_000)
+    })
+  }
 }

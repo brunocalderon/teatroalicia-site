@@ -5,6 +5,7 @@ import {
   formatThankYouFirstName,
   prefixThankYouFirstParagraph,
 } from "@/lib/formgong-thank-you"
+import { hasPendingMetaPixelUserData } from "@/lib/meta-pixel-pending-storage"
 import {
   trackMetaCompleteRegistrationFromPendingStorage,
   type MarketingPageTracking,
@@ -22,6 +23,16 @@ export function ThankYouBody({
   marketingTracking,
 }: ThankYouBodyProps) {
   useEffect(() => {
+    if (!hasPendingMetaPixelUserData()) {
+      return
+    }
+    const engage =
+      typeof window !== "undefined"
+        ? (
+            window as Window & { engageMarketingPixels?: () => void }
+          ).engageMarketingPixels
+        : undefined
+    engage?.()
     trackMetaCompleteRegistrationFromPendingStorage(marketingTracking)
   }, [marketingTracking])
   const displayedParagraphs = useMemo(() => {

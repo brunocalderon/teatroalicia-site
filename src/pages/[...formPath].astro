@@ -1,4 +1,5 @@
 ---
+import { getImage } from "astro:assets"
 import { getCollection, getEntry, render } from "astro:content"
 
 import { ConfigurableForm } from "@/components/forms/configurable-form"
@@ -7,7 +8,7 @@ import FormLivestackBrand from "@/components/forms/form-livestack-brand.astro"
 import FormPageSkeleton from "@/components/forms/form-page-skeleton.astro"
 import FormSiteBrand from "@/components/forms/form-site-brand.astro"
 import Layout from "@/layouts/Layout.astro"
-import { resolveFormEventImageUrl } from "@/lib/form-event-image"
+import { resolveFormEventImageSource } from "@/lib/form-event-image"
 import {
   assertFormsCollectionIntegrity,
   defaultNameFields,
@@ -70,7 +71,29 @@ const thankYouParagraphs = thankYouBody
   .filter((paragraph) => paragraph.length > 0)
 
 const nameFields = data.nameFields ?? defaultNameFields(data.fields)
-const formImageSrc = data.image ? resolveFormEventImageUrl(data.image) : undefined
+
+type FormLcpImage = {
+  src: string
+  width: number
+  height: number
+}
+
+let formLcpImage: FormLcpImage | undefined
+if (data.image) {
+  const source = resolveFormEventImageSource(data.image)
+  const optimized = await getImage({
+    src: source,
+    width: 480,
+    format: "webp",
+    quality: 72,
+  })
+  formLcpImage = {
+    src: optimized.src,
+    width: optimized.attributes.width ?? 480,
+    height: optimized.attributes.height ?? 640,
+  }
+}
+
 const tracking =
   kind === "form"
     ? invitationFormTracking(data.title)
@@ -78,11 +101,32 @@ const tracking =
 ---
 
 {kind === "form" ? (
-  <Layout title={data.title} tracking={tracking}>
+  <Layout
+    title={data.title}
+    lang={data.lang}
+    tracking={tracking}
+    formThirdPartyHints
+    lcpImageSrc={formLcpImage?.src}
+  >
     <main class:list={["form-page", data.image && "form-page--split"]}>
       <div class:list={[data.image ? "form-page__split" : "form-page__stack"]}>
         {data.image ? (
           <>
+            <figure class="form-page__visual form-page__split-visual">
+              {
+                formLcpImage ? (
+                  <img
+                    src={formLcpImage.src}
+                    alt={data.imageAlt ?? data.title}
+                    width={formLcpImage.width}
+                    height={formLcpImage.height}
+                    loading="eager"
+                    fetchpriority="high"
+                    decoding="sync"
+                  />
+                ) : null
+              }
+            </figure>
             <div class="form-page__masthead form-page__split-masthead">
               <FormSiteBrand align="start" />
               <header class="form-page__header">
@@ -94,16 +138,6 @@ const tracking =
                 <renderedBody.Content />
               </div>
             ) : null}
-            <figure class="form-page__visual form-page__split-visual">
-              <img
-                src={formImageSrc}
-                alt={data.imageAlt ?? data.title}
-                width="800"
-                height="1067"
-                loading="eager"
-                decoding="async"
-              />
-            </figure>
           </>
         ) : (
           <>
@@ -128,7 +162,7 @@ const tracking =
         >
           <div class="form-page__form">
             <ConfigurableForm
-              client:only="react"
+              client:idle="react"
               token={data.token}
               fields={data.fields}
               lang={data.lang}
@@ -150,14 +184,12 @@ const tracking =
       {data.livestackFooter ? <FormLivestackBrand /> : null}
     </main>
     <script
-      src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
-      async
-      defer
+      is:inline
+      set:html={`window.addEventListener("load",function(){var t=document.createElement("script");t.src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";t.async=true;t.defer=true;document.body.appendChild(t);var f=document.createElement("script");f.src="https://formgong.com/fg.js";f.async=true;document.body.appendChild(f);},{once:true});`}
     />
-    <script src="https://formgong.com/fg.js" async />
   </Layout>
 ) : (
-  <Layout title={data.title} tracking={tracking}>
+  <Layout title={data.title} lang={data.lang} tracking={tracking}>
     <main class="form-page form-page--thank-you">
       <div class="form-page__masthead">
         <FormSiteBrand align="start" />
@@ -188,17 +220,20 @@ const tracking =
     inset: 0;
     z-index: -1;
     background-color: #000;
-    background-image: url("/background.jpg");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
   }
 
+  :global(body.form-page-bg-ready:has(.form-page)::before) {
+    background-image: url("/background.jpg");
+  }
+
   .form-page {
-    width: 100%;
+    width: auto;
     max-width: min(75rem, 100%);
-    margin: 2rem auto 0;
-    min-height: calc(100dvh - 2rem);
+    margin: 2rem;
+    min-height: calc(100dvh - 4rem);
     padding: 2rem 1.5rem 3rem;
     box-sizing: border-box;
     display: flex;
@@ -249,20 +284,22 @@ const tracking =
       grid-row: 3;
       position: sticky;
       top: 2rem;
-      max-height: calc(100dvh - 4rem);
+      max-height: calc(100dvh - 6rem);
       align-self: start;
     }
 
     .form-page__split-visual img {
       width: 100%;
       height: 100%;
-      max-height: calc(100dvh - 4rem);
+      max-height: calc(100dvh - 6rem);
     }
 
     .form-page__split-panel {
       grid-column: 2;
       grid-row: 3;
       align-self: start;
+      content-visibility: auto;
+      contain-intrinsic-size: auto 720px;
     }
   }
 
@@ -405,7 +442,6 @@ const tracking =
   .form-page.form-page--thank-you {
     max-width: min(100%, 36rem);
     min-height: 0;
-    margin-bottom: 2rem;
     padding: 1.5rem 1.5rem 2rem;
   }
 

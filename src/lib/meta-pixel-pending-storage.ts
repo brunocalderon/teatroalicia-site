@@ -55,7 +55,9 @@ export function persistMetaPixelUserData(userData: MetaPixelUserData): void {
   }
 }
 
-export function consumePendingMetaPixelUserData(): MetaPixelUserData | undefined {
+function readPendingMetaPixelUserData(
+  consume: boolean,
+): MetaPixelUserData | undefined {
   if (typeof window === "undefined") {
     return undefined
   }
@@ -67,11 +69,6 @@ export function consumePendingMetaPixelUserData(): MetaPixelUserData | undefined
   }
   if (!raw) {
     return undefined
-  }
-  try {
-    window.localStorage.removeItem(STORAGE_KEY)
-  } catch {
-    // ignore
   }
 
   let parsed: unknown
@@ -85,7 +82,28 @@ export function consumePendingMetaPixelUserData(): MetaPixelUserData | undefined
   }
   const savedAt = parsed.savedAt
   if (typeof savedAt === "number" && Date.now() - savedAt > MAX_AGE_MS) {
+    try {
+      window.localStorage.removeItem(STORAGE_KEY)
+    } catch {
+      // ignore
+    }
     return undefined
   }
-  return parseUserData(parsed.userData)
+  const userData = parseUserData(parsed.userData)
+  if (consume && userData) {
+    try {
+      window.localStorage.removeItem(STORAGE_KEY)
+    } catch {
+      // ignore
+    }
+  }
+  return userData
+}
+
+export function hasPendingMetaPixelUserData(): boolean {
+  return readPendingMetaPixelUserData(false) !== undefined
+}
+
+export function consumePendingMetaPixelUserData(): MetaPixelUserData | undefined {
+  return readPendingMetaPixelUserData(true)
 }

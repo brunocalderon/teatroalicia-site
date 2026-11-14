@@ -2,8 +2,14 @@ import { describe, expect, inject, it } from "vitest"
 
 import { getLighthouseAuditPaths } from "@/lib/lighthouse-targets"
 
-import { lighthouseConfig } from "../../lighthouse.config.ts"
-import { runLighthouseAudit } from "./lighthouse-audit.ts"
+import {
+  lighthouseConfig,
+  type LighthouseCategoryId,
+} from "../../lighthouse.config.ts"
+import {
+  formatFailingCategoryAudits,
+  runLighthouseAudit,
+} from "./lighthouse-audit.ts"
 
 const auditPaths = getLighthouseAuditPaths()
 
@@ -12,17 +18,28 @@ describe("Lighthouse category scores", () => {
     const baseUrl = inject("lighthouseBaseUrl")
     const url = new URL(pathname, `${baseUrl}/`).href
 
-    const { scores } = await runLighthouseAudit(url)
+    const { scores, reportJson } = await runLighthouseAudit(url)
     const min = lighthouseConfig.minCategoryScore
 
-    const failures = lighthouseConfig.categories
-      .filter((id) => scores[id] < min)
-      .map((id) => `${id}: ${scores[id]} (min ${min})`)
+    const failingCategories = lighthouseConfig.categories.filter(
+      (id) => scores[id] < min,
+    )
+
+    const failures = failingCategories.map(
+      (id) => `${id}: ${scores[id]} (min ${min})`,
+    )
+
+    const auditHints = failingCategories.flatMap((categoryId) =>
+      formatFailingCategoryAudits(
+        reportJson,
+        categoryId as LighthouseCategoryId,
+      ),
+    )
 
     expect(
       failures,
       failures.length > 0
-        ? `${url}\n${failures.join("\n")}`
+        ? [url, ...failures, ...auditHints].join("\n")
         : undefined,
     ).toEqual([])
   })

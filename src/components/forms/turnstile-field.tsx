@@ -7,8 +7,8 @@ import "@/styles/formgong.css"
 
 const turnstileSiteKey = CLOUDFLARE_TURNSTILE_SITE_KEY.trim()
 
-/** Turnstile renders and is required only in production builds; `astro dev` skips it. */
-export const TURNSTILE_ENABLED = import.meta.env.PROD
+/** Turnstile renders and is required when `CLOUDFLARE_TURNSTILE_SITE_KEY` is set (dummy keys work in dev). */
+export const TURNSTILE_ENABLED = turnstileSiteKey.length > 0
 
 type TurnstileRenderOptions = {
   sitekey: string
@@ -73,7 +73,7 @@ export function TurnstileField({
   onTokenChangeRef.current = onTokenChange
 
   useEffect(() => {
-    if (!TURNSTILE_ENABLED || !turnstileSiteKey || !containerRef.current) {
+    if (!TURNSTILE_ENABLED || !containerRef.current) {
       onTokenChangeRef.current?.(null)
       return
     }
@@ -117,21 +117,21 @@ export function TurnstileField({
   }, [])
 
   if (!TURNSTILE_ENABLED) {
+    if (import.meta.env.PROD) {
+      return (
+        <div className="formgong-turnstile">
+          <p>{copy.label}</p>
+          <p className="formgong-alert" role="alert">
+            {copy.siteKeyMissing}
+          </p>
+        </div>
+      )
+    }
+
     return (
       <div className="formgong-turnstile">
         <span className="sr-only">{copy.label}</span>
         <div className="formgong-turnstile-placeholder">{copy.devPlaceholder}</div>
-      </div>
-    )
-  }
-
-  if (!turnstileSiteKey) {
-    return (
-      <div className="formgong-turnstile">
-        <p>{copy.label}</p>
-        <p className="formgong-alert" role="alert">
-          {copy.siteKeyMissing}
-        </p>
       </div>
     )
   }

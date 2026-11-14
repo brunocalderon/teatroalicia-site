@@ -1,19 +1,27 @@
 ---
-import MetaPixel from '@/components/pixels/MetaPixel.astro';
-import PageViewTracking from '@/components/pixels/PageViewTracking.astro';
-import UmamiPixel from '@/components/pixels/UmamiPixel.astro';
+import MarketingHead from '@/components/pixels/MarketingHead.astro';
 import type { MarketingPageTracking } from '@/lib/marketing-page-tracking';
 
 interface Props {
 	title?: string;
+	lang?: string;
 	tracking?: MarketingPageTracking;
+	/** Preconnect hints for Turnstile / Formgong on invitation form routes. */
+	formThirdPartyHints?: boolean;
+	lcpImageSrc?: string;
 }
 
-const { title = 'Coming soon', tracking } = Astro.props;
+const {
+	title = 'Coming soon',
+	lang = 'en',
+	tracking,
+	formThirdPartyHints = false,
+	lcpImageSrc,
+} = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en" class="dark">
+<html lang={lang} class="dark">
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -23,11 +31,38 @@ const { title = 'Coming soon', tracking } = Astro.props;
 		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
-		<MetaPixel />
-		<UmamiPixel />
-		{tracking ? <PageViewTracking {...tracking} /> : null}
+		{
+			formThirdPartyHints ? (
+				<>
+					<link rel="preconnect" href="https://challenges.cloudflare.com" />
+					<link rel="preconnect" href="https://formgong.com" />
+					<link rel="dns-prefetch" href="https://challenges.cloudflare.com" />
+					<link rel="dns-prefetch" href="https://formgong.com" />
+				</>
+			) : null
+		}
+		{
+			lcpImageSrc ? (
+				<link
+					rel="preload"
+					as="image"
+					type="image/webp"
+					href={lcpImageSrc}
+					fetchpriority="high"
+				/>
+			) : null
+		}
+		<MarketingHead tracking={tracking} />
 	</head>
 	<body>
+		{
+			formThirdPartyHints ? (
+				<script
+					is:inline
+					set:html={`(function(){function r(){document.body.classList.add("form-page-bg-ready")}var a=["pointerdown","keydown","touchstart","scroll"];function arm(){for(var i=0;i<a.length;i++){window.addEventListener(a[i],r,{once:true,passive:true})}}if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",arm)}else{arm()}})();`}
+				/>
+			) : null
+		}
 		<slot />
 	</body>
 </html>

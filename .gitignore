@@ -3,6 +3,7 @@ dist/
 
 # lighthouse vitest reports
 tests/lighthouse/reports/
+tests/lighthouse/certs/*.pem
 
 # generated types
 .astro/

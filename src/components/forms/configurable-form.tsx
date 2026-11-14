@@ -1,4 +1,3 @@
-import { CLOUDFLARE_TURNSTILE_SITE_KEY } from "astro:env/client"
 import { ArrowRight } from "lucide-react"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
@@ -44,8 +43,6 @@ import { buildMetaPixelUserDataFromForm } from "@/lib/meta-pixel-user-data"
 
 import "@/styles/formgong.css"
 import "@/styles/global.css"
-
-const turnstileSiteKey = CLOUDFLARE_TURNSTILE_SITE_KEY.trim()
 
 export type ConfigurableFormProps = {
   token: string
@@ -178,12 +175,10 @@ export function ConfigurableForm({
       }
 
       if (!TURNSTILE_ENABLED) {
-        return
-      }
-
-      if (!turnstileSiteKey) {
-        event.preventDefault()
-        setConfigError(formgongCopy.turnstile.siteKeyMissing)
+        if (import.meta.env.PROD) {
+          event.preventDefault()
+          setConfigError(formgongCopy.turnstile.siteKeyMissing)
+        }
         return
       }
 
@@ -273,7 +268,7 @@ export function ConfigurableForm({
             if (!navigated) {
               currentForm.removeAttribute("aria-busy")
               setIsSubmitting(false)
-              if (TURNSTILE_ENABLED && turnstileSiteKey) {
+              if (TURNSTILE_ENABLED) {
                 resetTurnstileInForm(currentForm)
               }
             }
