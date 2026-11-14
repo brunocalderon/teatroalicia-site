@@ -34,6 +34,13 @@ export default defineConfig({
         optional: true,
         default: "",
       }),
+      /** Public origin (e.g. https://teatroalicia.cl) for referral CSV links at build time. */
+      SITE_URL: envField.string({
+        context: "server",
+        access: "public",
+        optional: true,
+        default: "",
+      }),
     },
   },
 
