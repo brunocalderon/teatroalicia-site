@@ -1,5 +1,7 @@
 import { z } from "astro/zod"
 
+import { hasBundledFormEventImage } from "@/lib/form-event-image"
+
 const fieldOptionSchema = z.object({
   value: z.string(),
   label: z.string(),
@@ -105,9 +107,11 @@ export const formEntrySchema = z
     thankYouPath: sitePathSchema("thankYouPath").optional(),
     nameFields: z.array(z.string().min(1)).optional(),
     messages: formMessagesSchema,
-    /** Public URL path to event artwork, e.g. `/images/event.jpg`. */
+    /** Public path under `/images/`; file lives in `src/assets/images/` and is emitted hashed at build. */
     image: sitePathSchema("image").optional(),
     imageAlt: z.string().min(1).optional(),
+    /** When false, omits the “powered by Livestack” footer on the form page. */
+    livestackFooter: z.boolean().optional().default(true),
     fields: z.array(formFieldSchema).min(1),
   })
   .transform((data) => ({
@@ -190,6 +194,15 @@ export function assertFormsCollectionIntegrity(entries: FormCollectionEntry[]): 
     if (formOwner && formOwner !== entry.id) {
       throw new Error(
         `thankYouPath "${thankYouPath}" in ${entry.id} conflicts with form URL from ${formOwner}`
+      )
+    }
+  }
+
+  for (const entry of entries) {
+    const { image } = entry.data
+    if (image && !hasBundledFormEventImage(image)) {
+      throw new Error(
+        `Form image "${image}" in ${entry.id} has no matching file in src/assets/images/`,
       )
     }
   }

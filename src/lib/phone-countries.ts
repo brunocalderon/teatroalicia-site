@@ -4,9 +4,9 @@ import {
   type CountryCode,
 } from "libphonenumber-js"
 
-const PRIORITY_COUNTRY_CODES: CountryCode[] = ["CL", "MX", "US", "AR"]
+const PINNED_FIRST_COUNTRY_CODE: CountryCode = "CL"
 
-export const DEFAULT_PHONE_COUNTRY_CODE: CountryCode = "CL"
+export const DEFAULT_PHONE_COUNTRY_CODE: CountryCode = PINNED_FIRST_COUNTRY_CODE
 
 export function countryCodeToFlagEmoji(countryCode: string) {
   return countryCode
@@ -36,6 +36,7 @@ function regionLabel(code: CountryCode, lang: string) {
 }
 
 export function buildPhoneCountryOptions(lang: string): PhoneCountryOption[] {
+  const locale = lang === "es" ? "es" : "en"
   const options = getCountries().map((code) => ({
     code,
     name: regionLabel(code, lang),
@@ -43,16 +44,12 @@ export function buildPhoneCountryOptions(lang: string): PhoneCountryOption[] {
     flag: countryCodeToFlagEmoji(code),
   }))
 
-  const priority = PRIORITY_COUNTRY_CODES.flatMap((code) => {
-    const match = options.find((option) => option.code === code)
-    return match ? [match] : []
-  })
-
+  const pinned = options.find((option) => option.code === PINNED_FIRST_COUNTRY_CODE)
   const rest = options
-    .filter((option) => !PRIORITY_COUNTRY_CODES.includes(option.code))
-    .sort((a, b) => a.name.localeCompare(b.name, lang === "es" ? "es" : "en"))
+    .filter((option) => option.code !== PINNED_FIRST_COUNTRY_CODE)
+    .sort((a, b) => a.name.localeCompare(b.name, locale))
 
-  return [...priority, ...rest]
+  return pinned ? [pinned, ...rest] : rest
 }
 
 export function filterPhoneCountryOptions(

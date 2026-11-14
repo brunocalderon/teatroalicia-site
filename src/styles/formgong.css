@@ -380,6 +380,12 @@
   list-style: none;
   max-height: 12rem;
   overflow: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.formgong-phone__list::-webkit-scrollbar {
+  display: none;
 }
 
 .formgong-phone__option {

@@ -13,6 +13,10 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 export default defineConfig({
   integrations: [react()],
 
+  devToolbar: {
+    enabled: false,
+  },
+
   env: {
     schema: {
       /** Required when any markdown form includes a `file` field. */
@@ -52,5 +56,13 @@ export default defineConfig({
     },
 
     plugins: [tailwindcss()],
+
+  build: {
+      assetsInlineLimit: (filePath) => {
+        if (filePath.includes("livestack-logo-white.svg")) {
+          return false
+        }
+      },
+    },
   },
 })

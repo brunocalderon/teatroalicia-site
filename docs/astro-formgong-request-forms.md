@@ -34,7 +34,7 @@ Shared helpers in this repo:
 ## Adding a form (default path)
 
 1. Create `content/forms/<id>.md` with frontmatter: `title`, `path`, `token` (Formgong `fk_…` access key), and `fields` (see schema in `src/lib/form-schema.ts`).
-2. Optional: `lang`, `submitLabel`, `thankYouPath` (defaults to `{path}/gracias`), `nameFields`, `messages`, `image` + `imageAlt` (event poster on the left; form panel on the right), and markdown body for intro copy.
+2. Optional: `lang`, `submitLabel`, `thankYouPath` (defaults to `{path}/gracias`), `nameFields`, `messages`, `image` + `imageAlt` (event poster on the left; form panel on the right), `livestackFooter` (defaults to `true`; set `false` to hide the Livestack footer), and markdown body for intro copy. Set `image` to `/images/<filename>` and place the file in `src/assets/images/` (build emits a hashed URL under `/_astro/`).
 3. Build or run dev — Astro generates the form page at `path` and the thank-you page at `thankYouPath`.
 
 Example:

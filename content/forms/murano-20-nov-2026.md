@@ -5,6 +5,7 @@ token: fk_qyWV9hdtePd2wPQHA5fmi2wC
 lang: es
 image: /images/murano-one-more-night-20-11-2026.jpg
 imageAlt: "MURANO — One More Night, 20 de noviembre de 2026"
+livestackFooter: false
 submitLabel: Enviar
 messages:
   submit: Enviar

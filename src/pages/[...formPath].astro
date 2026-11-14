@@ -7,6 +7,7 @@ import FormLivestackBrand from "@/components/forms/form-livestack-brand.astro"
 import FormPageSkeleton from "@/components/forms/form-page-skeleton.astro"
 import FormSiteBrand from "@/components/forms/form-site-brand.astro"
 import Layout from "@/layouts/Layout.astro"
+import { resolveFormEventImageUrl } from "@/lib/form-event-image"
 import {
   assertFormsCollectionIntegrity,
   defaultNameFields,
@@ -69,6 +70,7 @@ const thankYouParagraphs = thankYouBody
   .filter((paragraph) => paragraph.length > 0)
 
 const nameFields = data.nameFields ?? defaultNameFields(data.fields)
+const formImageSrc = data.image ? resolveFormEventImageUrl(data.image) : undefined
 const tracking =
   kind === "form"
     ? invitationFormTracking(data.title)
@@ -94,7 +96,7 @@ const tracking =
             ) : null}
             <figure class="form-page__visual form-page__split-visual">
               <img
-                src={data.image}
+                src={formImageSrc}
                 alt={data.imageAlt ?? data.title}
                 width="800"
                 height="1067"
@@ -145,7 +147,7 @@ const tracking =
           </div>
         </div>
       </div>
-      <FormLivestackBrand />
+      {data.livestackFooter ? <FormLivestackBrand /> : null}
     </main>
     <script
       src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
@@ -267,16 +269,18 @@ const tracking =
   @media (max-width: 55.99rem) {
     .form-page {
       margin-top: 0.75rem;
+      margin-bottom: 0.75rem;
+      min-height: calc(100dvh - 1.5rem);
       padding: 1.25rem 1rem 2rem;
     }
 
-    .form-page--split .form-page__masthead {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 0.75rem;
+    .form-page--split .form-page__split-masthead {
+      flex-direction: row;
+      align-items: center;
+      gap: 0.875rem 1rem;
     }
 
-    .form-page--split .form-page__masthead h1 {
+    .form-page--split .form-page__split-masthead h1 {
       font-size: clamp(1.125rem, 5vw, 1.5rem);
       line-height: 1.2;
       overflow-wrap: anywhere;

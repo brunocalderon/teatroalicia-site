@@ -36,6 +36,12 @@ const { align = "center" } = Astro.props
     width: auto;
   }
 
+  @media (max-width: 55.99rem) {
+    .form-page__brand img {
+      height: calc(4.25rem * 0.75);
+    }
+  }
+
   .form-page__brand--start {
     width: auto;
     margin-bottom: 0;
