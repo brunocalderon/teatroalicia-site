@@ -7,13 +7,15 @@ import { defineConfig, envField } from "astro/config"
 
 import tailwindcss from "@tailwindcss/vite";
 
+import { contentSecurityPolicyIntegration } from "./src/integrations/content-security-policy.ts"
+import { cspDevServerPlugin } from "./src/integrations/csp-dev-server.ts"
 import { deferCssIntegration } from "./src/integrations/defer-css.ts"
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 // https://astro.build/config
 export default defineConfig({
-  integrations: [react(), deferCssIntegration()],
+  integrations: [react(), deferCssIntegration(), contentSecurityPolicyIntegration()],
 
   devToolbar: {
     enabled: false,
@@ -82,7 +84,7 @@ export default defineConfig({
       },
     },
 
-    plugins: [tailwindcss()],
+    plugins: [tailwindcss(), cspDevServerPlugin()],
 
   build: {
       assetsInlineLimit: (filePath) => {
