@@ -88,7 +88,7 @@ export default defineConfig({
 
   build: {
       assetsInlineLimit: (filePath) => {
-        if (filePath.includes("livestack-logo-white.svg")) {
+        if (filePath.includes("livestack-logo-white.")) {
           return false
         }
       },
