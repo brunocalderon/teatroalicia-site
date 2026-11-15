@@ -1,6 +1,6 @@
 import promotersRoster, {
   type PromoterRosterEntry,
-} from "@/config/promoters.roster"
+} from "../../content/promoters.roster"
 import { promoterRefQueryParam } from "@/lib/promoters"
 
 const PROMOTER_COLUMNS = [

@@ -2,13 +2,13 @@ import { writeFileSync } from "node:fs"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 
-import { promotersRoster } from "../src/config/promoters.roster.ts"
+import { promotersRoster } from "../content/promoters.roster.ts"
 
 const outPath = path.join(
   path.dirname(fileURLToPath(import.meta.url)),
   "..",
-  "content",
-  "promoters",
+  "src",
+  "generated",
   "promoters.public.json"
 )
 
@@ -19,5 +19,5 @@ const publicPromoters = promotersRoster
 writeFileSync(outPath, `${JSON.stringify(publicPromoters, null, 2)}\n`)
 
 console.log(
-  `Wrote ${publicPromoters.length} guest-pass promoters to content/promoters/promoters.public.json`
+  `Wrote ${publicPromoters.length} guest-pass promoters to src/generated/promoters.public.json`
 )

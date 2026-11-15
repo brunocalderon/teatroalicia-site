@@ -197,7 +197,7 @@ export const promotersRoster: PromoterRosterEntry[] = [
     id: "lupe-fernandez",
     name: "Lupe Fernández",
     email: "lupe@teatroalicia.cl",
-    active: false,
+    active: true,
     ticket_sale_enabled: true,
     guest_pass_enabled: true,
   },
