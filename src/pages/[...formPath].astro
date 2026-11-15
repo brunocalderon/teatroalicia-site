@@ -15,7 +15,7 @@ import {
   formMetaDescription,
 } from "@/lib/form-schema"
 import {
-  FORM_PAGE_BACKGROUND_HD,
+  FORM_PAGE_BACKGROUND_HD_IMAGE_SET,
   FORM_PAGE_BACKGROUND_LQIP_DATA_URI,
 } from "@/lib/form-page-background"
 import { INVITATION_FORM_MARKETING_ENGAGE_MS } from "astro:env/client"
@@ -95,7 +95,7 @@ const tracking =
 const formDescription =
   kind === "form" ? formMetaDescription(data) : undefined
 
-const formPageBackdropCss = `body:has(.form-page){position:relative;background-color:transparent;min-height:100dvh}body:has(.form-page)::before{content:"";position:fixed;inset:0;z-index:-1;background-color:#000;background-image:url(${JSON.stringify(FORM_PAGE_BACKGROUND_LQIP_DATA_URI)});background-size:cover;background-position:center;background-repeat:no-repeat}body.form-page-bg-hd:has(.form-page)::before{background-image:url(${JSON.stringify(FORM_PAGE_BACKGROUND_HD)})}`
+const formPageBackdropCss = `body:has(.form-page){position:relative;background-color:transparent;min-height:100dvh}body:has(.form-page)::before{content:"";position:fixed;inset:0;z-index:-1;background-color:#000;background-image:url(${JSON.stringify(FORM_PAGE_BACKGROUND_LQIP_DATA_URI)});background-size:cover;background-position:center;background-repeat:no-repeat}body.form-page-bg-hd:has(.form-page)::before{background-image:${FORM_PAGE_BACKGROUND_HD_IMAGE_SET}}`
 ---
 
 {kind === "form" ? (

@@ -1,6 +1,7 @@
 ---
 import FormSiteBrand from "@/components/forms/form-site-brand.astro"
 import Layout from "@/layouts/Layout.astro"
+import { FORM_PAGE_BACKGROUND_HD_IMAGE_SET } from "@/lib/form-page-background"
 import { marketingPageTracking } from "@/lib/marketing-page-tracking"
 ---
 
@@ -13,7 +14,7 @@ import { marketingPageTracking } from "@/lib/marketing-page-tracking"
   </main>
 </Layout>
 
-<style>
+<style define:vars={{ formPageBgHd: FORM_PAGE_BACKGROUND_HD_IMAGE_SET }}>
   :global(body:has(.home-page)) {
     position: relative;
     background-color: transparent;
@@ -26,7 +27,7 @@ import { marketingPageTracking } from "@/lib/marketing-page-tracking"
     inset: 0;
     z-index: -1;
     background-color: #000;
-    background-image: url("/background.jpg");
+    background-image: var(--form-page-bg-hd);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;

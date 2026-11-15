@@ -1,6 +1,6 @@
 ---
 import MarketingHead from '@/components/pixels/MarketingHead.astro';
-import { FORM_PAGE_BACKGROUND_HD } from '@/lib/form-page-background';
+import { FORM_PAGE_BACKGROUND_HD_SOURCES } from '@/lib/form-page-background';
 import type { MarketingPageTracking } from '@/lib/marketing-page-tracking';
 
 interface Props {
@@ -77,7 +77,7 @@ const {
 			formThirdPartyHints ? (
 				<script
 					is:inline
-					set:html={`(function(){var s=${JSON.stringify(FORM_PAGE_BACKGROUND_HD)};function u(){var i=new Image();i.decoding="async";i.onload=function(){document.body.classList.add("form-page-bg-hd")};i.src=s}function n(){if("requestIdleCallback"in window){requestIdleCallback(u,{timeout:2500})}else{setTimeout(u,0)}}if(document.readyState==="complete"){n()}else{window.addEventListener("load",n,{once:true})}})();`}
+					set:html={`(function(){var s=${JSON.stringify(FORM_PAGE_BACKGROUND_HD_SOURCES)};function u(){var n=0;function t(){if(n>=s.length){return}var i=new Image();i.decoding="async";i.onload=function(){document.body.classList.add("form-page-bg-hd")};i.onerror=function(){n+=1;t()};i.src=s[n]}t()}function n(){if("requestIdleCallback"in window){requestIdleCallback(u,{timeout:2500})}else{setTimeout(u,0)}}if(document.readyState==="complete"){n()}else{window.addEventListener("load",n,{once:true})}})();`}
 				/>
 			) : null
 		}

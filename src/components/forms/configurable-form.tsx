@@ -35,11 +35,7 @@ import {
   buildThankYouRedirectUrl,
   normalizeFormNameFields,
 } from "@/lib/formgong-thank-you"
-import {
-  trackMetaLead,
-  type MarketingPageTracking,
-} from "@/lib/marketing-page-tracking"
-import { buildMetaPixelUserDataFromForm } from "@/lib/meta-pixel-user-data"
+import type { MarketingPageTracking } from "@/lib/marketing-page-tracking"
 
 import "@/styles/formgong.css"
 import "@/styles/global.css"
@@ -225,6 +221,11 @@ export function ConfigurableForm({
           }
           try {
             if (marketingTracking) {
+              const [{ trackMetaLead }, { buildMetaPixelUserDataFromForm }] =
+                await Promise.all([
+                  import("@/lib/marketing-page-tracking"),
+                  import("@/lib/meta-pixel-user-data"),
+                ])
               trackMetaLead(
                 marketingTracking,
                 buildMetaPixelUserDataFromForm(currentForm, fields, {
