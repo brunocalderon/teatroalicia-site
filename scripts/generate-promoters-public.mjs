@@ -7,8 +7,8 @@ import { promotersRoster } from "../src/config/promoters.roster.ts"
 const outPath = path.join(
   path.dirname(fileURLToPath(import.meta.url)),
   "..",
-  "src",
-  "config",
+  "content",
+  "promoters",
   "promoters.public.json"
 )
 
@@ -19,5 +19,5 @@ const publicPromoters = promotersRoster
 writeFileSync(outPath, `${JSON.stringify(publicPromoters, null, 2)}\n`)
 
 console.log(
-  `Wrote ${publicPromoters.length} guest-pass promoters to src/config/promoters.public.json`
+  `Wrote ${publicPromoters.length} guest-pass promoters to content/promoters/promoters.public.json`
 )

@@ -1,4 +1,4 @@
-import publicPromoters from "@/config/promoters.public.json"
+import publicPromoters from "../../content/promoters/promoters.public.json"
 import promotersRoster, {
   type PromoterRosterEntry,
 } from "@/config/promoters.roster"
