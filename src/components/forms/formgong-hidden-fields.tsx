@@ -6,14 +6,20 @@ import "@/styles/formgong.css"
 export function FormgongHiddenFields({
   accessKey,
   lang = "en",
+  eventId,
 }: {
   accessKey: string
   lang?: string
+  eventId?: string
 }) {
+  const eventIdValue = eventId?.trim() ?? ""
   return (
     <>
       <input type="hidden" name="access_key" value={accessKey} />
       <input type="hidden" name="_lang" value={lang} />
+      {eventIdValue ? (
+        <input type="hidden" name="eventId" value={eventIdValue} />
+      ) : null}
       <div aria-hidden className="formgong-honeypot">
         {/*
           Chrome maps email + nearby text inputs to saved passwords. A nameless

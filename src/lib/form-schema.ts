@@ -97,12 +97,27 @@ const tokenSchema = z
     }
   })
 
+const eventIdSchema = z
+  .string()
+  .min(1)
+  .superRefine((value, ctx) => {
+    if (value.trim() !== value || !value.trim()) {
+      ctx.addIssue({
+        code: "custom",
+        message:
+          "eventId must be non-empty and must not have leading or trailing whitespace",
+      })
+    }
+  })
+
 export const formEntrySchema = z
   .object({
     title: z.string().min(1),
     /** SEO meta description for the invitation form page (`<meta name="description">`). */
     description: z.string().min(1).max(320).optional(),
     path: sitePathSchema("path"),
+    /** Posted as a hidden field so Formgong can tie submissions to an event. */
+    eventId: eventIdSchema.optional(),
     token: tokenSchema,
     lang: z.string().optional().default("en"),
     submitLabel: z.string().optional().default("Submit"),

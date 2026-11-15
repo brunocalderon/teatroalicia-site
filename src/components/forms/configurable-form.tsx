@@ -50,6 +50,7 @@ export type ConfigurableFormProps = {
   lang: string
   submitLabel: string
   thankYouPath: string
+  eventId?: string
   nameFields?: string[]
   messages?: FormMessages
   marketingTracking?: MarketingPageTracking
@@ -74,6 +75,7 @@ export function ConfigurableForm({
   lang,
   submitLabel,
   thankYouPath,
+  eventId,
   nameFields: nameFieldsProp,
   messages: messagesProp,
   marketingTracking,
@@ -298,7 +300,11 @@ export function ConfigurableForm({
       action={FORMGONG_SUBMIT_ACTION}
       method="POST"
     >
-      <FormgongHiddenFields accessKey={accessKey} lang={lang} />
+      <FormgongHiddenFields
+        accessKey={accessKey}
+        lang={lang}
+        eventId={eventId}
+      />
       {referralAttribution ? (
         <ReferralAttributionFields
           referralFieldName={
