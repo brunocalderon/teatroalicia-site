@@ -229,17 +229,7 @@ export function formEntryHasFileField(fields: readonly FormField[]): boolean {
   return fields.some((field) => field.type === "file")
 }
 
-export function defaultNameFields(fields: readonly FormField[]): string[] {
-  const names = new Set(fields.map((field) => field.name))
-  const result: string[] = []
-  if (names.has("firstName")) {
-    result.push("firstName")
-  }
-  if (names.has("lastName")) {
-    result.push("lastName")
-  }
-  return result
-}
+export { defaultNameFields } from "@/lib/form-name-fields"
 
 /** `<meta name="description">` for invitation form routes. */
 export function formMetaDescription(

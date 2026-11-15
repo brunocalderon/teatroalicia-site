@@ -164,7 +164,7 @@ const formPageBackdropCss = `body:has(.form-page){position:relative;background-c
         >
           <div class="form-page__form">
             <ConfigurableForm
-              client:idle="react"
+              client:visible={{ rootMargin: "200px" }}
               token={data.token}
               fields={data.fields}
               lang={data.lang}

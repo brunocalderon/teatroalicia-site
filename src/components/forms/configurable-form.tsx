@@ -1,4 +1,3 @@
-import { ArrowRight } from "lucide-react"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 import { ComposableFormField } from "@/components/forms/fields/composable-form-field"
@@ -12,8 +11,8 @@ import {
   TurnstileField,
 } from "@/components/forms/turnstile-field"
 import { formgongCopy } from "@/lib/formgong-copy"
+import { defaultNameFields } from "@/lib/form-name-fields"
 import type { FormField, FormMessages } from "@/lib/form-schema"
-import { defaultNameFields } from "@/lib/form-schema"
 import {
   FORMGONG_SUBMIT_ACTION,
   getTurnstileResponseFromForm,
@@ -31,10 +30,6 @@ import {
   getReferralAttributionFromSearchParams,
 } from "@/lib/referral-attribution"
 import { resolveGuestPassReferralFromSearchParams } from "@/lib/promoters"
-import {
-  buildThankYouRedirectUrl,
-  normalizeFormNameFields,
-} from "@/lib/formgong-thank-you"
 import type { MarketingPageTracking } from "@/lib/marketing-page-tracking"
 
 import "@/styles/formgong.css"
@@ -220,12 +215,20 @@ export function ConfigurableForm({
             return
           }
           try {
-            if (marketingTracking) {
+            const submitImports = Promise.all([
+              import("@/lib/formgong-thank-you"),
+              marketingTracking
+                ? Promise.all([
+                    import("@/lib/marketing-page-tracking"),
+                    import("@/lib/meta-pixel-user-data"),
+                  ])
+                : Promise.resolve(null),
+            ] as const)
+            const [{ normalizeFormNameFields, buildThankYouRedirectUrl }, marketingModules] =
+              await submitImports
+            if (marketingTracking && marketingModules) {
               const [{ trackMetaLead }, { buildMetaPixelUserDataFromForm }] =
-                await Promise.all([
-                  import("@/lib/marketing-page-tracking"),
-                  import("@/lib/meta-pixel-user-data"),
-                ])
+                marketingModules
               trackMetaLead(
                 marketingTracking,
                 buildMetaPixelUserDataFromForm(currentForm, fields, {
@@ -348,11 +351,19 @@ export function ConfigurableForm({
             <span className="formgong-submit__label">
               {isSubmitting ? copy.sending : displaySubmitLabel}
             </span>
-            <ArrowRight
+            <svg
               className="formgong-submit__icon"
               aria-hidden="true"
-              strokeWidth={2}
-            />
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M5 12h14" />
+              <path d="m12 5 7 7-7 7" />
+            </svg>
           </span>
         </button>
       </fieldset>
