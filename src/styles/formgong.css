@@ -140,7 +140,7 @@
 .formgong-input::placeholder,
 .formgong-textarea::placeholder,
 .formgong-phone__number::placeholder {
-  color: color-mix(in srgb, #f5f5f5 45%, transparent);
+  color: color-mix(in srgb, #f5f5f5 68%, #0f0f0f);
   font-size: var(--formgong-control-font-size);
   line-height: 1.25;
   opacity: 1;
@@ -157,7 +157,7 @@
 }
 
 .formgong-date-trigger[data-empty="true"] {
-  color: color-mix(in srgb, #f5f5f5 45%, transparent);
+  color: color-mix(in srgb, #f5f5f5 68%, #0f0f0f);
 }
 
 .formgong-fieldset button.formgong-date-trigger {
