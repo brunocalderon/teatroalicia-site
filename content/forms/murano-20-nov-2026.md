@@ -11,7 +11,7 @@ token: fk_qyWV9hdtePd2wPQHA5fmi2wC
 lang: es
 image: /images/murano-one-more-night-20-11-2026.jpg
 imageAlt: "MURANO — One More Night, 20 de noviembre de 2026"
-submitLabel: Enviar
+submitLabel: Solicitar mi acceso
 messages:
   submit: Enviar
   sending: Enviando…
@@ -34,11 +34,11 @@ fields:
     type: text
     required: true
     placeholder: Tu apellido
-  - name: id
-    label: RUT / Pasaporte
-    type: text
-    required: true
-    placeholder: "12.345.678-9 o pasaporte"
+  # - name: id
+  #   label: RUT / Pasaporte
+  #   type: text
+  #   required: true
+  #   placeholder: "12.345.678-9 o pasaporte"
   - name: email
     label: Correo Electrónico
     type: email
@@ -48,11 +48,11 @@ fields:
     label: Teléfono
     type: tel
     required: true
-  - name: instagram
-    label: Usuario de Instagram
-    type: instagram
-    required: true
-    placeholder: "@usuario"
+  # - name: instagram
+  #   label: Usuario de Instagram
+  #   type: instagram
+  #   required: true
+  #   placeholder: "@usuario"
   - name: birthday
     label: Fecha de Nacimiento
     type: date
@@ -61,3 +61,8 @@ fields:
     label: Invitado por
     type: referral
 ---
+_**Alicia Privé**_
+
+Completa tus datos para solicitar tu acceso de cortesía y ser parte de una noche especial.
+
+Los accesos son limitados y están sujetos a confirmación.

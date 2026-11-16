@@ -129,3 +129,13 @@
     background-color: #000;
     }
 }
+
+body > [data-sonner-toaster] {
+  position: fixed;
+  z-index: 2147483646;
+  pointer-events: none;
+}
+
+body > [data-sonner-toaster] [data-sonner-toast] {
+  pointer-events: auto;
+}

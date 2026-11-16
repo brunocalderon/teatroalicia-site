@@ -10,6 +10,7 @@ export function trimmedUrlParam(
 
 type FieldVisibilityContext = {
   referralPromoter?: Promoter | null
+  referralPromoterPending?: boolean
 }
 
 export function isFormFieldVisible(
@@ -18,7 +19,10 @@ export function isFormFieldVisible(
   context?: FieldVisibilityContext
 ): boolean {
   if (field.type === "referral") {
-    return Boolean(context?.referralPromoter)
+    return (
+      Boolean(context?.referralPromoter) ||
+      Boolean(context?.referralPromoterPending)
+    )
   }
 
   const gate = field.visibleWhenUrlParam
@@ -41,12 +45,27 @@ export function formFieldUrlPrefill(
   return value || undefined
 }
 
+function orderReferralFieldsFirst(fields: FormField[]): FormField[] {
+  const referralFields: FormField[] = []
+  const otherFields: FormField[] = []
+
+  for (const field of fields) {
+    if (field.type === "referral") {
+      referralFields.push(field)
+    } else {
+      otherFields.push(field)
+    }
+  }
+
+  return [...referralFields, ...otherFields]
+}
+
 export function visibleFormFields(
   fields: readonly FormField[],
   params: URLSearchParams,
   context?: FieldVisibilityContext
 ): FormField[] {
-  return fields.filter((field) =>
-    isFormFieldVisible(field, params, context)
+  return orderReferralFieldsFirst(
+    fields.filter((field) => isFormFieldVisible(field, params, context)),
   )
 }

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
+import { FormFomoToasts } from "@/components/forms/form-fomo-toasts"
 import { ComposableFormField } from "@/components/forms/fields/composable-form-field"
 import {
   normalizeConfiguredFields,
@@ -21,15 +22,20 @@ import {
 } from "@/lib/formgong-submit"
 import {
   formFieldUrlPrefill,
+  trimmedUrlParam,
   visibleFormFields,
 } from "@/lib/form-field-visibility"
+import { useHasMounted } from "@/hooks/use-has-mounted"
 import { ReferralAttributionFields } from "@/components/forms/referral-attribution-fields"
 import {
   applyReferralAttributionToForm,
   findReferralFormField,
   getReferralAttributionFromSearchParams,
 } from "@/lib/referral-attribution"
-import { resolveGuestPassReferralFromSearchParams } from "@/lib/promoters"
+import {
+  promoterRefQueryParam,
+  resolveGuestPassReferralFromSearchParams,
+} from "@/lib/promoters"
 import type { MarketingPageTracking } from "@/lib/marketing-page-tracking"
 
 import "@/styles/formgong.css"
@@ -72,6 +78,11 @@ export function ConfigurableForm({
   marketingTracking,
 }: ConfigurableFormProps) {
   const formRef = useRef<HTMLFormElement>(null)
+  const [formNode, setFormNode] = useState<HTMLFormElement | null>(null)
+  const bindFormRef = useCallback((node: HTMLFormElement | null) => {
+    formRef.current = node
+    setFormNode(node)
+  }, [])
   const [configError, setConfigError] = useState<string | null>(null)
   const [formgongError, setFormgongError] = useState<string | null>(null)
   const [fieldErrors, setFieldErrors] = useState<Partial<Record<string, string>>>(
@@ -97,10 +108,24 @@ export function ConfigurableForm({
     return new URLSearchParams(window.location.search)
   }, [])
 
+  const hasMounted = useHasMounted()
+
+  const hasReferralField = useMemo(
+    () => fields.some((field) => field.type === "referral"),
+    [fields],
+  )
+
+  const guestPassRef = trimmedUrlParam(urlSearchParams, promoterRefQueryParam)
+
+  const expectsGuestPassReferral =
+    hasReferralField && guestPassRef.length > 0
+
   const referralPromoter = useMemo(
     () => resolveGuestPassReferralFromSearchParams(urlSearchParams),
     [urlSearchParams]
   )
+
+  const referralPromoterPending = expectsGuestPassReferral && !hasMounted
 
   const referralAttribution = useMemo(
     () => getReferralAttributionFromSearchParams(urlSearchParams, fields),
@@ -108,8 +133,8 @@ export function ConfigurableForm({
   )
 
   const referralVisibilityContext = useMemo(
-    () => ({ referralPromoter }),
-    [referralPromoter]
+    () => ({ referralPromoter, referralPromoterPending }),
+    [referralPromoter, referralPromoterPending],
   )
 
   const visibleFields = useMemo(
@@ -296,14 +321,18 @@ export function ConfigurableForm({
     thankYouPath,
   ])
 
+  const fomoToastsEnabled = lang === "es"
+
   return (
-    <form
-      ref={formRef}
-      id={accessKey ? `fg-${accessKey}` : undefined}
-      className="formgong-form"
-      action={FORMGONG_SUBMIT_ACTION}
-      method="POST"
-    >
+    <>
+      <FormFomoToasts enabled={fomoToastsEnabled} form={formNode} />
+      <form
+        ref={bindFormRef}
+        id={accessKey ? `fg-${accessKey}` : undefined}
+        className="formgong-form"
+        action={FORMGONG_SUBMIT_ACTION}
+        method="POST"
+      >
       <FormgongHiddenFields
         accessKey={accessKey}
         lang={lang}
@@ -327,6 +356,9 @@ export function ConfigurableForm({
             defaultValue={formFieldUrlPrefill(field, urlSearchParams)}
             referralPromoter={
               field.type === "referral" ? referralPromoter ?? undefined : undefined
+            }
+            referralPromoterPending={
+              field.type === "referral" ? referralPromoterPending : undefined
             }
             error={fieldErrors[field.name]}
             onClearError={clearFieldError}
@@ -368,5 +400,6 @@ export function ConfigurableForm({
         </button>
       </fieldset>
     </form>
+    </>
   )
 }

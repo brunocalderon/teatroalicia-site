@@ -15,9 +15,10 @@ function fieldSpansFullWidth(type: FormFieldType): boolean {
 }
 
 function formFieldClassName(type: FormFieldType): string {
-  return fieldSpansFullWidth(type)
+  const base = fieldSpansFullWidth(type)
     ? "formgong-field formgong-field--full"
     : "formgong-field"
+  return type === "referral" ? `${base} formgong-field--referral` : base
 }
 
 type ComposableFormFieldProps = {
@@ -26,6 +27,7 @@ type ComposableFormFieldProps = {
   error?: string
   defaultValue?: string
   referralPromoter?: { id: string; name: string }
+  referralPromoterPending?: boolean
   onClearError: (name: string) => void
   onSetFieldError: (name: string, message: string) => void
 }
@@ -36,6 +38,7 @@ export function ComposableFormField({
   error,
   defaultValue,
   referralPromoter,
+  referralPromoterPending,
   onClearError,
   onSetFieldError,
 }: ComposableFormFieldProps) {
@@ -71,6 +74,7 @@ export function ComposableFormField({
           lang={lang}
           defaultValue={defaultValue}
           referralPromoter={referralPromoter}
+          referralPromoterPending={referralPromoterPending}
           onValueChange={onValueChange}
           onBlurValidate={onBlurValidate}
         />
@@ -101,6 +105,7 @@ export function ComposableFormField({
         describedBy={errorId}
         defaultValue={defaultValue}
         referralPromoter={referralPromoter}
+        referralPromoterPending={referralPromoterPending}
         onValueChange={onValueChange}
         onBlurValidate={onBlurValidate}
       />

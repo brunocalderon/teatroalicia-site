@@ -15,6 +15,7 @@ export type FormFieldControlProps = {
   describedBy?: string
   defaultValue?: string
   referralPromoter?: { id: string; name: string }
+  referralPromoterPending?: boolean
   onValueChange?: () => void
   onBlurValidate?: (value: string) => void
 }
