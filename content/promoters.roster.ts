@@ -184,6 +184,13 @@ export const promotersRoster: PromoterRosterEntry[] = [
     guest_pass_enabled: false,
   },
   {
+    id: "marcela-diaz-lizama",
+    name: "Marcela Diaz Lizama",
+    active: true,
+    ticket_sale_enabled: true,
+    guest_pass_enabled: true,
+  },
+  {
     id: "miguel-ananias",
     name: "Miguel Ananias",
     active: true,
@@ -371,7 +378,7 @@ export const promotersRoster: PromoterRosterEntry[] = [
     active: true,
     ticket_sale_enabled: true,
     guest_pass_enabled: true,
-  }
+  },
 ];
 
 export default promotersRoster;
