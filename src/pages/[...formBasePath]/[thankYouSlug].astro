@@ -9,6 +9,7 @@ import {
   thankYouRouteParams,
 } from "@/lib/form-thank-you"
 import { marketingPageTracking } from "@/lib/marketing-page-tracking"
+import { renderFormBodyMarkdown } from "@/lib/render-form-body-markdown"
 
 export async function getStaticPaths() {
   const forms = await getCollection("forms")
@@ -38,12 +39,15 @@ const { data } = entry
 
 const thankYouBody = data.messages?.thankYouBody ?? DEFAULT_THANK_YOU_BODY
 const thankYouParagraphs = parseThankYouParagraphs(thankYouBody)
+const thankYouParagraphsHtml = await Promise.all(
+  thankYouParagraphs.map((paragraph) => renderFormBodyMarkdown(paragraph))
+)
 const thankYouTitle = data.messages?.thankYouTitle ?? data.title
 ---
 
 <FormThankYouPage
   title={thankYouTitle}
   lang={data.lang}
-  paragraphs={thankYouParagraphs}
+  paragraphsHtml={thankYouParagraphsHtml}
   marketingTracking={marketingPageTracking.thankYou}
 />

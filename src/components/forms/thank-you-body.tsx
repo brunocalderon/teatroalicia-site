@@ -3,7 +3,7 @@ import { useEffect, useMemo } from "react"
 import {
   THANK_YOU_NAME_QUERY_PARAM,
   formatThankYouFirstName,
-  prefixThankYouFirstParagraph,
+  prefixThankYouFirstParagraphHtml,
 } from "@/lib/form-thank-you"
 import { hasPendingMetaPixelUserData } from "@/lib/meta-pixel-pending-storage"
 import {
@@ -12,13 +12,13 @@ import {
 } from "@/lib/marketing-page-tracking"
 
 export type ThankYouBodyProps = {
-  paragraphs: string[]
+  paragraphsHtml: string[]
   locale: string
   marketingTracking: MarketingPageTracking
 }
 
 export function ThankYouBody({
-  paragraphs,
+  paragraphsHtml,
   locale,
   marketingTracking,
 }: ThankYouBodyProps) {
@@ -35,25 +35,34 @@ export function ThankYouBody({
     engage?.()
     trackMetaCompleteRegistrationFromPendingStorage(marketingTracking)
   }, [marketingTracking])
-  const displayedParagraphs = useMemo(() => {
+
+  const displayedParagraphsHtml = useMemo(() => {
     const params = new URLSearchParams(window.location.search)
     const firstName = formatThankYouFirstName(
       params.get(THANK_YOU_NAME_QUERY_PARAM) ?? ""
     )
-    if (!firstName || paragraphs.length === 0) {
-      return paragraphs
+    if (!firstName || paragraphsHtml.length === 0) {
+      return paragraphsHtml
     }
     const thankYouLocale = locale === "es" ? "es" : "en"
     return [
-      prefixThankYouFirstParagraph(paragraphs[0], firstName, thankYouLocale),
-      ...paragraphs.slice(1),
+      prefixThankYouFirstParagraphHtml(
+        paragraphsHtml[0],
+        firstName,
+        thankYouLocale
+      ),
+      ...paragraphsHtml.slice(1),
     ]
-  }, [locale, paragraphs])
+  }, [locale, paragraphsHtml])
 
   return (
     <div className="form-page__thank-you-body">
-      {displayedParagraphs.map((paragraph, index) => (
-        <p key={index}>{paragraph}</p>
+      {displayedParagraphsHtml.map((html, index) => (
+        <div
+          key={index}
+          dangerouslySetInnerHTML={{ __html: html }}
+          suppressHydrationWarning
+        />
       ))}
     </div>
   )

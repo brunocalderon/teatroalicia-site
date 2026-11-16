@@ -32,6 +32,7 @@ import {
   findReferralFormField,
   getReferralAttributionFromSearchParams,
 } from "@/lib/referral-attribution"
+import { persistGuestPassAttributionForAnalytics } from "@/lib/guest-pass-attribution-storage"
 import {
   promoterRefQueryParam,
   displayGuestPassReferralFromSearchParams,
@@ -135,6 +136,13 @@ export function ConfigurableForm({
     () => getReferralAttributionFromSearchParams(urlSearchParams, fields),
     [urlSearchParams, fields]
   )
+
+  useEffect(() => {
+    if (!referralAttribution) {
+      return
+    }
+    persistGuestPassAttributionForAnalytics(urlSearchParams, referralAttribution)
+  }, [referralAttribution, urlSearchParams])
 
   const referralVisibilityContext = useMemo(
     () => ({ showGuestPassReferralRow, referralPromoterPending }),
@@ -296,7 +304,8 @@ export function ConfigurableForm({
                   thankYouPath,
                   window.location.origin,
                   currentForm,
-                  thankYouField
+                  thankYouField,
+                  new URLSearchParams(window.location.search)
                 )
               )
               return

@@ -11,7 +11,7 @@ async function getFormBodyMarkdownProcessor(): Promise<MarkdownProcessor> {
   return processorPromise
 }
 
-/** Render `messages.formBody` markdown to HTML (Astro-compatible pipeline). */
+/** Render invitation copy markdown (`formBody`, `thankYouBody`, etc.) to HTML. */
 export async function renderFormBodyMarkdown(markdown: string): Promise<string> {
   const processor = await getFormBodyMarkdownProcessor()
   const { code } = await processor.render(markdown.trim())

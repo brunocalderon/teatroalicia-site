@@ -8,11 +8,11 @@ import { sitePageBackdropCss } from "@/lib/site-page-backdrop-css"
 export interface Props {
   title: string
   lang: string
-  paragraphs: string[]
+  paragraphsHtml: string[]
   marketingTracking: MarketingPageTracking
 }
 
-const { title, lang, paragraphs, marketingTracking } = Astro.props
+const { title, lang, paragraphsHtml, marketingTracking } = Astro.props
 
 const formPageBackdropCss = sitePageBackdropCss("form-page")
 ---
@@ -31,7 +31,7 @@ const formPageBackdropCss = sitePageBackdropCss("form-page")
     <div class="form-page__thank-you-content">
       <ThankYouBody
         client:only="react"
-        paragraphs={paragraphs}
+        paragraphsHtml={paragraphsHtml}
         locale={lang}
         marketingTracking={marketingTracking}
       />
@@ -107,5 +107,23 @@ const formPageBackdropCss = sitePageBackdropCss("form-page")
     margin: 0;
     line-height: 1.55;
     color: color-mix(in srgb, #f5f5f5 85%, transparent);
+  }
+
+  .form-page--thank-you
+    .form-page__thank-you-content
+    :global(.form-page__thank-you-body p + p) {
+    margin-top: 0.625rem;
+  }
+
+  .form-page--thank-you
+    .form-page__thank-you-content
+    :global(.form-page__thank-you-body p em) {
+    font-style: italic;
+  }
+
+  .form-page--thank-you
+    .form-page__thank-you-content
+    :global(.form-page__thank-you-body p strong) {
+    font-weight: 600;
   }
 </style>

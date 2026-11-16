@@ -27,6 +27,47 @@ export function thankYouRouteParams(
   return { formBasePath, thankYouSlug: slug }
 }
 
+/** Prefix rendered thank-you HTML (`<p>…</p>`) with the guest's first name when known. */
+export function prefixThankYouFirstParagraphHtml(
+  html: string,
+  firstName: string,
+  locale = "en"
+): string {
+  const trimmed = html.trim()
+  if (!trimmed || !firstName) {
+    return trimmed
+  }
+  if (typeof DOMParser === "undefined") {
+    return trimmed
+  }
+  const doc = new DOMParser().parseFromString(
+    `<div id="thank-you-root">${trimmed}</div>`,
+    "text/html"
+  )
+  const root = doc.getElementById("thank-you-root")
+  const paragraph = root?.querySelector("p")
+  if (!paragraph) {
+    return trimmed
+  }
+
+  const walker = doc.createTreeWalker(paragraph, NodeFilter.SHOW_TEXT)
+  const firstText = walker.nextNode()
+  if (firstText?.textContent) {
+    const content = firstText.textContent
+    const leading = content.match(/^\s*/)?.[0] ?? ""
+    const rest = content.slice(leading.length)
+    if (rest.length > 0) {
+      firstText.textContent =
+        leading +
+        rest.charAt(0).toLocaleLowerCase(locale) +
+        rest.slice(1)
+    }
+  }
+
+  paragraph.insertBefore(doc.createTextNode(`${firstName}, `), paragraph.firstChild)
+  return root?.innerHTML ?? trimmed
+}
+
 /** Prefix the opening thank-you sentence with the guest's first name when known. */
 export function prefixThankYouFirstParagraph(
   paragraph: string,
@@ -81,12 +122,21 @@ export function readFirstNameFromForm(
 export function appendThankYouNameToUrl(
   thankYouPath: string,
   origin: string,
-  firstNameRaw: string
+  firstNameRaw: string,
+  extraSearchParams?: URLSearchParams
 ): string {
   const url = new URL(thankYouPath, origin)
   const firstName = formatThankYouFirstName(firstNameRaw)
   if (firstName) {
     url.searchParams.set(THANK_YOU_NAME_QUERY_PARAM, firstName)
+  }
+  if (extraSearchParams) {
+    for (const [key, value] of extraSearchParams.entries()) {
+      if (key === THANK_YOU_NAME_QUERY_PARAM) {
+        continue
+      }
+      url.searchParams.set(key, value)
+    }
   }
   return url.href
 }
@@ -95,12 +145,14 @@ export function buildThankYouRedirectUrl(
   thankYouPath: string,
   origin: string,
   form: HTMLFormElement,
-  firstNameFieldName = "firstName"
+  firstNameFieldName = "firstName",
+  currentSearchParams?: URLSearchParams
 ): string {
   return appendThankYouNameToUrl(
     thankYouPath,
     origin,
-    readFirstNameFromForm(form, firstNameFieldName)
+    readFirstNameFromForm(form, firstNameFieldName),
+    currentSearchParams
   )
 }
 

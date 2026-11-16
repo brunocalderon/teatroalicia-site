@@ -50,12 +50,10 @@ export function ReferralPromoterField({
           )}
         </ItemMedia>
         <ItemContent className="min-w-0">
-          <ItemTitle id={titleId}>
-            {label}:{" "}
-            <span className="italic" suppressHydrationWarning>
-              {displayName}
-            </span>
-          </ItemTitle>
+            <ItemTitle id={titleId} className="gap-1">
+              <span>{label}</span>
+              <span suppressHydrationWarning>{displayName}</span>
+            </ItemTitle>
         </ItemContent>
       </Item>
     </div>

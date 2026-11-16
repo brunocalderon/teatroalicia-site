@@ -58,6 +58,12 @@ const marketingConfig = JSON.stringify({
 {
   facebookPixelId || umamiWebsiteId ? (
     <>
+      {umamiWebsiteId ? (
+        <script>
+          import { bindUmamiPromoterEventDataResolver } from "@/lib/marketing-umami-track"
+          bindUmamiPromoterEventDataResolver()
+        </script>
+      ) : null}
       <script
         is:inline
         type="application/json"
@@ -81,7 +87,15 @@ const marketingConfig = JSON.stringify({
     if (!eventName) return;
     window.customPageViewTracking = function () {
       if (typeof window.umami !== "undefined" && window.umami.track) {
-        window.umami.track(eventName);
+        var promoterData =
+          typeof window.__umamiPromoterEventData === "function"
+            ? window.__umamiPromoterEventData()
+            : null;
+        if (promoterData) {
+          window.umami.track(eventName, promoterData);
+        } else {
+          window.umami.track(eventName);
+        }
       }
     };
   }
