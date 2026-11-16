@@ -44,7 +44,7 @@ function skeletonFieldClassName(type: FormFieldType): string {
           data-referral-skeleton
         >
           <div class="form-referral-display" aria-hidden="true">
-            <div class="form-skeleton form-skeleton--referral-item">
+            <div class="form-skeleton form-skeleton--referral-item form-referral-item">
               <span class="form-skeleton form-skeleton--referral-icon" />
               <span class="form-skeleton form-skeleton--referral-line" />
             </div>
@@ -241,7 +241,6 @@ function skeletonFieldClassName(type: FormFieldType): string {
     gap: 0.625rem;
     box-sizing: border-box;
     width: 100%;
-    min-height: 2.5625rem;
     padding: 0.625rem 0.75rem;
     border: 1px solid color-mix(in srgb, #f5f5f5 14%, transparent);
     border-radius: 0.5rem;

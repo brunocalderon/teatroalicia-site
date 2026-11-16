@@ -54,6 +54,7 @@ export const formMessagesSchema = z
     formNotConfigured: z.string().optional(),
     turnstileRequired: z.string().optional(),
     connectionFailed: z.string().optional(),
+    formBody: z.string().optional(),
     thankYouTitle: z.string().optional(),
     thankYouBody: z.string().optional(),
   })

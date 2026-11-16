@@ -1,0 +1,63 @@
+---
+import { Separator } from "@/components/ui/separator"
+import type { AstroComponentFactory } from "astro/runtime/server/index.js"
+
+export interface Props {
+  formBodyHtml?: string
+  renderedBody?: AstroComponentFactory | null
+  split?: boolean
+}
+
+const { formBodyHtml, renderedBody, split = false } = Astro.props
+const BodyContent = renderedBody
+---
+
+<div
+  class:list={["form-page__intro", split && "form-page__split-intro"]}
+>
+  {
+    formBodyHtml ? (
+      <div class="form-page__intro-markdown" set:html={formBodyHtml} />
+    ) : (
+      BodyContent ? <BodyContent /> : null
+    )
+  }
+  <Separator className="form-page__intro-separator" />
+</div>
+
+<style>
+  .form-page__intro {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    font-size: 1rem;
+    line-height: 1.55;
+    color: color-mix(in srgb, #f5f5f5 85%, transparent);
+  }
+
+  .form-page__split-intro {
+    margin-bottom: 0;
+  }
+
+  .form-page__intro :global(.form-page__intro-separator) {
+    margin: 0;
+    width: 100%;
+  }
+
+  @media (min-width: 56rem) {
+    .form-page__intro :global(.form-page__intro-separator) {
+      display: none;
+    }
+  }
+
+  .form-page__intro :global(p),
+  .form-page__intro-markdown :global(p) {
+    margin: 0;
+  }
+
+  .form-page__intro :global(p + p),
+  .form-page__intro-markdown :global(p + p) {
+    margin-top: 0.625rem;
+  }
+</style>

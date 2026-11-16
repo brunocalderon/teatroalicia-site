@@ -17,14 +17,16 @@ messages:
   sending: Enviando…
   turnstileRequired: Completa la verificación de seguridad antes de enviar.
   connectionFailed: No pudimos enviar tu solicitud. Intenta de nuevo.
+  formBody: |
+    _**Alicia Privé**_
+
+    Completa tus datos para solicitar tu acceso de cortesía y ser parte de una noche especial.
+
+    Los accesos son limitados.
   thankYouBody: |
-    Estás un paso más cerca de vivir una noche inolvidable!
+    Bienvenido a _**Alicia Privé**_, estás un paso más cerca de vivir una noche inolvidable!
 
-    Hemos recibido tu solicitud de tickets de cortesía. Los cupos son limitados y están sujetos a confirmación.
-
-    Si tu solicitud es aprobada, recibirás tus tickets por correo electrónico dentro de las próximas horas.
-
-    Mantente atento a tu correo. ¡Nos encantaría que fueras parte de esta noche!
+    Recibirás tus accesos de cortesía por correo electrónico dentro de las próximas horas.
 fields:
   - name: firstName
     label: Nombre(s)
@@ -63,8 +65,3 @@ fields:
     label: Invitado por
     type: referral
 ---
-_**Alicia Privé**_
-
-Completa tus datos para solicitar tu acceso de cortesía y ser parte de una noche especial.
-
-Los accesos son limitados y están sujetos a confirmación.

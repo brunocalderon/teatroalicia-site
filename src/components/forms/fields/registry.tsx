@@ -4,7 +4,6 @@ import { FileField } from "@/components/forms/fields/file-field"
 import { InstagramField } from "@/components/forms/fields/instagram-field"
 import { PhoneField } from "@/components/forms/fields/phone-field"
 import { ReferralPromoterField } from "@/components/forms/fields/referral-promoter-field"
-import { ReferralPromoterFieldSkeleton } from "@/components/forms/fields/referral-promoter-field-skeleton"
 import { RadioField } from "@/components/forms/fields/radio-field"
 import { SelectField } from "@/components/forms/fields/select-field"
 import { TextLikeField } from "@/components/forms/fields/text-like-field"
@@ -148,14 +147,12 @@ const fieldRegistry = {
   },
   referral: {
     Control(props) {
-      if (props.referralPromoterPending) {
-        return <ReferralPromoterFieldSkeleton lang={props.lang} />
-      }
-      if (!props.referralPromoter) {
-        return null
-      }
       return (
-        <ReferralPromoterField {...props} promoter={props.referralPromoter} />
+        <ReferralPromoterField
+          {...props}
+          promoter={props.referralPromoter}
+          referralPromoterPending={props.referralPromoterPending}
+        />
       )
     },
     validate: validateReferral,

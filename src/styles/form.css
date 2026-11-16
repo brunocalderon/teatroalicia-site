@@ -193,6 +193,43 @@
   min-width: 0;
 }
 
+/* Guest-pass referral row. Hidden until html.has-guest-pass-ref (set before paint when ?e= is set). Fixed height so the name cannot change the form layout. */
+.form-fieldset > .form-field.form-field--referral {
+  display: none;
+  min-height: 0;
+}
+
+html.has-guest-pass-ref .form-fieldset > .form-field.form-field--referral {
+  display: flex;
+  height: 2.625rem;
+  min-height: 2.625rem;
+  max-height: 2.625rem;
+}
+
+.form-referral-item,
+.form-skeleton--referral-item {
+  box-sizing: border-box;
+  height: 2.625rem;
+  min-height: 2.625rem;
+  max-height: 2.625rem;
+  overflow: hidden;
+  flex-wrap: nowrap;
+}
+
+.form-referral-item [data-slot="item-content"] {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.form-referral-item [data-slot="item-title"],
+.form-referral-item__title-skeleton {
+  min-height: 1.25rem;
+  max-height: 1.25rem;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
 .form-radio-group {
   margin: 0;
   padding: 0;
@@ -388,6 +425,7 @@
 }
 
 .form-birthday {
+  --form-birthday-dd-mm: 3.25rem;
   display: flex;
   align-items: center;
   gap: 0.375rem;
@@ -396,21 +434,24 @@
 }
 
 .form-birthday__segment {
-  width: auto;
   min-width: 0;
   flex-shrink: 0;
   text-align: center;
   padding-inline: 0.5rem;
+  box-sizing: border-box;
 }
 
-.form-birthday__day,
-.form-birthday__month {
-  flex: 0 0 3.25rem;
+.form-birthday .form-birthday__day,
+.form-birthday .form-birthday__month {
+  flex: 0 0 var(--form-birthday-dd-mm);
+  width: var(--form-birthday-dd-mm);
+  max-width: var(--form-birthday-dd-mm);
 }
 
-.form-birthday__year {
-  flex: 1 1 4.75rem;
-  min-width: 4.75rem;
+.form-birthday .form-birthday__year {
+  flex: 0 0 calc(var(--form-birthday-dd-mm) * 2.5);
+  width: calc(var(--form-birthday-dd-mm) * 2.5);
+  max-width: calc(var(--form-birthday-dd-mm) * 2.5);
   text-align: left;
 }
 

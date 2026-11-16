@@ -22,10 +22,10 @@ import {
 } from "@/lib/form-submit"
 import {
   formFieldUrlPrefill,
+  guestPassReferralRowVisible,
   trimmedUrlParam,
   visibleFormFields,
 } from "@/lib/form-field-visibility"
-import { useHasMounted } from "@/hooks/use-has-mounted"
 import { ReferralAttributionFields } from "@/components/forms/referral-attribution-fields"
 import {
   applyReferralAttributionToForm,
@@ -34,7 +34,7 @@ import {
 } from "@/lib/referral-attribution"
 import {
   promoterRefQueryParam,
-  resolveGuestPassReferralFromSearchParams,
+  displayGuestPassReferralFromSearchParams,
 } from "@/lib/promoters"
 import type { MarketingPageTracking } from "@/lib/marketing-page-tracking"
 
@@ -101,14 +101,16 @@ export function ConfigurableForm({
   const copy = useMemo(() => mergeMessages(messagesProp), [messagesProp])
   const displaySubmitLabel = submitLabel.trim() || copy.submit
 
-  const [urlSearchParams] = useState(() => {
-    if (typeof window === "undefined") {
-      return new URLSearchParams()
-    }
-    return new URLSearchParams(window.location.search)
-  })
+  const [urlSearchParams, setUrlSearchParams] = useState(
+    () => new URLSearchParams()
+  )
 
-  const hasMounted = useHasMounted()
+  useEffect(() => {
+    const next = new URLSearchParams(window.location.search)
+    setUrlSearchParams((current) =>
+      current.toString() === next.toString() ? current : next
+    )
+  }, [])
 
   const hasReferralField = useMemo(
     () => fields.some((field) => field.type === "referral"),
@@ -117,15 +119,17 @@ export function ConfigurableForm({
 
   const guestPassRef = trimmedUrlParam(urlSearchParams, promoterRefQueryParam)
 
-  const expectsGuestPassReferral =
+  const showGuestPassReferralRow =
     hasReferralField && guestPassRef.length > 0
 
-  const referralPromoter = useMemo(
-    () => resolveGuestPassReferralFromSearchParams(urlSearchParams),
-    [urlSearchParams]
-  )
+  const referralPromoter = useMemo(() => {
+    if (!showGuestPassReferralRow) {
+      return undefined
+    }
+    return displayGuestPassReferralFromSearchParams(urlSearchParams)
+  }, [showGuestPassReferralRow, urlSearchParams])
 
-  const referralPromoterPending = expectsGuestPassReferral && !hasMounted
+  const referralPromoterPending = false
 
   const referralAttribution = useMemo(
     () => getReferralAttributionFromSearchParams(urlSearchParams, fields),
@@ -133,8 +137,8 @@ export function ConfigurableForm({
   )
 
   const referralVisibilityContext = useMemo(
-    () => ({ referralPromoter, referralPromoterPending }),
-    [referralPromoter, referralPromoterPending],
+    () => ({ showGuestPassReferralRow, referralPromoterPending }),
+    [showGuestPassReferralRow, referralPromoterPending],
   )
 
   const visibleFields = useMemo(
@@ -182,7 +186,10 @@ export function ConfigurableForm({
       const validationErrors = validateConfiguredFields(
         activeForm,
         visibleFormFields(fields, submitParams, {
-          referralPromoter: resolveGuestPassReferralFromSearchParams(submitParams),
+          showGuestPassReferralRow: guestPassReferralRowVisible(
+            fields,
+            submitParams,
+          ),
         }),
         lang
       )
@@ -270,8 +277,10 @@ export function ConfigurableForm({
                 normalizeConfiguredFields(
                   target,
                   visibleFormFields(fields, postParams, {
-                    referralPromoter:
-                      resolveGuestPassReferralFromSearchParams(postParams),
+                    showGuestPassReferralRow: guestPassReferralRowVisible(
+                      fields,
+                      postParams,
+                    ),
                   })
                 )
                 if (nameFields.length > 0) {

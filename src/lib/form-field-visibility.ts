@@ -1,5 +1,5 @@
 import type { FormField } from "@/lib/form-schema"
-import type { Promoter } from "@/lib/promoters"
+import { promoterRefQueryParam } from "@/lib/promoters"
 
 export function trimmedUrlParam(
   params: URLSearchParams,
@@ -9,20 +9,30 @@ export function trimmedUrlParam(
 }
 
 type FieldVisibilityContext = {
-  referralPromoter?: Promoter | null
+  /** Retained for callers. Referral rows stay in the tree; `?e=` shows them with CSS. */
+  showGuestPassReferralRow?: boolean
   referralPromoterPending?: boolean
+}
+
+export function guestPassReferralRowVisible(
+  fields: readonly FormField[],
+  params: URLSearchParams
+): boolean {
+  if (!fields.some((field) => field.type === "referral")) {
+    return false
+  }
+  return trimmedUrlParam(params, promoterRefQueryParam).length > 0
 }
 
 export function isFormFieldVisible(
   field: FormField,
   params: URLSearchParams,
-  context?: FieldVisibilityContext
+  _context?: FieldVisibilityContext
 ): boolean {
   if (field.type === "referral") {
-    return (
-      Boolean(context?.referralPromoter) ||
-      Boolean(context?.referralPromoterPending)
-    )
+    // Always in the tree so SSR reserves the row. `?e=` only toggles visibility
+    // via `html.has-guest-pass-ref` before first paint (see form page).
+    return true
   }
 
   const gate = field.visibleWhenUrlParam

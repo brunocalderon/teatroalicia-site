@@ -40,4 +40,24 @@ export function resolveGuestPassReferralFromSearchParams(
   return resolveGuestPassReferral(ref)
 }
 
+/** Shown in “Invitado por” when `?e=` is present but not an eligible guest-pass promoter. */
+export const guestPassReferralFallbackPromoter: Promoter = {
+  id: "teatro-alicia",
+  name: "Teatro Alicia",
+}
+
+/** Display promoter for the referral row when `?e=` is set (eligible match or venue fallback). */
+export function displayGuestPassReferralFromSearchParams(
+  params: URLSearchParams,
+  paramName = REF_QUERY_PARAM
+): Promoter | undefined {
+  const ref = params.get(paramName)?.trim() ?? ""
+  if (!ref) {
+    return undefined
+  }
+  return (
+    resolveGuestPassReferral(ref) ?? guestPassReferralFallbackPromoter
+  )
+}
+
 export const promoterRefQueryParam = REF_QUERY_PARAM
