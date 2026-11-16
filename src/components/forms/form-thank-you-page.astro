@@ -1,0 +1,111 @@
+---
+import { ThankYouBody } from "@/components/forms/thank-you-body"
+import SiteBrand from "@/components/site-brand.astro"
+import Layout from "@/layouts/Layout.astro"
+import type { MarketingPageTracking } from "@/lib/marketing-page-tracking"
+import { sitePageBackdropCss } from "@/lib/site-page-backdrop-css"
+
+export interface Props {
+  title: string
+  lang: string
+  paragraphs: string[]
+  marketingTracking: MarketingPageTracking
+}
+
+const { title, lang, paragraphs, marketingTracking } = Astro.props
+
+const formPageBackdropCss = sitePageBackdropCss("form-page")
+---
+
+<Layout
+  title={title}
+  lang={lang}
+  tracking={marketingTracking}
+  formThirdPartyHints
+>
+  <main class="form-page form-page--thank-you">
+    <div class="form-page__masthead">
+      <SiteBrand align="start" />
+      <h1>{title}</h1>
+    </div>
+    <div class="form-page__thank-you-content">
+      <ThankYouBody
+        client:only="react"
+        paragraphs={paragraphs}
+        locale={lang}
+        marketingTracking={marketingTracking}
+      />
+    </div>
+  </main>
+</Layout>
+
+<style is:global set:html={formPageBackdropCss}></style>
+
+<style>
+  .form-page {
+    width: min(75rem, calc(100% - 4rem));
+    max-width: 100%;
+    margin-block: 2rem;
+    margin-inline: auto;
+    min-height: calc(100dvh - 4rem);
+    padding: 2rem 1.5rem 3rem;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    overflow-x: clip;
+    background-color: color-mix(in srgb, #0a0a0a 90%, transparent);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid color-mix(in srgb, #f5f5f5 10%, transparent);
+    border-radius: 1rem;
+  }
+
+  @media (max-width: 55.99rem) {
+    .form-page {
+      width: calc(100% - 1.5rem);
+      margin-block: 0.75rem;
+      margin-inline: auto;
+      min-height: calc(100dvh - 1.5rem);
+      padding: 1.25rem 1rem 2rem;
+    }
+  }
+
+  .form-page__masthead {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem 1.5rem;
+    min-width: 0;
+    margin-bottom: 0.25rem;
+  }
+
+  .form-page.form-page--thank-you {
+    max-width: min(100%, 36rem);
+    min-height: 0;
+    padding: 1.5rem 1.5rem 2rem;
+  }
+
+  .form-page--thank-you h1 {
+    margin: 0 0 1rem;
+    font-size: clamp(1.25rem, 3vw, 1.75rem);
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    line-height: 1.25;
+  }
+
+  .form-page--thank-you .form-page__thank-you-content {
+    margin-top: 2rem;
+  }
+
+  .form-page--thank-you .form-page__thank-you-content :global(.form-page__thank-you-body) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .form-page--thank-you .form-page__thank-you-content :global(.form-page__thank-you-body p) {
+    margin: 0;
+    line-height: 1.55;
+    color: color-mix(in srgb, #f5f5f5 85%, transparent);
+  }
+</style>

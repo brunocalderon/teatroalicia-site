@@ -18,11 +18,13 @@ messages:
   turnstileRequired: Completa la verificación de seguridad antes de enviar.
   connectionFailed: No pudimos enviar tu solicitud. Intenta de nuevo.
   thankYouBody: |
-    Hemos recibido correctamente tu solicitud de tickets de cortesía.
+    Estás un paso más cerca de vivir una noche inolvidable!
 
-    Si tu solicitud es aprobada, recibirás un correo electrónico con los tickets en un plazo máximo de 24 horas.
+    Hemos recibido tu solicitud de tickets de cortesía. Los cupos son limitados y están sujetos a confirmación.
 
-    ¡Esperamos verte en el evento!
+    Si tu solicitud es aprobada, recibirás tus tickets por correo electrónico dentro de las próximas horas.
+
+    Mantente atento a tu correo. ¡Nos encantaría que fueras parte de esta noche!
 fields:
   - name: firstName
     label: Nombre(s)

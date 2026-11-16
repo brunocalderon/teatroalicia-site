@@ -29,7 +29,9 @@ Shared helpers in this repo:
 | Markdown form configs + schema | `content/forms/*.md`, `src/lib/form-schema.ts` |
 | Generic form renderer | `src/components/forms/configurable-form.tsx` |
 | Composable field types | `src/components/forms/fields/` (`registry.tsx`, per-type components) |
-| Generated form + thank-you routes | `src/pages/[...formPath].astro` |
+| Generated form routes | `src/pages/[...formPath].astro` |
+| Generated thank-you routes | `src/pages/[...formBasePath]/[thankYouSlug].astro` (`form-thank-you-page.astro`) |
+| Referral promoter CSV | `src/pages/[...formBasePath]/referrals/csv.ts` |
 
 ## Adding a form (default path)
 

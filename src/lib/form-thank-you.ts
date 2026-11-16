@@ -1,3 +1,32 @@
+export const DEFAULT_THANK_YOU_BODY =
+  "We received your request and will get back to you soon."
+
+/** Split markdown `thankYouBody` into trimmed paragraphs for `ThankYouBody`. */
+export function parseThankYouParagraphs(body: string): string[] {
+  return body
+    .split(/\n\n+/)
+    .map((paragraph) => paragraph.trim())
+    .filter((paragraph) => paragraph.length > 0)
+}
+
+/** Rest segments for `src/pages/[...formBasePath]/[thankYouSlug].astro`. */
+export function thankYouRouteParams(
+  formPath: string,
+  thankYouPath: string
+): { formBasePath: string; thankYouSlug: string } {
+  const formBasePath = formPath.replace(/^\//, "")
+  const thankYouNormalized = thankYouPath.replace(/^\//, "")
+  const slug = thankYouNormalized
+    .slice(formBasePath.length)
+    .replace(/^\//, "")
+  if (!slug) {
+    throw new Error(
+      `thankYouPath must extend form path (path="${formPath}", thankYouPath="${thankYouPath}")`
+    )
+  }
+  return { formBasePath, thankYouSlug: slug }
+}
+
 /** Prefix the opening thank-you sentence with the guest's first name when known. */
 export function prefixThankYouFirstParagraph(
   paragraph: string,

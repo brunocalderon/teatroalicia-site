@@ -2,7 +2,6 @@
 import { getCollection, getEntry, render } from "astro:content"
 
 import { ConfigurableForm } from "@/components/forms/configurable-form"
-import { ThankYouBody } from "@/components/forms/thank-you-body"
 import FormLivestackBrand from "@/components/forms/form-livestack-brand.astro"
 import FormPageSkeleton from "@/components/forms/form-page-skeleton.astro"
 import SiteBrand from "@/components/site-brand.astro"
@@ -22,64 +21,31 @@ import { venueConfig } from "../../content/venue"
 import { sitePageBackdropCss } from "@/lib/site-page-backdrop-css"
 import { MARKETING_ENGAGE_MS } from "astro:env/client"
 
-import {
-  invitationFormTracking,
-  marketingPageTracking,
-} from "@/lib/marketing-page-tracking"
+import { invitationFormTracking } from "@/lib/marketing-page-tracking"
 
 export async function getStaticPaths() {
   const forms = await getCollection("forms")
   assertFormsCollectionIntegrity(forms)
 
-  const paths: {
-    params: { formPath: string }
-    props: {
-      kind: "form" | "thankYou"
-      entry: (typeof forms)[number]
-    }
-  }[] = []
-
   warnFormSchemaOrgFields(forms)
 
-  for (const entry of forms) {
-    const formPath = entry.data.path.replace(/^\//, "")
-    const thankYouPath = entry.data.thankYouPath.replace(/^\//, "")
-
-    paths.push({
-      params: { formPath },
-      props: { kind: "form", entry },
-    })
-    paths.push({
-      params: { formPath: thankYouPath },
-      props: { kind: "thankYou", entry },
-    })
-  }
-
-  return paths
+  return forms.map((entry) => ({
+    params: { formPath: entry.data.path.replace(/^\//, "") },
+    props: { entry },
+  }))
 }
 
 type Props = {
-  kind: "form" | "thankYou"
   entry: Awaited<ReturnType<typeof getCollection<"forms">>>[number]
 }
 
-const { kind, entry: entryFromProps } = Astro.props as Props
+const { entry: entryFromProps } = Astro.props as Props
 /** Re-fetch so dev picks up new frontmatter (e.g. `image`) without a full server restart. */
 const entry =
   (await getEntry("forms", entryFromProps.id)) ?? entryFromProps
 const { data } = entry
 
-const renderedBody =
-  kind === "form" ? await render(entry) : null
-
-const thankYouBody =
-  data.messages?.thankYouBody ??
-  "We received your request and will get back to you soon."
-
-const thankYouParagraphs = thankYouBody
-  .split(/\n\n+/)
-  .map((paragraph) => paragraph.trim())
-  .filter((paragraph) => paragraph.length > 0)
+const renderedBody = await render(entry)
 
 const nameFields = data.nameFields ?? defaultNameFields(data.fields)
 
@@ -91,43 +57,33 @@ if (data.image) {
   formLcpImage = await buildFormSplitVisualImage(source)
 }
 
-const tracking =
-  kind === "form"
-    ? invitationFormTracking(data.title)
-    : marketingPageTracking.thankYou
+const tracking = invitationFormTracking(data.title)
+const formDescription = formMetaDescription(data)
 
-const formDescription =
-  kind === "form" ? formMetaDescription(data) : undefined
-
-const eventImageUrl =
-  kind === "form" && formLcpImage
-    ? new URL(formLcpImage.src, CANONICAL_SITE_ORIGIN).href
-    : undefined
-const formJsonLd =
-  kind === "form"
-    ? buildInvitationPageJsonLd({
-        venue: venueConfig,
-        data,
-        pageTitle: data.title,
-        pageDescription: formDescription,
-        imageUrl: eventImageUrl,
-      })
-    : undefined
+const eventImageUrl = formLcpImage
+  ? new URL(formLcpImage.src, CANONICAL_SITE_ORIGIN).href
+  : undefined
+const formJsonLd = buildInvitationPageJsonLd({
+  venue: venueConfig,
+  data,
+  pageTitle: data.title,
+  pageDescription: formDescription,
+  imageUrl: eventImageUrl,
+})
 
 const formPageBackdropCss = sitePageBackdropCss("form-page")
 ---
 
-{kind === "form" ? (
-  <Layout
-    title={data.title}
-    description={formDescription}
-    lang={data.lang}
-    tracking={tracking}
-    formThirdPartyHints
-    lcpImage={formLcpImage}
-    marketingEngageAfterLoadMs={MARKETING_ENGAGE_MS}
-    jsonLd={formJsonLd}
-  >
+<Layout
+  title={data.title}
+  description={formDescription}
+  lang={data.lang}
+  tracking={tracking}
+  formThirdPartyHints
+  lcpImage={formLcpImage}
+  marketingEngageAfterLoadMs={MARKETING_ENGAGE_MS}
+  jsonLd={formJsonLd}
+>
     <main class:list={["form-page", data.image && "form-page--split"]}>
       <div class:list={[data.image ? "form-page__split" : "form-page__stack"]}>
         {data.image ? (
@@ -212,30 +168,7 @@ const formPageBackdropCss = sitePageBackdropCss("form-page")
       is:inline
       set:html={`window.addEventListener("load",function(){var t=document.createElement("script");t.src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";t.async=true;t.defer=true;document.body.appendChild(t);var f=document.createElement("script");f.src="https://formgong.com/fg.js";f.async=true;document.body.appendChild(f);},{once:true});`}
     />
-  </Layout>
-) : (
-  <Layout
-    title={data.title}
-    lang={data.lang}
-    tracking={tracking}
-    formThirdPartyHints
-  >
-    <main class="form-page form-page--thank-you">
-      <div class="form-page__masthead">
-        <SiteBrand align="start" />
-        <h1>{data.title}</h1>
-      </div>
-      <div class="form-page__thank-you-content">
-        <ThankYouBody
-          client:only="react"
-          paragraphs={thankYouParagraphs}
-          locale={data.lang}
-          marketingTracking={tracking}
-        />
-      </div>
-    </main>
-  </Layout>
-)}
+</Layout>
 
 <style is:global set:html={formPageBackdropCss}></style>
 
@@ -462,35 +395,5 @@ const formPageBackdropCss = sitePageBackdropCss("form-page")
 
   .form-page__intro :global(p + p) {
     margin-top: 0.625rem;
-  }
-
-  .form-page.form-page--thank-you {
-    max-width: min(100%, 36rem);
-    min-height: 0;
-    padding: 1.5rem 1.5rem 2rem;
-  }
-
-  .form-page--thank-you h1 {
-    margin: 0 0 1rem;
-    font-size: clamp(1.25rem, 3vw, 1.75rem);
-    font-weight: 500;
-    letter-spacing: 0.03em;
-    line-height: 1.25;
-  }
-
-  .form-page--thank-you .form-page__thank-you-content {
-    margin-top: 2rem;
-  }
-
-  .form-page--thank-you .form-page__thank-you-content :global(.form-page__thank-you-body) {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-
-  .form-page--thank-you .form-page__thank-you-content :global(.form-page__thank-you-body p) {
-    margin: 0;
-    line-height: 1.55;
-    color: color-mix(in srgb, #f5f5f5 85%, transparent);
   }
 </style>
