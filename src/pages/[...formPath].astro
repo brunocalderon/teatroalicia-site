@@ -5,7 +5,7 @@ import { ConfigurableForm } from "@/components/forms/configurable-form"
 import { ThankYouBody } from "@/components/forms/thank-you-body"
 import FormLivestackBrand from "@/components/forms/form-livestack-brand.astro"
 import FormPageSkeleton from "@/components/forms/form-page-skeleton.astro"
-import FormSiteBrand from "@/components/forms/form-site-brand.astro"
+import SiteBrand from "@/components/site-brand.astro"
 import Layout from "@/layouts/Layout.astro"
 import { resolveFormEventImageSource } from "@/lib/form-event-image"
 import { buildFormSplitVisualImage } from "@/lib/form-split-visual-image"
@@ -13,11 +13,12 @@ import {
   assertFormsCollectionIntegrity,
   defaultNameFields,
   formMetaDescription,
+  warnFormSchemaOrgFields,
 } from "@/lib/form-schema"
-import {
-  FORM_PAGE_BACKGROUND_HD_IMAGE_SET,
-  FORM_PAGE_BACKGROUND_LQIP_DATA_URI,
-} from "@/lib/form-page-background"
+import { CANONICAL_SITE_ORIGIN } from "@/lib/schema-org/canonical-origin"
+import { buildInvitationPageJsonLd } from "@/lib/schema-org/build-invitation-page-json-ld"
+import { venueConfig } from "../../content/venue"
+import { sitePageBackdropCss } from "@/lib/site-page-backdrop-css"
 import { INVITATION_FORM_MARKETING_ENGAGE_MS } from "astro:env/client"
 
 import {
@@ -36,6 +37,8 @@ export async function getStaticPaths() {
       entry: (typeof forms)[number]
     }
   }[] = []
+
+  warnFormSchemaOrgFields(forms)
 
   for (const entry of forms) {
     const formPath = entry.data.path.replace(/^\//, "")
@@ -95,7 +98,22 @@ const tracking =
 const formDescription =
   kind === "form" ? formMetaDescription(data) : undefined
 
-const formPageBackdropCss = `body:has(.form-page){position:relative;background-color:transparent;min-height:100dvh}body:has(.form-page)::before{content:"";position:fixed;inset:0;z-index:-1;background-color:#000;background-image:url(${JSON.stringify(FORM_PAGE_BACKGROUND_LQIP_DATA_URI)});background-size:cover;background-position:center;background-repeat:no-repeat}body.form-page-bg-hd:has(.form-page)::before{background-image:${FORM_PAGE_BACKGROUND_HD_IMAGE_SET}}`
+const eventImageUrl =
+  kind === "form" && formLcpImage
+    ? new URL(formLcpImage.src, CANONICAL_SITE_ORIGIN).href
+    : undefined
+const formJsonLd =
+  kind === "form"
+    ? buildInvitationPageJsonLd({
+        venue: venueConfig,
+        data,
+        pageTitle: data.title,
+        pageDescription: formDescription,
+        imageUrl: eventImageUrl,
+      })
+    : undefined
+
+const formPageBackdropCss = sitePageBackdropCss("form-page")
 ---
 
 {kind === "form" ? (
@@ -107,13 +125,14 @@ const formPageBackdropCss = `body:has(.form-page){position:relative;background-c
     formThirdPartyHints
     lcpImage={formLcpImage}
     marketingEngageAfterLoadMs={INVITATION_FORM_MARKETING_ENGAGE_MS}
+    jsonLd={formJsonLd}
   >
     <main class:list={["form-page", data.image && "form-page--split"]}>
       <div class:list={[data.image ? "form-page__split" : "form-page__stack"]}>
         {data.image ? (
           <>
             <div class="form-page__masthead form-page__split-masthead">
-              <FormSiteBrand align="start" />
+              <SiteBrand align="start" />
               <header class="form-page__header">
                 <h1>{data.title}</h1>
               </header>
@@ -144,7 +163,7 @@ const formPageBackdropCss = `body:has(.form-page){position:relative;background-c
         ) : (
           <>
             <div class="form-page__masthead">
-              <FormSiteBrand align="start" />
+              <SiteBrand align="start" />
               <header class="form-page__header">
                 <h1>{data.title}</h1>
               </header>
@@ -200,7 +219,7 @@ const formPageBackdropCss = `body:has(.form-page){position:relative;background-c
   >
     <main class="form-page form-page--thank-you">
       <div class="form-page__masthead">
-        <FormSiteBrand align="start" />
+        <SiteBrand align="start" />
         <h1>{data.title}</h1>
       </div>
       <div class="form-page__thank-you-content">

@@ -110,6 +110,83 @@ const eventIdSchema = z
     }
   })
 
+const eventDateTimeSchema = z
+  .string()
+  .min(1)
+  .superRefine((value, ctx) => {
+    if (Number.isNaN(Date.parse(value))) {
+      ctx.addIssue({
+        code: "custom",
+        message: "event date-time must be a parseable ISO 8601 string",
+      })
+    }
+  })
+
+export const formEventStatusSchema = z.enum([
+  "EventScheduled",
+  "EventCancelled",
+  "EventPostponed",
+  "EventRescheduled",
+])
+
+export type FormEventStatus = z.infer<typeof formEventStatusSchema>
+
+export const formEventAttendanceModeSchema = z.enum([
+  "OfflineEventAttendanceMode",
+  "OnlineEventAttendanceMode",
+  "MixedEventAttendanceMode",
+])
+
+export const formPerformerKindSchema = z.enum([
+  "Person",
+  "MusicGroup",
+  "PerformingGroup",
+  "Organization",
+])
+
+export const formPerformerSchema = z.object({
+  name: z.string().min(1),
+  kind: formPerformerKindSchema,
+  sameAs: z.string().url().optional(),
+})
+
+export type FormPerformer = z.infer<typeof formPerformerSchema>
+
+export const formEventKindSchema = z.enum([
+  "general",
+  "social",
+  "music",
+  "social-music",
+  "business",
+  "theater",
+])
+
+export type FormEventKind = z.infer<typeof formEventKindSchema>
+
+export const formOrganizerKindSchema = z.enum(["Organization", "Person"])
+
+export const formOrganizerSchema = z.object({
+  name: z.string().min(1),
+  kind: formOrganizerKindSchema.default("Organization"),
+  url: z.string().url().optional(),
+  sameAs: z.string().url().optional(),
+})
+
+export type FormOrganizer = z.infer<typeof formOrganizerSchema>
+
+export const formTicketOfferSchema = z.object({
+  name: z.string().optional(),
+  url: z.string().url(),
+  price: z.number().positive().optional(),
+  priceCurrency: z.literal("CLP").optional(),
+  availability: z
+    .enum(["InStock", "SoldOut", "PreOrder", "LimitedAvailability"])
+    .optional(),
+  validFrom: eventDateTimeSchema.optional(),
+})
+
+export type FormTicketOffer = z.infer<typeof formTicketOfferSchema>
+
 export const formEntrySchema = z
   .object({
     title: z.string().min(1),
@@ -118,6 +195,26 @@ export const formEntrySchema = z
     path: sitePathSchema("path"),
     /** Posted as a hidden field so Formgong can tie submissions to an event. */
     eventId: eventIdSchema.optional(),
+    /** ISO 8601 start date/time (America/Santiago offset) for event JSON-LD. */
+    eventStart: eventDateTimeSchema.optional(),
+    eventEnd: eventDateTimeSchema.optional(),
+    eventStatus: formEventStatusSchema.optional(),
+    eventAttendanceMode: formEventAttendanceModeSchema.optional(),
+  /** Schema.org event classification for this occurrence. */
+    eventKind: formEventKindSchema.optional().default("general"),
+    performer: z.array(formPerformerSchema).optional(),
+    organizer: formOrganizerSchema.optional(),
+    /** When true, Teatro Alicia is the event organizer (venue-produced concert). */
+    organizerIsVenue: z.boolean().optional().default(false),
+    /** External ticket sales URL for this show. */
+    ticketUrl: z.string().url().optional(),
+    /** Structured paid ticket offers with verified price data. */
+    ticketOffers: z.array(formTicketOfferSchema).optional(),
+    /** When true, schema includes guest-pass application (not free admission). */
+    invitationOnly: z.boolean().optional(),
+    isAccessibleForFree: z.boolean().optional(),
+    typicalAgeRange: z.string().optional(),
+    eventMaximumAttendeeCapacity: z.number().int().positive().optional(),
     token: tokenSchema,
     lang: z.string().optional().default("en"),
     submitLabel: z.string().optional().default("Submit"),
@@ -220,6 +317,27 @@ export function assertFormsCollectionIntegrity(entries: FormCollectionEntry[]): 
     if (image && !hasBundledFormEventImage(image)) {
       throw new Error(
         `Form image "${image}" in ${entry.id} has no matching file in src/assets/images/`,
+      )
+    }
+  }
+}
+
+/**
+ * Logs Schema.org warnings (does not fail the build).
+ * Call from static path generation after integrity checks.
+ */
+export function warnFormSchemaOrgFields(entries: FormCollectionEntry[]): void {
+  for (const entry of entries) {
+    const { eventStart, eventId, path } = entry.data
+    if (!eventStart?.trim()) {
+      console.warn(
+        `[schema.org] Form "${entry.id}" (${path}) omits eventStart — event JSON-LD is skipped for this route.`,
+      )
+      continue
+    }
+    if (!eventId?.trim()) {
+      console.warn(
+        `[schema.org] Form "${entry.id}" (${path}) has eventStart but omits eventId — event JSON-LD is skipped.`,
       )
     }
   }

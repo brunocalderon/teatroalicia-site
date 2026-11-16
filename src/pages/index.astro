@@ -1,38 +1,39 @@
 ---
-import FormSiteBrand from "@/components/forms/form-site-brand.astro"
+import { venueConfig } from "../../content/venue"
+import SiteBrand from "@/components/site-brand.astro"
 import Layout from "@/layouts/Layout.astro"
-import { FORM_PAGE_BACKGROUND_HD_IMAGE_SET } from "@/lib/form-page-background"
 import { marketingPageTracking } from "@/lib/marketing-page-tracking"
+import { buildHomePageJsonLd } from "@/lib/schema-org/build-home-json-ld"
+import { sitePageBackdropCss } from "@/lib/site-page-backdrop-css"
+
+const homePageBackdropCss = sitePageBackdropCss("home-page")
+const homeDescription = venueConfig.description
+const homeJsonLd = buildHomePageJsonLd({
+  venue: venueConfig,
+  pageTitle: "Teatro Alicia",
+  pageDescription: homeDescription,
+})
 ---
 
-<Layout tracking={marketingPageTracking.home}>
+<Layout
+  title="Teatro Alicia"
+  description={homeDescription}
+  lang="es"
+  tracking={marketingPageTracking.home}
+  deferredSiteBackdrop
+  jsonLd={homeJsonLd}
+>
   <main class="home-page">
     <div class="home-page__content">
-      <FormSiteBrand />
-      <h1>Coming soon</h1>
+      <SiteBrand />
+      <h1>Pronto</h1>
     </div>
   </main>
 </Layout>
 
-<style define:vars={{ formPageBgHd: FORM_PAGE_BACKGROUND_HD_IMAGE_SET }}>
-  :global(body:has(.home-page)) {
-    position: relative;
-    background-color: transparent;
-    min-height: 100dvh;
-  }
+<style is:global set:html={homePageBackdropCss}></style>
 
-  :global(body:has(.home-page)::before) {
-    content: "";
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    background-color: #000;
-    background-image: var(--form-page-bg-hd);
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-  }
-
+<style>
   .home-page {
     display: flex;
     align-items: center;

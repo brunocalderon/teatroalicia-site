@@ -3,6 +3,10 @@ title: "Murano: One more night"
 description: "Solicita tickets de cortesía para Murano — One More Night en Teatro Alicia. Completa el formulario de invitación."
 path: /i/murano
 eventId: teatro-alicia-murano-one-more-night-2026-11-20
+eventKind: social-music
+eventStart: "2026-11-20T21:00:00-03:00"
+eventEnd: "2026-11-21T02:00:00-03:00"
+invitationOnly: true
 token: fk_qyWV9hdtePd2wPQHA5fmi2wC
 lang: es
 image: /images/murano-one-more-night-20-11-2026.jpg

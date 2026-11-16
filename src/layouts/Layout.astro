@@ -1,5 +1,6 @@
 ---
 import MarketingHead from '@/components/pixels/MarketingHead.astro';
+import SchemaOrgJsonLd from '@/components/schema-org-json-ld.astro';
 import { FORM_PAGE_BACKGROUND_HD_SOURCES } from '@/lib/form-page-background';
 import type { MarketingPageTracking } from '@/lib/marketing-page-tracking';
 
@@ -10,6 +11,8 @@ interface Props {
 	tracking?: MarketingPageTracking;
 	/** Preconnect hints for Turnstile / Formgong on invitation form routes. */
 	formThirdPartyHints?: boolean;
+	/** Post-load AVIF→WebP→JPEG backdrop swap (pairs with `sitePageBackdropCss`). */
+	deferredSiteBackdrop?: boolean;
 	lcpImage?: {
 		src: string;
 		srcSet: string;
@@ -17,6 +20,8 @@ interface Props {
 	};
 	/** Meta/Umami: ms after `load` to engage (0 = first user interaction). */
 	marketingEngageAfterLoadMs?: number;
+	/** Optional Schema.org graph or node for `<script type="application/ld+json">`. */
+	jsonLd?: Record<string, unknown>;
 }
 
 const {
@@ -25,9 +30,14 @@ const {
 	lang = 'en',
 	tracking,
 	formThirdPartyHints = false,
+	deferredSiteBackdrop = false,
 	lcpImage,
 	marketingEngageAfterLoadMs = 0,
+	jsonLd,
 } = Astro.props;
+
+const loadHdBackdropAfterPageLoad =
+	formThirdPartyHints || deferredSiteBackdrop;
 ---
 
 <!doctype html>
@@ -71,10 +81,11 @@ const {
 			tracking={tracking}
 			engageAfterLoadMs={marketingEngageAfterLoadMs}
 		/>
+		{jsonLd ? <SchemaOrgJsonLd data={jsonLd} /> : null}
 	</head>
 	<body>
 		{
-			formThirdPartyHints ? (
+			loadHdBackdropAfterPageLoad ? (
 				<script
 					is:inline
 					set:html={`(function(){var s=${JSON.stringify(FORM_PAGE_BACKGROUND_HD_SOURCES)};function u(){var n=0;function t(){if(n>=s.length){return}var i=new Image();i.decoding="async";i.onload=function(){document.body.classList.add("form-page-bg-hd")};i.onerror=function(){n+=1;t()};i.src=s[n]}t()}function n(){if("requestIdleCallback"in window){requestIdleCallback(u,{timeout:2500})}else{setTimeout(u,0)}}if(document.readyState==="complete"){n()}else{window.addEventListener("load",n,{once:true})}})();`}
