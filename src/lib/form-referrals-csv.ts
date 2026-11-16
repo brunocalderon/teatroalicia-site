@@ -6,7 +6,6 @@ import { promoterRefQueryParam } from "@/lib/promoters"
 const PROMOTER_COLUMNS = [
   "id",
   "name",
-  "email",
   "active",
   "ticket_sale_enabled",
   "guest_pass_enabled",

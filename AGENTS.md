@@ -48,8 +48,6 @@ After changes that affect performance, accessibility, SEO, or third-party script
 - Keep Lighthouse category floors at **≥90** unless the user explicitly relaxes `lighthouse.config.ts`; fix failing contrast on form placeholders and the Livestack footer label in `form.css` / `form-livestack-brand.astro`.
 - Run Lighthouse against local HTTP without a dev SSL/cert harness; production enforces TLS—ignore local SSL audit warnings.
 - Use a production-format `FACEBOOK_PIXEL_ID` (8+ digits) in env when testing Meta locally; placeholder IDs omit `MarketingHead` entirely.
-- In `content/promoters.roster.ts`, use `no@email.com` instead of `@teatroalicia.cl` addresses on roster emails (referral CSV and exports); leave other domains unchanged.
-
 ## Learned Workspace Facts
 
 - Teatro Alicia site (Astro); GitHub remote is `brunocalderon/teatroalicia-site`. Spanish 404 at `src/pages/404.astro` → `dist/404.html`. Schema.org JSON-LD: edit `content/venue.ts`; builders in `src/lib/schema-org/*`; embedded via `Layout.astro`; canonical site URLs `https://teatroalicia.com/` (keep contact emails on `@teatroalicia.cl`). See `docs/schema-org.md`, `npm run build:json-ld`.

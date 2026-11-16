@@ -1,7 +1,6 @@
 export interface PromoterRosterEntry {
   id: string;
   name: string;
-  email: string;
   active: boolean;
   ticket_sale_enabled: boolean;
   guest_pass_enabled: boolean;
@@ -12,7 +11,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "ana-maria-rojas",
     name: "Ana Maria Rojas",
-    email: "no@email.com",
     active: false,
     ticket_sale_enabled: true,
     guest_pass_enabled: false,
@@ -20,7 +18,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "belen-echevarria",
     name: "Belen echevarria",
-    email: "no@email.com",
     active: true,
     ticket_sale_enabled: true,
     guest_pass_enabled: true,
@@ -28,7 +25,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "checho-apes",
     name: "Checho Apes",
-    email: "no@email.com",
     active: false,
     ticket_sale_enabled: true,
     guest_pass_enabled: true,
@@ -36,7 +32,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "christian-leal",
     name: "Christian Leal",
-    email: "no@email.com",
     active: true,
     ticket_sale_enabled: true,
     guest_pass_enabled: true,
@@ -44,7 +39,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "claudio-garrido",
     name: "Claudio Garrido",
-    email: "no@email.com",
     active: false,
     ticket_sale_enabled: true,
     guest_pass_enabled: false,
@@ -52,7 +46,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "constanza-barros",
     name: "Constanza Barros",
-    email: "no@email.com",
     active: true,
     ticket_sale_enabled: true,
     guest_pass_enabled: true,
@@ -60,7 +53,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "debora-jaches",
     name: "Débora Jaches",
-    email: "no@email.com",
     active: true,
     ticket_sale_enabled: true,
     guest_pass_enabled: true,
@@ -68,7 +60,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "dukes",
     name: "DUKES",
-    email: "no@email.com",
     active: false,
     ticket_sale_enabled: true,
     guest_pass_enabled: false,
@@ -76,7 +67,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "eduardo-caco-moreno",
     name: "Eduardo Caco Moreno",
-    email: "no@email.com",
     active: true,
     ticket_sale_enabled: true,
     guest_pass_enabled: true,
@@ -84,7 +74,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "embajadores-teatro-alicia",
     name: "Embajadores Teatro Alicia",
-    email: "embajadoresteatroalicia@gmail.com",
     active: true,
     ticket_sale_enabled: true,
     guest_pass_enabled: true,
@@ -92,7 +81,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "emilia-castillo",
     name: "Emilia Castillo",
-    email: "no@email.com",
     active: true,
     ticket_sale_enabled: true,
     guest_pass_enabled: true,
@@ -100,7 +88,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "enterapia",
     name: "Enterapia",
-    email: "no@email.com",
     active: false,
     ticket_sale_enabled: true,
     guest_pass_enabled: false,
@@ -108,7 +95,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "felipe-gera",
     name: "Felipe Gera",
-    email: "no@email.com",
     active: false,
     ticket_sale_enabled: true,
     guest_pass_enabled: false,
@@ -116,7 +102,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "fernando-borquez",
     name: "Fernando Borquez",
-    email: "no@email.com",
     active: true,
     ticket_sale_enabled: true,
     guest_pass_enabled: true,
@@ -124,7 +109,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "fernando-cabezon-covarrubias",
     name: "Fernando Cabezón Covarrubias",
-    email: "no@email.com",
     active: true,
     ticket_sale_enabled: true,
     guest_pass_enabled: true,
@@ -132,7 +116,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "fernando-de-la-cerda",
     name: "Fernando de la cerda",
-    email: "no@email.com",
     active: false,
     ticket_sale_enabled: true,
     guest_pass_enabled: false,
@@ -140,7 +123,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "gonzalo-barros",
     name: "Gonzalo Barros",
-    email: "no@email.com",
     active: true,
     ticket_sale_enabled: true,
     guest_pass_enabled: true,
@@ -148,7 +130,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "ignacio-donoso",
     name: "Ignacio Donoso",
-    email: "no@email.com",
     active: false,
     ticket_sale_enabled: true,
     guest_pass_enabled: false,
@@ -156,7 +137,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "invitado-cumpleanos",
     name: "Invitado_cumpleaños",
-    email: "11111invitado_cumpleaños@gmail.com",
     active: false,
     ticket_sale_enabled: true,
     guest_pass_enabled: false,
@@ -164,7 +144,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "ismael-retro",
     name: "Ismael Retro",
-    email: "no@email.com",
     active: false,
     ticket_sale_enabled: true,
     guest_pass_enabled: false,
@@ -172,7 +151,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "jaime-barrios",
     name: "Jaime Barrios",
-    email: "no@email.com",
     active: true,
     ticket_sale_enabled: true,
     guest_pass_enabled: true,
@@ -180,7 +158,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "loreto-borquez",
     name: "Loreto Borquez",
-    email: "no@email.com",
     active: true,
     ticket_sale_enabled: true,
     guest_pass_enabled: true,
@@ -188,7 +165,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "loreto-borquez-2",
     name: "Loreto Borquez",
-    email: "no@email.com",
     active: false,
     ticket_sale_enabled: true,
     guest_pass_enabled: true,
@@ -196,7 +172,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "lupe-fernandez",
     name: "Lupe Fernández",
-    email: "no@email.com",
     active: true,
     ticket_sale_enabled: true,
     guest_pass_enabled: true,
@@ -204,7 +179,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "marcela-abusleme",
     name: "Marcela Abusleme",
-    email: "no@email.com",
     active: false,
     ticket_sale_enabled: true,
     guest_pass_enabled: false,
@@ -212,7 +186,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "miguel-ananias",
     name: "Miguel Ananias",
-    email: "51@tetatro.cl",
     active: true,
     ticket_sale_enabled: true,
     guest_pass_enabled: true,
@@ -220,7 +193,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "pachi-perez",
     name: "Pachi Perez",
-    email: "no@email.com",
     active: true,
     ticket_sale_enabled: true,
     guest_pass_enabled: true,
@@ -228,7 +200,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "paola-aranda",
     name: "Paola Aranda",
-    email: "no@email.com",
     active: true,
     ticket_sale_enabled: true,
     guest_pass_enabled: true,
@@ -236,7 +207,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "pato-hado",
     name: "Pato Hado",
-    email: "no@email.com",
     active: true,
     ticket_sale_enabled: true,
     guest_pass_enabled: true,
@@ -244,7 +214,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "patyfinger",
     name: "PatyFinger",
-    email: "no@email.com",
     active: true,
     ticket_sale_enabled: true,
     guest_pass_enabled: true,
@@ -252,7 +221,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "paula-urenda",
     name: "Paula Urenda",
-    email: "no@email.com",
     active: false,
     ticket_sale_enabled: true,
     guest_pass_enabled: false,
@@ -260,7 +228,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "pauli-filer",
     name: "Pauli Filer",
-    email: "no@email.com",
     active: true,
     ticket_sale_enabled: true,
     guest_pass_enabled: true,
@@ -268,7 +235,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "paulina-concha",
     name: "Paulina Concha",
-    email: "no@email.com",
     active: false,
     ticket_sale_enabled: true,
     guest_pass_enabled: false,
@@ -276,7 +242,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "prometeo",
     name: "Prometeo",
-    email: "prometeo@teatroprometeo.cl",
     active: false,
     ticket_sale_enabled: true,
     guest_pass_enabled: false,
@@ -284,7 +249,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "prometeo-cumpleanos",
     name: "Prometeo Cumpleaños",
-    email: "prometeocumpleaños22222@gmai.com",
     active: false,
     ticket_sale_enabled: true,
     guest_pass_enabled: false,
@@ -292,7 +256,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "renzo-martinez",
     name: "Renzo Martinez",
-    email: "no@email.com",
     active: false,
     ticket_sale_enabled: true,
     guest_pass_enabled: false,
@@ -300,7 +263,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "rodrigo-pichi-quintana",
     name: "Rodrigo Pichi Quintana",
-    email: "no@email.com",
     active: true,
     ticket_sale_enabled: true,
     guest_pass_enabled: true,
@@ -308,7 +270,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "rodrigo-tapia",
     name: "Rodrigo Tapia",
-    email: "no@email.com",
     active: true,
     ticket_sale_enabled: true,
     guest_pass_enabled: true,
@@ -316,7 +277,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "rodrigo-tejos",
     name: "Rodrigo Tejos",
-    email: "no@email.com",
     active: false,
     ticket_sale_enabled: true,
     guest_pass_enabled: false,
@@ -324,7 +284,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "rose-marie-ferger",
     name: "Rose Marie Ferger",
-    email: "no@email.com",
     active: true,
     ticket_sale_enabled: true,
     guest_pass_enabled: true,
@@ -332,7 +291,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "sergio-arriagada",
     name: "Sergio Arriagada",
-    email: "no@email.com",
     active: true,
     ticket_sale_enabled: true,
     guest_pass_enabled: true,
@@ -340,7 +298,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "soffi-luz",
     name: "Soffi Luz",
-    email: "no@email.com",
     active: true,
     ticket_sale_enabled: true,
     guest_pass_enabled: true,
@@ -348,7 +305,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "staff",
     name: "Staff",
-    email: "no@email.com",
     active: false,
     ticket_sale_enabled: true,
     guest_pass_enabled: true,
@@ -356,7 +312,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "studio54",
     name: "Studio54",
-    email: "no@email.com",
     active: false,
     ticket_sale_enabled: true,
     guest_pass_enabled: false,
@@ -364,7 +319,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "teatro-alicia",
     name: "Teatro Alicia",
-    email: "teatroalicia@proton.me",
     active: false,
     ticket_sale_enabled: true,
     guest_pass_enabled: false,
@@ -372,7 +326,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "trini-alvarado",
     name: "Trini Alvarado",
-    email: "no@email.com",
     active: true,
     ticket_sale_enabled: true,
     guest_pass_enabled: true,
@@ -380,7 +333,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "trinidad-montalva",
     name: "Trinidad Montalva",
-    email: "no@email.com",
     active: false,
     ticket_sale_enabled: true,
     guest_pass_enabled: false,
@@ -388,7 +340,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "universidad-adolfo-ibanez",
     name: "Universidad Adolfo Ibáñez",
-    email: "AdolfoIbteatroalicia@proton.me",
     active: false,
     ticket_sale_enabled: true,
     guest_pass_enabled: false,
@@ -396,7 +347,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "universidad-catolica",
     name: "Universidad Catolica",
-    email: "ucteatroalicia@proton.me",
     active: false,
     ticket_sale_enabled: true,
     guest_pass_enabled: false,
@@ -404,7 +354,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "universidad-los-andes",
     name: "Universidad los Andes",
-    email: "innovest1@proton.me",
     active: false,
     ticket_sale_enabled: true,
     guest_pass_enabled: false,
@@ -412,7 +361,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "vale-maraboli",
     name: "Vale Maraboli",
-    email: "no@email.com",
     active: true,
     ticket_sale_enabled: true,
     guest_pass_enabled: true,
@@ -420,7 +368,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
   {
     id: "vitita-perez",
     name: "Vitita Pérez",
-    email: "no@email.com",
     active: true,
     ticket_sale_enabled: true,
     guest_pass_enabled: true,
