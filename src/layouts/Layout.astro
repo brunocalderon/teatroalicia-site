@@ -6,8 +6,10 @@ import { FORM_PAGE_BACKGROUND_HD_SOURCES } from '@/lib/form-page-background';
 import type { MarketingPageTracking } from '@/lib/marketing-page-tracking';
 import {
 	formResourceHintOrigins,
+	homeMarketingResourceHintOrigins,
 	marketingResourceHintOrigins,
 } from '@/lib/third-party-resource-hints';
+import { MARKETING_ENGAGE_MS } from 'astro:env/client';
 
 interface Props {
 	title?: string;
@@ -23,7 +25,10 @@ interface Props {
 		srcSet: string;
 		sizes: string;
 	};
-	/** Meta/Umami: ms after `load` to engage (0 = first user interaction). */
+	/**
+	 * Meta/Umami: ms after `load` to engage (0 = first user interaction).
+	 * When omitted and `tracking` is set, uses `MARKETING_ENGAGE_MS`.
+	 */
 	marketingEngageAfterLoadMs?: number;
 	/** Optional Schema.org graph or node for `<script type="application/ld+json">`. */
 	jsonLd?: Record<string, unknown>;
@@ -37,9 +42,16 @@ const {
 	formThirdPartyHints = false,
 	deferredSiteBackdrop = false,
 	lcpImage,
-	marketingEngageAfterLoadMs = 0,
+	marketingEngageAfterLoadMs: marketingEngageAfterLoadMsProp,
 	jsonLd,
 } = Astro.props;
+
+const marketingEngageAfterLoadMs =
+	marketingEngageAfterLoadMsProp !== undefined
+		? marketingEngageAfterLoadMsProp
+		: tracking
+			? MARKETING_ENGAGE_MS
+			: 0;
 
 const loadHdBackdropAfterPageLoad =
 	formThirdPartyHints || deferredSiteBackdrop;
@@ -59,7 +71,13 @@ const loadHdBackdropAfterPageLoad =
 		<link rel="ard" href="/.well-known/ard.json" type="application/ard+json" />
 		<title>{title}</title>
 		{description ? <meta name="description" content={description} /> : null}
-		<ResourceHints origins={marketingResourceHintOrigins} />
+		<ResourceHints
+			origins={
+				formThirdPartyHints
+					? marketingResourceHintOrigins
+					: homeMarketingResourceHintOrigins
+			}
+		/>
 		{formThirdPartyHints ? (
 			<ResourceHints origins={formResourceHintOrigins} />
 		) : null}

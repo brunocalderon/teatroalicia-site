@@ -42,8 +42,8 @@ export default defineConfig({
         optional: true,
         default: "",
       }),
-      /** Ms after `window` `load` before Meta/Umami on invitation form routes (`/i/...`). */
-      INVITATION_FORM_MARKETING_ENGAGE_MS: envField.number({
+      /** Ms after `window` `load` before Meta/Umami on any page with marketing `tracking` (home, forms, 404, thank-you). */
+      MARKETING_ENGAGE_MS: envField.number({
         context: "client",
         access: "public",
         optional: true,

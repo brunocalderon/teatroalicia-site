@@ -19,7 +19,7 @@ import { CANONICAL_SITE_ORIGIN } from "@/lib/schema-org/canonical-origin"
 import { buildInvitationPageJsonLd } from "@/lib/schema-org/build-invitation-page-json-ld"
 import { venueConfig } from "../../content/venue"
 import { sitePageBackdropCss } from "@/lib/site-page-backdrop-css"
-import { INVITATION_FORM_MARKETING_ENGAGE_MS } from "astro:env/client"
+import { MARKETING_ENGAGE_MS } from "astro:env/client"
 
 import {
   invitationFormTracking,
@@ -124,7 +124,7 @@ const formPageBackdropCss = sitePageBackdropCss("form-page")
     tracking={tracking}
     formThirdPartyHints
     lcpImage={formLcpImage}
-    marketingEngageAfterLoadMs={INVITATION_FORM_MARKETING_ENGAGE_MS}
+    marketingEngageAfterLoadMs={MARKETING_ENGAGE_MS}
     jsonLd={formJsonLd}
   >
     <main class:list={["form-page", data.image && "form-page--split"]}>

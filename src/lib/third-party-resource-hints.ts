@@ -8,12 +8,20 @@ export type ResourceHintOrigin = {
   crossOrigin?: boolean
 }
 
-/** Marketing pixels, Umami, and Cloudflare Web Analytics. */
-export const marketingResourceHintOrigins: readonly ResourceHintOrigin[] = [
+const marketingResourceHintOriginsBase: readonly ResourceHintOrigin[] = [
   { href: "https://static.cloudflareinsights.com" },
   { href: "https://cloud.umami.is", crossOrigin: true },
-  { href: "https://gateway.umami.is" },
   { href: "https://connect.facebook.net", crossOrigin: true },
+]
+
+/** Home, 404, thank-you — omit Umami gateway and Meta beacon hosts. */
+export const homeMarketingResourceHintOrigins: readonly ResourceHintOrigin[] =
+  marketingResourceHintOriginsBase
+
+/** Invitation form routes — extra connects after scripts load. */
+export const marketingResourceHintOrigins: readonly ResourceHintOrigin[] = [
+  ...marketingResourceHintOriginsBase,
+  { href: "https://gateway.umami.is" },
   { href: "https://www.facebook.com" },
 ]
 

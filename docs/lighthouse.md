@@ -39,8 +39,8 @@ Edit [`lighthouse.config.ts`](../lighthouse.config.ts):
 | `LIGHTHOUSE_BASE_URL` | If set (e.g. `http://127.0.0.1:4321`), Vitest **does not** spawn the HTTP preview server; audits use this origin. Useful when iterating manually. |
 | `FACEBOOK_PIXEL_ID` / `UMAMI_PIXEL_ID` | Use the **same real IDs as production** (not placeholders such as `1`). Invalid IDs are skipped at build time; placeholder values also break Umami with console errors during audits. |
 | `MARKETING_TRACKING_CITY` | Meta payload `city` field (default `Santiago`). |
-| `INVITATION_FORM_MARKETING_ENGAGE_MS` | Ms after `load` before Meta/Umami on invitation form pages (default `1000`). Set to `0` to disable timed engage on forms. |
-| `MARKETING_INTERACTION_IDLE_TIMEOUT_MS` | Idle callback cap when home/thank-you pixels load after interaction (default `2000`). |
+| `MARKETING_ENGAGE_MS` | Ms after `load` before Meta/Umami on pages with `tracking` (default `1000`). Set to `0` for interaction-gated pixels. |
+| `MARKETING_INTERACTION_IDLE_TIMEOUT_MS` | Idle callback cap when pixels load after interaction (`marketingEngageAfterLoadMs={0}`) (default `2000`). |
 
 ## Reports
 
