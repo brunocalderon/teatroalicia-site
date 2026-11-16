@@ -4,7 +4,7 @@ import {
   THANK_YOU_NAME_QUERY_PARAM,
   formatThankYouFirstName,
   prefixThankYouFirstParagraph,
-} from "@/lib/formgong-thank-you"
+} from "@/lib/form-thank-you"
 import { hasPendingMetaPixelUserData } from "@/lib/meta-pixel-pending-storage"
 import {
   trackMetaCompleteRegistrationFromPendingStorage,

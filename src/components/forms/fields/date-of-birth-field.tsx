@@ -117,8 +117,8 @@ export function DateOfBirthField({
       ref={containerRef}
       className={
         invalid
-          ? "formgong-birthday formgong-birthday--invalid"
-          : "formgong-birthday"
+          ? "form-birthday form-birthday--invalid"
+          : "form-birthday"
       }
       onFocusOut={(event) => {
         const next = event.relatedTarget
@@ -142,7 +142,7 @@ export function DateOfBirthField({
         type="text"
         inputMode="numeric"
         autoComplete="bday-day"
-        className="formgong-input formgong-birthday__segment formgong-birthday__day"
+        className="form-input form-birthday__segment form-birthday__day"
         placeholder={placeholders.day}
         aria-label={ariaLabels.day}
         required={field.required}
@@ -156,7 +156,7 @@ export function DateOfBirthField({
           updatePart("day", next, { nextFocus: "month" })
         }}
       />
-      <span className="formgong-birthday__separator" aria-hidden>
+      <span className="form-birthday__separator" aria-hidden>
         /
       </span>
       <input
@@ -164,7 +164,7 @@ export function DateOfBirthField({
         type="text"
         inputMode="numeric"
         autoComplete="bday-month"
-        className="formgong-input formgong-birthday__segment formgong-birthday__month"
+        className="form-input form-birthday__segment form-birthday__month"
         placeholder={placeholders.month}
         aria-label={ariaLabels.month}
         required={field.required}
@@ -178,7 +178,7 @@ export function DateOfBirthField({
           updatePart("month", next, { nextFocus: "year" })
         }}
       />
-      <span className="formgong-birthday__separator" aria-hidden>
+      <span className="form-birthday__separator" aria-hidden>
         /
       </span>
       <input
@@ -186,7 +186,7 @@ export function DateOfBirthField({
         type="text"
         inputMode="numeric"
         autoComplete="bday-year"
-        className="formgong-input formgong-birthday__segment formgong-birthday__year"
+        className="form-input form-birthday__segment form-birthday__year"
         placeholder={placeholders.year}
         aria-label={ariaLabels.year}
         required={field.required}

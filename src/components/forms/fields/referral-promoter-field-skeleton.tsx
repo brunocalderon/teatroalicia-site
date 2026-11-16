@@ -12,7 +12,7 @@ export function ReferralPromoterFieldSkeleton({
     lang === "es" ? "Cargando invitado por…" : "Loading referral…"
 
   return (
-    <div className="formgong-referral-display" aria-busy="true">
+    <div className="form-referral-display" aria-busy="true">
       <span className="sr-only">{loadingMessage}</span>
       <Item variant="outline" size="sm" className="w-full min-w-0">
         <ItemMedia variant="icon">

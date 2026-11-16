@@ -1,9 +1,9 @@
-import "@/styles/formgong.css"
+import "@/styles/form.css"
 
 /**
- * Required Formgong fields — see docs/astro-formgong-request-forms.md
+ * Required Formgong fields — see docs/astro-form-request-forms.md
  */
-export function FormgongHiddenFields({
+export function FormHiddenFields({
   accessKey,
   lang = "en",
   eventId,
@@ -20,7 +20,7 @@ export function FormgongHiddenFields({
       {eventIdValue ? (
         <input type="hidden" name="eventId" value={eventIdValue} />
       ) : null}
-      <div aria-hidden className="formgong-honeypot">
+      <div aria-hidden className="form-honeypot">
         {/*
           Chrome maps email + nearby text inputs to saved passwords. A nameless
           decoy absorbs that autofill without posting to Formgong.

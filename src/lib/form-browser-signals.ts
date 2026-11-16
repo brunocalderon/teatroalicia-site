@@ -1,4 +1,4 @@
-const FORMGONG_POW_URL = "https://formgong.com/pow"
+const FORM_POW_URL = "https://formgong.com/pow"
 
 function setHiddenInput(form: HTMLFormElement, name: string, value: string) {
   let input = form.querySelector<HTMLInputElement>(`input[name="${name}"]`)
@@ -20,7 +20,7 @@ function sleep(ms: number) {
 /**
  * Formgong proof-of-work (same algorithm as fg.js). Returns `challenge~nonce`, or `"na"`.
  */
-export async function solveFormgongPow(accessKey: string): Promise<string> {
+export async function solveFormPow(accessKey: string): Promise<string> {
   const subtle = globalThis.crypto?.subtle
   if (!subtle) {
     return "na"
@@ -28,7 +28,7 @@ export async function solveFormgongPow(accessKey: string): Promise<string> {
 
   try {
     const response = await fetch(
-      `${FORMGONG_POW_URL}?k=${encodeURIComponent(accessKey)}`,
+      `${FORM_POW_URL}?k=${encodeURIComponent(accessKey)}`,
       { credentials: "omit" }
     )
     if (!response.ok) {
@@ -83,7 +83,7 @@ const DEFAULT_POW_WAIT_MS = 2000
  * Wait for fg.js submit stamping, then resolve PoW (matching fg.js inline `ready()`),
  * and write `_fg_pow` before building `FormData`.
  */
-export async function refreshFormgongPowFieldBeforePost(
+export async function refreshFormPowFieldBeforePost(
   form: HTMLFormElement,
   accessKey: string,
   timeoutMs = DEFAULT_POW_WAIT_MS
@@ -104,7 +104,7 @@ export async function refreshFormgongPowFieldBeforePost(
   }
 
   const powFromRace = await Promise.race([
-    solveFormgongPow(trimmedKey),
+    solveFormPow(trimmedKey),
     sleep(timeoutMs).then(() => undefined),
   ])
 

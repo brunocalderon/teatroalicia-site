@@ -11,7 +11,7 @@ export function FileField({
       id={`field-${field.name}`}
       name={field.name}
       type="file"
-      className="formgong-input formgong-file"
+      className="form-input form-file"
       required={field.required}
       accept={field.accept}
       aria-invalid={invalid || undefined}

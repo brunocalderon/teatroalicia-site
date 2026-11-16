@@ -1,4 +1,4 @@
-export const formgongCopy = {
+export const formCopy = {
   turnstile: {
     label: "Security check",
     siteKeyMissing:

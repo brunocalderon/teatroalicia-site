@@ -10,7 +10,7 @@ export function TextareaField({
     <textarea
       id={`field-${field.name}`}
       name={field.name}
-      className="formgong-input formgong-textarea"
+      className="form-input form-textarea"
       rows={5}
       required={field.required}
       placeholder={field.placeholder}

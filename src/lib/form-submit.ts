@@ -1,8 +1,8 @@
-import { refreshFormgongPowFieldBeforePost } from "@/lib/formgong-browser-signals"
+import { refreshFormPowFieldBeforePost } from "@/lib/form-browser-signals"
 
-export const FORMGONG_SUBMIT_ACTION = "https://formgong.com/submit"
+export const FORM_SUBMIT_ACTION = "https://formgong.com/submit"
 
-export type FormgongJsonResponse = {
+export type FormJsonResponse = {
   success?: boolean
   message?: string
 }
@@ -25,7 +25,7 @@ export function resetTurnstileInForm(form: HTMLFormElement): void {
   }
 }
 
-export type PostFormgongFormOptions = {
+export type PostFormOptions = {
   accessKey: string
   /**
    * Mutate the form DOM before PoW and `FormData` (e.g. title-case names).
@@ -37,13 +37,13 @@ export type PostFormgongFormOptions = {
  * Refresh PoW, then POST multipart `FormData` to Formgong with JSON Accept header.
  * Do not set `Content-Type` — the browser must set multipart boundaries for files.
  */
-export async function postFormgongForm(
+export async function postForm(
   form: HTMLFormElement,
-  options: PostFormgongFormOptions
-): Promise<FormgongJsonResponse> {
+  options: PostFormOptions
+): Promise<FormJsonResponse> {
   const trimmedKey = options.accessKey.trim()
   if (trimmedKey) {
-    await refreshFormgongPowFieldBeforePost(form, trimmedKey)
+    await refreshFormPowFieldBeforePost(form, trimmedKey)
   }
   options.beforePost?.(form)
 
@@ -54,5 +54,5 @@ export async function postFormgongForm(
     credentials: "omit",
   })
 
-  return (await response.json()) as FormgongJsonResponse
+  return (await response.json()) as FormJsonResponse
 }

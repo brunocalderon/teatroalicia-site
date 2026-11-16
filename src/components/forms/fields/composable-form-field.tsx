@@ -16,9 +16,9 @@ function fieldSpansFullWidth(type: FormFieldType): boolean {
 
 function formFieldClassName(type: FormFieldType): string {
   const base = fieldSpansFullWidth(type)
-    ? "formgong-field formgong-field--full"
-    : "formgong-field"
-  return type === "referral" ? `${base} formgong-field--referral` : base
+    ? "form-field form-field--full"
+    : "form-field"
+  return type === "referral" ? `${base} form-field--referral` : base
 }
 
 type ComposableFormFieldProps = {
@@ -79,7 +79,7 @@ export function ComposableFormField({
           onBlurValidate={onBlurValidate}
         />
         {error ? (
-          <p id={errorId} className="formgong-field-error" role="alert">
+          <p id={errorId} className="form-field-error" role="alert">
             {error}
           </p>
         ) : null}
@@ -89,10 +89,10 @@ export function ComposableFormField({
 
   return (
     <div className={formFieldClassName(field.type)}>
-      <label className="formgong-label" htmlFor={`field-${field.name}`}>
+      <label className="form-label" htmlFor={`field-${field.name}`}>
         {labelText}
         {field.required ? (
-          <span className="formgong-required" aria-hidden>
+          <span className="form-required" aria-hidden>
             {" "}
             *
           </span>
@@ -110,7 +110,7 @@ export function ComposableFormField({
         onBlurValidate={onBlurValidate}
       />
       {error ? (
-        <p id={errorId} className="formgong-field-error" role="alert">
+        <p id={errorId} className="form-field-error" role="alert">
           {error}
         </p>
       ) : null}

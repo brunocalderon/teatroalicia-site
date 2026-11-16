@@ -10,7 +10,7 @@ export function SelectField({
     <select
       id={`field-${field.name}`}
       name={field.name}
-      className="formgong-input formgong-select"
+      className="form-input form-select"
       required={field.required}
       defaultValue=""
       aria-invalid={invalid || undefined}

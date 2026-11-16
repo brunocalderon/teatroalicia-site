@@ -23,7 +23,7 @@ export function ReferralPromoterField({
   const label = referralFieldLabel(lang, field.label)
 
   return (
-    <div className="formgong-referral-display">
+    <div className="form-referral-display">
       <Item
         variant="outline"
         size="sm"

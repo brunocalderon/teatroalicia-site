@@ -24,7 +24,7 @@ const TURNSTILE_ORIGINS = [
 /** Parent-page fetches for flexible / managed challenges (`data:,`, nested dnstest hosts). */
 const TURNSTILE_CONNECT = ["data:", "blob:", ...TURNSTILE_ORIGINS] as const
 
-const FORMGONG = "https://formgong.com"
+const FORM_SERVICE_ORIGIN = "https://formgong.com"
 const META_SCRIPT = "https://connect.facebook.net"
 const META_IMG = "https://www.facebook.com"
 const UMAMI_SCRIPT = "https://cloud.umami.is"
@@ -82,11 +82,11 @@ export const CONTENT_SECURITY_POLICY = [
   `base-uri ${SELF}`,
   `object-src 'none'`,
   `frame-ancestors ${SELF}`,
-  `script-src ${SELF} 'unsafe-inline' ${TURNSTILE_ORIGINS[0]} ${TURNSTILE_ORIGINS[1]} ${FORMGONG} ${META_SCRIPT} ${UMAMI_SCRIPT} ${CF_INSIGHTS}`,
+  `script-src ${SELF} 'unsafe-inline' ${TURNSTILE_ORIGINS[0]} ${TURNSTILE_ORIGINS[1]} ${FORM_SERVICE_ORIGIN} ${META_SCRIPT} ${UMAMI_SCRIPT} ${CF_INSIGHTS}`,
   `style-src ${SELF} 'unsafe-inline' ${TURNSTILE_ORIGINS[0]} ${TURNSTILE_ORIGINS[1]}`,
   `img-src ${SELF} data: ${META_IMG}`,
   `font-src ${SELF} ${TURNSTILE_ORIGINS.join(" ")}`,
   `worker-src ${SELF} blob: ${TURNSTILE_ORIGINS.join(" ")}`,
   `frame-src ${TURNSTILE_ORIGINS.join(" ")}`,
-  `connect-src ${SELF} ${TURNSTILE_CONNECT.join(" ")} ${FORMGONG} ${META_SCRIPT} ${META_IMG} ${UMAMI_SCRIPT} ${UMAMI_CONNECT} ${CF_INSIGHTS} ${AWS_ECS_ON_AWS_CONNECT.join(" ")} ${GCP_CLOUD_RUN_CONNECT}`,
+  `connect-src ${SELF} ${TURNSTILE_CONNECT.join(" ")} ${FORM_SERVICE_ORIGIN} ${META_SCRIPT} ${META_IMG} ${UMAMI_SCRIPT} ${UMAMI_CONNECT} ${CF_INSIGHTS} ${AWS_ECS_ON_AWS_CONNECT.join(" ")} ${GCP_CLOUD_RUN_CONNECT}`,
 ].join("; ")

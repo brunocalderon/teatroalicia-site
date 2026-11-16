@@ -6,7 +6,7 @@ Submitting a Formgong-backed form could hang the tab: the UI stopped responding,
 
 ## Cause
 
-The custom submit path calls `refreshFormgongPowFieldBeforePost()` before POSTing to Formgong. That lives in `src/lib/formgong-browser-signals.ts` and implements the same proof-of-work (PoW) as `fg.js`: fetch a challenge from `https://formgong.com/pow`, hash `challenge:nonce` with SHA-256 in batches until enough leading zero bits match the difficulty, then set hidden field `_fg_pow` to `challenge~nonce`.
+The custom submit path calls `refreshFormPowFieldBeforePost()` before POSTing to Formgong. That lives in `src/lib/form-browser-signals.ts` and implements the same proof-of-work (PoW) as `fg.js`: fetch a challenge from `https://formgong.com/pow`, hash `challenge:nonce` with SHA-256 in batches until enough leading zero bits match the difficulty, then set hidden field `_fg_pow` to `challenge~nonce`.
 
 The bug was in the loop that counts leading zero bits in each hash. The loop advanced `zeroBits` but never advanced the byte index, so when the first hash byte was `0` (common while searching), the condition stayed true forever:
 
@@ -21,7 +21,7 @@ That ran synchronously inside the hash-check path, blocking the browser main thr
 
 ## Why the 2s timeout did not unblock the UI
 
-`refreshFormgongPowFieldBeforePost` uses `Promise.race` between `solveFormgongPow` and a 2s sleep. A timeout only stops *waiting* for the promise; it does not cancel work already running on the main thread. An infinite synchronous loop keeps the event loop busy, so the tab stays frozen even after the race “times out.”
+`refreshFormPowFieldBeforePost` uses `Promise.race` between `solveFormPow` and a 2s sleep. A timeout only stops *waiting* for the promise; it does not cancel work already running on the main thread. An infinite synchronous loop keeps the event loop busy, so the tab stays frozen even after the race “times out.”
 
 ## Fix
 
@@ -39,8 +39,8 @@ After this change, PoW still uses CPU briefly (by design), but it completes and 
 
 | Piece | Location |
 | --- | --- |
-| PoW solver and pre-POST refresh | `src/lib/formgong-browser-signals.ts` |
-| Submit POST helper | `src/lib/formgong-submit.ts` |
+| PoW solver and pre-POST refresh | `src/lib/form-browser-signals.ts` |
+| Submit POST helper | `src/lib/form-submit.ts` |
 | `fg.js` (analytics / `_fg_*`) | Loaded on form Astro pages |
 
 If `_fg_pow` already contains `~` (e.g. from `fg.js`), the refresh helper skips solving again.

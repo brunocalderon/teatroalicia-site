@@ -25,7 +25,7 @@ export function TextLikeField({
       id={`field-${field.name}`}
       name={field.name}
       type={inputType}
-      className="formgong-input"
+      className="form-input"
       required={field.required}
       placeholder={field.placeholder}
       {...(autoComplete !== undefined ? { autoComplete } : {})}

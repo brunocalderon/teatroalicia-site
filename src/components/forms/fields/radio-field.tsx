@@ -2,9 +2,9 @@ import type { FormFieldControlProps } from "@/components/forms/fields/types"
 
 export function RadioField({ field, onValueChange }: FormFieldControlProps) {
   return (
-    <fieldset className="formgong-radio-group">
+    <fieldset className="form-radio-group">
       {field.options?.map((option) => (
-        <label key={option.value} className="formgong-choice">
+        <label key={option.value} className="form-choice">
           <input
             type="radio"
             name={field.name}

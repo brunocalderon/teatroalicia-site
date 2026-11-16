@@ -145,7 +145,7 @@ export function PhoneField({
   }
 
   return (
-    <div ref={containerRef} className="formgong-phone">
+    <div ref={containerRef} className="form-phone">
       <input
         ref={hiddenRef}
         type="text"
@@ -158,31 +158,31 @@ export function PhoneField({
       <div
         className={
           invalid
-            ? "formgong-phone__control formgong-phone__control--invalid"
-            : "formgong-phone__control"
+            ? "form-phone__control form-phone__control--invalid"
+            : "form-phone__control"
         }
       >
         <button
           type="button"
-          className="formgong-phone__country"
+          className="form-phone__country"
           aria-expanded={isCountryOpen}
           aria-haspopup="listbox"
           aria-controls={listboxId}
           onClick={() => setIsCountryOpen((open) => !open)}
           onKeyDown={handleCountryKeyDown}
         >
-          <span className="formgong-phone__flag" aria-hidden>
+          <span className="form-phone__flag" aria-hidden>
             {selectedCountry.flag}
           </span>
-          <span className="formgong-phone__dial-code">{selectedCountry.callingCode}</span>
-          <ChevronDown className="formgong-phone__chevron" aria-hidden />
+          <span className="form-phone__dial-code">{selectedCountry.callingCode}</span>
+          <ChevronDown className="form-phone__chevron" aria-hidden />
         </button>
         <input
           id={inputId}
           type="tel"
           inputMode="tel"
           autoComplete="tel-national"
-          className="formgong-phone__number"
+          className="form-phone__number"
           placeholder={numberPlaceholder}
           required={field.required}
           aria-invalid={invalid || undefined}
@@ -200,10 +200,10 @@ export function PhoneField({
         />
       </div>
       {isCountryOpen ? (
-        <div className="formgong-phone__dropdown">
+        <div className="form-phone__dropdown">
           <input
             type="search"
-            className="formgong-input formgong-phone__search"
+            className="form-input form-phone__search"
             placeholder={phoneSearchPlaceholder(lang)}
             aria-label={phoneSearchAriaLabel(lang)}
             value={countryQuery}
@@ -212,7 +212,7 @@ export function PhoneField({
               setActiveCountryIndex(-1)
             }}
           />
-          <ul id={listboxId} role="listbox" className="formgong-phone__list">
+          <ul id={listboxId} role="listbox" className="form-phone__list">
             {filteredCountries.map((option, index) => (
               <li key={option.code} role="presentation">
                 <button
@@ -221,10 +221,10 @@ export function PhoneField({
                   aria-selected={option.code === country}
                   className={
                     index === activeCountryIndex
-                      ? "formgong-phone__option formgong-phone__option--active"
+                      ? "form-phone__option form-phone__option--active"
                       : option.code === country
-                        ? "formgong-phone__option formgong-phone__option--selected"
-                        : "formgong-phone__option"
+                        ? "form-phone__option form-phone__option--selected"
+                        : "form-phone__option"
                   }
                   onMouseDown={(event) => event.preventDefault()}
                   onClick={() => selectCountry(option.code)}

@@ -1,9 +1,9 @@
 import { CLOUDFLARE_TURNSTILE_SITE_KEY } from "astro:env/client"
 import { useEffect, useRef } from "react"
 
-import { formgongCopy } from "@/lib/formgong-copy"
+import { formCopy } from "@/lib/form-copy"
 
-import "@/styles/formgong.css"
+import "@/styles/form.css"
 
 const turnstileSiteKey = CLOUDFLARE_TURNSTILE_SITE_KEY.trim()
 
@@ -57,7 +57,7 @@ function waitForTurnstile(): Promise<NonNullable<Window["turnstile"]>> {
 }
 
 export function TurnstileField({
-  copy = formgongCopy.turnstile,
+  copy = formCopy.turnstile,
   onTokenChange,
 }: {
   copy?: {
@@ -119,9 +119,9 @@ export function TurnstileField({
   if (!TURNSTILE_ENABLED) {
     if (import.meta.env.PROD) {
       return (
-        <div className="formgong-turnstile">
+        <div className="form-turnstile">
           <p>{copy.label}</p>
-          <p className="formgong-alert" role="alert">
+          <p className="form-alert" role="alert">
             {copy.siteKeyMissing}
           </p>
         </div>
@@ -129,17 +129,17 @@ export function TurnstileField({
     }
 
     return (
-      <div className="formgong-turnstile">
+      <div className="form-turnstile">
         <span className="sr-only">{copy.label}</span>
-        <div className="formgong-turnstile-placeholder">{copy.devPlaceholder}</div>
+        <div className="form-turnstile-placeholder">{copy.devPlaceholder}</div>
       </div>
     )
   }
 
   return (
-    <div className="formgong-turnstile">
+    <div className="form-turnstile">
       <span className="sr-only">{copy.label}</span>
-      <div ref={containerRef} className="formgong-turnstile-widget" />
+      <div ref={containerRef} className="form-turnstile-widget" />
     </div>
   )
 }

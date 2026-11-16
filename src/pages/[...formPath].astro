@@ -271,7 +271,7 @@ const formPageBackdropCss = sitePageBackdropCss("form-page")
     .form-page--split .form-page__split {
       display: grid;
       grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
-      grid-template-rows: auto auto minmax(0, 1fr);
+      grid-template-rows: auto auto auto;
       column-gap: 3rem;
       row-gap: 1.25rem;
       align-items: start;
@@ -286,29 +286,21 @@ const formPageBackdropCss = sitePageBackdropCss("form-page")
       white-space: nowrap;
     }
 
-    .form-page__split-intro {
-      grid-column: 1;
-      grid-row: 2;
-    }
-
     .form-page__split-visual {
       grid-column: 1;
-      grid-row: 3;
-      position: sticky;
-      top: 2rem;
-      max-height: calc(100dvh - 6rem);
+      grid-row: 2;
       align-self: start;
     }
 
-    .form-page__split-visual img {
-      width: 100%;
-      height: 100%;
-      max-height: calc(100dvh - 6rem);
+    .form-page__split-intro {
+      grid-column: 1;
+      grid-row: 3;
+      align-self: start;
     }
 
     .form-page__split-panel {
       grid-column: 2;
-      grid-row: 3;
+      grid-row: 2 / span 2;
       align-self: start;
       content-visibility: auto;
       contain-intrinsic-size: auto 720px;
@@ -456,6 +448,12 @@ const formPageBackdropCss = sitePageBackdropCss("form-page")
     margin: 0;
     width: 100%;
     opacity: 1;
+  }
+
+  @media (min-width: 56rem) {
+    .form-page__intro :global(.form-page__intro-separator) {
+      display: none;
+    }
   }
 
   .form-page__intro :global(p) {

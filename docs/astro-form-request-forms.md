@@ -4,7 +4,7 @@ How this repo wires **Astro pages**, **React islands**, and **Formgong** so agen
 
 Official Formgong agent notes: [formgong.com/agents.md](https://formgong.com/agents.md). Official HTML setup: [formgong.com/en/docs/html/](https://formgong.com/en/docs/html/). Astro env: [docs.astro.build — environment variables](https://docs.astro.build/en/guides/environment-variables/).
 
-Shared modules live under `src/lib/formgong-*` and `src/components/forms/`.
+Shared modules live under `src/lib/form-*` and `src/components/forms/`.
 
 ## Goal
 
@@ -20,12 +20,12 @@ Shared helpers in this repo:
 
 | Piece | Location |
 | --- | --- |
-| PoW / `_fg_pow` | `src/lib/formgong-browser-signals.ts` |
-| POST + Turnstile utils | `src/lib/formgong-submit.ts` |
-| Thank-you URL + name normalize | `src/lib/formgong-thank-you.ts` |
-| Default UI copy | `src/lib/formgong-copy.ts` |
+| PoW / `_fg_pow` | `src/lib/form-browser-signals.ts` |
+| POST + Turnstile utils | `src/lib/form-submit.ts` |
+| Thank-you URL + name normalize | `src/lib/form-thank-you.ts` |
+| Default UI copy | `src/lib/form-copy.ts` |
 | Turnstile widget | `src/components/forms/turnstile-field.tsx` |
-| Hidden `access_key` / honeypot | `src/components/forms/formgong-hidden-fields.tsx` |
+| Hidden `access_key` / honeypot | `src/components/forms/form-hidden-fields.tsx` |
 | Markdown form configs + schema | `content/forms/*.md`, `src/lib/form-schema.ts` |
 | Generic form renderer | `src/components/forms/configurable-form.tsx` |
 | Composable field types | `src/components/forms/fields/` (`registry.tsx`, per-type components) |
@@ -135,7 +135,7 @@ import Layout from "@/layouts/Layout.astro"
 
 ## 4. Form markup
 
-`ConfigurableForm` already applies this markup. For custom forms, use `FormgongHiddenFields`, set `id={accessKey ? \`fg-${accessKey}\` : undefined}` on the `<form>`, and named inputs for each answer. See `configurable-form.tsx` for capture/bubble submit listener patterns.
+`ConfigurableForm` already applies this markup. For custom forms, use `FormHiddenFields`, set `id={accessKey ? \`fg-${accessKey}\` : undefined}` on the `<form>`, and named inputs for each answer. See `configurable-form.tsx` for capture/bubble submit listener patterns.
 
 **Do not** use `data-fg-success` / `data-fg-error` if you want a thank-you redirect — `fg.js` will not navigate in inline mode.
 
@@ -143,7 +143,7 @@ import Layout from "@/layouts/Layout.astro"
 
 1. **Capture phase** — validate; `preventDefault` when config, per-field rules (registry `validate`), Turnstile, or business rules fail.
 2. **Bubble phase** — `preventDefault`, set loading state, then:
-   - `postFormgongForm(form, { accessKey, beforePost: normalizeFormNameFields })` from `src/lib/formgong-submit.ts`
+   - `postForm(form, { accessKey, beforePost: normalizeFormNameFields })` from `src/lib/form-submit.ts`
    - Success → `window.location.assign(buildThankYouRedirectUrl(...))`
    - Failure → inline `role="alert"`; `resetTurnstileInForm(form)`
 
@@ -151,7 +151,7 @@ While submitting: keep fields in the DOM (`sr-only` wrapper), lock with **`inert
 
 ## 6. Proof-of-work
 
-Call `refreshFormgongPowFieldBeforePost` before `FormData` (handled inside `postFormgongForm`). See `docs/formgong-pow-submit-freeze.md` for a prior main-thread freeze bug — copy `formgong-browser-signals.ts`, do not reimplement bit counting.
+Call `refreshFormPowFieldBeforePost` before `FormData` (handled inside `postForm`). See `docs/form-pow-submit-freeze.md` for a prior main-thread freeze bug — copy `form-browser-signals.ts`, do not reimplement bit counting.
 
 ## 7. New form smoke test
 

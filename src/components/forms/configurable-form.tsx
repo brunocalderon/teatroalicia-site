@@ -6,20 +6,20 @@ import {
   normalizeConfiguredFields,
   validateConfiguredFields,
 } from "@/components/forms/fields/values"
-import { FormgongHiddenFields } from "@/components/forms/formgong-hidden-fields"
+import { FormHiddenFields } from "@/components/forms/form-hidden-fields"
 import {
   TURNSTILE_ENABLED,
   TurnstileField,
 } from "@/components/forms/turnstile-field"
-import { formgongCopy } from "@/lib/formgong-copy"
+import { formCopy } from "@/lib/form-copy"
 import { defaultNameFields } from "@/lib/form-name-fields"
 import type { FormField, FormMessages } from "@/lib/form-schema"
 import {
-  FORMGONG_SUBMIT_ACTION,
+  FORM_SUBMIT_ACTION,
   getTurnstileResponseFromForm,
-  postFormgongForm,
+  postForm,
   resetTurnstileInForm,
-} from "@/lib/formgong-submit"
+} from "@/lib/form-submit"
 import {
   formFieldUrlPrefill,
   trimmedUrlParam,
@@ -38,7 +38,7 @@ import {
 } from "@/lib/promoters"
 import type { MarketingPageTracking } from "@/lib/marketing-page-tracking"
 
-import "@/styles/formgong.css"
+import "@/styles/form.css"
 import "@/styles/global.css"
 
 export type ConfigurableFormProps = {
@@ -58,11 +58,11 @@ function mergeMessages(messages?: FormMessages) {
     submit: messages?.submit ?? "Submit",
     sending: messages?.sending ?? "Sending…",
     formNotConfigured:
-      messages?.formNotConfigured ?? formgongCopy.errors.formNotConfigured,
+      messages?.formNotConfigured ?? formCopy.errors.formNotConfigured,
     turnstileRequired:
-      messages?.turnstileRequired ?? formgongCopy.errors.turnstileRequired,
+      messages?.turnstileRequired ?? formCopy.errors.turnstileRequired,
     connectionFailed:
-      messages?.connectionFailed ?? formgongCopy.errors.connectionFailed,
+      messages?.connectionFailed ?? formCopy.errors.connectionFailed,
   }
 }
 
@@ -84,7 +84,7 @@ export function ConfigurableForm({
     setFormNode(node)
   }, [])
   const [configError, setConfigError] = useState<string | null>(null)
-  const [formgongError, setFormgongError] = useState<string | null>(null)
+  const [formError, setFormError] = useState<string | null>(null)
   const [fieldErrors, setFieldErrors] = useState<Partial<Record<string, string>>>(
     {}
   )
@@ -101,12 +101,12 @@ export function ConfigurableForm({
   const copy = useMemo(() => mergeMessages(messagesProp), [messagesProp])
   const displaySubmitLabel = submitLabel.trim() || copy.submit
 
-  const urlSearchParams = useMemo(() => {
+  const [urlSearchParams] = useState(() => {
     if (typeof window === "undefined") {
       return new URLSearchParams()
     }
     return new URLSearchParams(window.location.search)
-  }, [])
+  })
 
   const hasMounted = useHasMounted()
 
@@ -195,7 +195,7 @@ export function ConfigurableForm({
       if (!TURNSTILE_ENABLED) {
         if (import.meta.env.PROD) {
           event.preventDefault()
-          setConfigError(formgongCopy.turnstile.siteKeyMissing)
+          setConfigError(formCopy.turnstile.siteKeyMissing)
         }
         return
       }
@@ -227,7 +227,7 @@ export function ConfigurableForm({
         return
       }
       event.preventDefault()
-      setFormgongError(null)
+      setFormError(null)
       setIsSubmitting(true)
       activeForm.setAttribute("aria-busy", "true")
 
@@ -241,7 +241,7 @@ export function ConfigurableForm({
           }
           try {
             const submitImports = Promise.all([
-              import("@/lib/formgong-thank-you"),
+              import("@/lib/form-thank-you"),
               marketingTracking
                 ? Promise.all([
                     import("@/lib/marketing-page-tracking"),
@@ -262,7 +262,7 @@ export function ConfigurableForm({
                 })
               )
             }
-            const res = await postFormgongForm(currentForm, {
+            const res = await postForm(currentForm, {
               accessKey,
               beforePost: (target) => {
                 const postParams = new URLSearchParams(window.location.search)
@@ -292,9 +292,9 @@ export function ConfigurableForm({
               )
               return
             }
-            setFormgongError(res?.message ?? copy.connectionFailed)
+            setFormError(res?.message ?? copy.connectionFailed)
           } catch {
-            setFormgongError(copy.connectionFailed)
+            setFormError(copy.connectionFailed)
           } finally {
             if (!navigated) {
               currentForm.removeAttribute("aria-busy")
@@ -329,11 +329,11 @@ export function ConfigurableForm({
       <form
         ref={bindFormRef}
         id={accessKey ? `fg-${accessKey}` : undefined}
-        className="formgong-form"
-        action={FORMGONG_SUBMIT_ACTION}
+        className="form-form"
+        action={FORM_SUBMIT_ACTION}
         method="POST"
       >
-      <FormgongHiddenFields
+      <FormHiddenFields
         accessKey={accessKey}
         lang={lang}
         eventId={eventId}
@@ -347,7 +347,7 @@ export function ConfigurableForm({
         />
       ) : null}
 
-      <fieldset className="formgong-fieldset" inert={isSubmitting}>
+      <fieldset className="form-fieldset" inert={isSubmitting}>
         {visibleFields.map((field) => (
           <ComposableFormField
             key={field.name}
@@ -368,23 +368,23 @@ export function ConfigurableForm({
 
         <TurnstileField />
 
-        {(configError ?? formgongError) ? (
-          <p className="formgong-alert" role="alert">
-            {configError ?? formgongError}
+        {(configError ?? formError) ? (
+          <p className="form-alert" role="alert">
+            {configError ?? formError}
           </p>
         ) : null}
 
         <button
           type="submit"
-          className="formgong-submit"
+          className="form-submit"
           disabled={!accessKey}
         >
-          <span className="formgong-submit__inner">
-            <span className="formgong-submit__label">
+          <span className="form-submit__inner">
+            <span className="form-submit__label">
               {isSubmitting ? copy.sending : displaySubmitLabel}
             </span>
             <svg
-              className="formgong-submit__icon"
+              className="form-submit__icon"
               aria-hidden="true"
               viewBox="0 0 24 24"
               fill="none"

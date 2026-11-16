@@ -39,7 +39,7 @@ export function InstagramField({
       id={`field-${field.name}`}
       name={field.name}
       type="text"
-      className="formgong-input"
+      className="form-input"
       required={field.required}
       placeholder={field.placeholder}
       autoComplete={instagramFieldAutoComplete}

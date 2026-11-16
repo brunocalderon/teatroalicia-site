@@ -2,7 +2,7 @@ import type { FormFieldControlProps } from "@/components/forms/fields/types"
 
 export function CheckboxField({ field, onValueChange }: FormFieldControlProps) {
   return (
-    <label className="formgong-choice">
+    <label className="form-choice">
       <input
         type="checkbox"
         name={field.name}

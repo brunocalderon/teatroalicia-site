@@ -15,7 +15,7 @@ function isFormFieldFocusTarget(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) {
     return false
   }
-  if (target.matches('input[type="hidden"], .formgong-honeypot input')) {
+  if (target.matches('input[type="hidden"], .form-honeypot input')) {
     return false
   }
   return target.matches(

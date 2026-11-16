@@ -10,7 +10,7 @@
   border: 0;
 }
 
-.formgong-honeypot {
+.form-honeypot {
   position: absolute;
   left: -9999px;
   width: 1px;
@@ -18,12 +18,12 @@
   overflow: hidden;
 }
 
-.formgong-turnstile {
+.form-turnstile {
   margin-top: 0.75rem;
   width: 100%;
 }
 
-.formgong-turnstile-placeholder {
+.form-turnstile-placeholder {
   display: flex;
   min-height: 4rem;
   width: 100%;
@@ -37,33 +37,33 @@
   opacity: 0.7;
 }
 
-.formgong-turnstile-widget {
+.form-turnstile-widget {
   min-height: 0;
   width: 100%;
   max-width: 100%;
 }
 
-.formgong-turnstile-widget :where(.cf-turnstile, iframe) {
+.form-turnstile-widget :where(.cf-turnstile, iframe) {
   max-width: 100%;
 }
 
-.formgong-alert,
-.formgong-field-error {
+.form-alert,
+.form-field-error {
   font-size: 0.875rem;
   color: #f87171;
 }
 
-.formgong-field-error {
+.form-field-error {
   margin: 0;
 }
 
-.formgong-input[aria-invalid="true"] {
+.form-input[aria-invalid="true"] {
   border-color: color-mix(in srgb, #f87171 65%, transparent);
 }
 
-.formgong-form {
-  --formgong-control-font-size: 1rem;
-  --formgong-submit-bg: #f6f4f0;
+.form-form {
+  --form-control-font-size: 1rem;
+  --form-submit-bg: #f6f4f0;
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
@@ -72,7 +72,7 @@
   max-width: 100%;
 }
 
-.formgong-fieldset {
+.form-fieldset {
   margin: 0;
   padding: 0;
   border: 0;
@@ -86,22 +86,23 @@
 
 /* Two columns only when the form panel is wide enough (not viewport). */
 @container form-panel (min-width: 28rem) {
-  .formgong-fieldset {
+  .form-fieldset {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-.formgong-field--full,
-.formgong-fieldset > .formgong-alert {
+.form-field--full,
+.form-field--referral,
+.form-fieldset > .form-alert {
   grid-column: 1 / -1;
 }
 
-.formgong-fieldset > .formgong-turnstile,
-.formgong-fieldset > .formgong-submit {
+.form-fieldset > .form-turnstile,
+.form-fieldset > .form-submit {
   grid-column: 1;
 }
 
-.formgong-field {
+.form-field {
   display: flex;
   flex-direction: column;
   gap: 0.375rem;
@@ -109,20 +110,20 @@
   max-width: 100%;
 }
 
-.formgong-label {
+.form-label {
   font-size: 0.875rem;
   font-weight: 500;
   color: #f5f5f5;
 }
 
-.formgong-required {
+.form-required {
   color: #f87171;
 }
 
-.formgong-input,
-.formgong-textarea,
-.formgong-select,
-.formgong-date-trigger {
+.form-input,
+.form-textarea,
+.form-select,
+.form-date-trigger {
   width: 100%;
   max-width: 100%;
   min-width: 0;
@@ -133,66 +134,66 @@
   background: color-mix(in srgb, #f5f5f5 6%, #000);
   color: #f5f5f5;
   font-family: inherit;
-  font-size: var(--formgong-control-font-size);
+  font-size: var(--form-control-font-size);
   line-height: 1.25;
 }
 
-.formgong-input::placeholder,
-.formgong-textarea::placeholder,
-.formgong-phone__number::placeholder {
+.form-input::placeholder,
+.form-textarea::placeholder,
+.form-phone__number::placeholder {
   color: color-mix(in srgb, #f5f5f5 68%, #0f0f0f);
-  font-size: var(--formgong-control-font-size);
+  font-size: var(--form-control-font-size);
   line-height: 1.25;
   opacity: 1;
 }
 
-.formgong-date-trigger {
+.form-date-trigger {
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  min-height: calc(0.625rem * 2 + 1.25 * var(--formgong-control-font-size));
+  min-height: calc(0.625rem * 2 + 1.25 * var(--form-control-font-size));
   cursor: pointer;
   font-weight: 400;
   text-align: left;
 }
 
-.formgong-date-trigger[data-empty="true"] {
+.form-date-trigger[data-empty="true"] {
   color: color-mix(in srgb, #f5f5f5 68%, #0f0f0f);
 }
 
-.formgong-fieldset button.formgong-date-trigger {
+.form-fieldset button.form-date-trigger {
   height: auto;
-  min-height: calc(0.625rem * 2 + 1.25 * var(--formgong-control-font-size));
-  font-size: var(--formgong-control-font-size);
+  min-height: calc(0.625rem * 2 + 1.25 * var(--form-control-font-size));
+  font-size: var(--form-control-font-size);
   font-weight: 400;
   line-height: 1.25;
 }
 
-.formgong-input:focus-visible,
-.formgong-textarea:focus-visible,
-.formgong-select:focus-visible,
-.formgong-date-trigger:focus-visible {
+.form-input:focus-visible,
+.form-textarea:focus-visible,
+.form-select:focus-visible,
+.form-date-trigger:focus-visible {
   outline: 2px solid color-mix(in srgb, #f5f5f5 45%, transparent);
   outline-offset: 2px;
 }
 
-.formgong-textarea {
+.form-textarea {
   resize: vertical;
   min-height: 6rem;
 }
 
-.formgong-input:disabled {
+.form-input:disabled {
   opacity: 0.85;
   cursor: not-allowed;
 }
 
-.formgong-referral-display {
+.form-referral-display {
   display: block;
   width: 100%;
   min-width: 0;
 }
 
-.formgong-radio-group {
+.form-radio-group {
   margin: 0;
   padding: 0;
   border: 0;
@@ -201,7 +202,7 @@
   gap: 0.5rem;
 }
 
-.formgong-choice {
+.form-choice {
   display: flex;
   align-items: flex-start;
   gap: 0.5rem;
@@ -209,27 +210,27 @@
   cursor: pointer;
 }
 
-.formgong-choice input {
+.form-choice input {
   margin-top: 0.2rem;
 }
 
-.formgong-fieldset > button.formgong-submit,
-.formgong-submit {
+.form-fieldset > button.form-submit,
+.form-submit {
   margin-top: 0.5rem;
   justify-self: stretch;
   width: 100%;
   appearance: none;
   padding: 0.65rem 1.25rem;
   border-radius: 0.5rem;
-  border: 1px solid color-mix(in srgb, var(--formgong-submit-bg) 72%, #f5f5f5);
-  background-color: var(--formgong-submit-bg);
+  border: 1px solid color-mix(in srgb, var(--form-submit-bg) 72%, #f5f5f5);
+  background-color: var(--form-submit-bg);
   color: #1a1a1a;
   font: inherit;
   font-weight: 500;
   cursor: pointer;
 }
 
-.formgong-submit__inner {
+.form-submit__inner {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -237,27 +238,27 @@
   width: 100%;
 }
 
-.formgong-submit__icon {
+.form-submit__icon {
   flex-shrink: 0;
   width: 1.25rem;
   height: 1.25rem;
 }
 
-.formgong-submit:disabled {
+.form-submit:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-.formgong-submit:not(:disabled):hover {
-  background-color: color-mix(in srgb, var(--formgong-submit-bg) 90%, #000);
+.form-submit:not(:disabled):hover {
+  background-color: color-mix(in srgb, var(--form-submit-bg) 90%, #000);
 }
 
-.formgong-phone {
+.form-phone {
   position: relative;
   width: 100%;
 }
 
-.formgong-phone__control {
+.form-phone__control {
   display: flex;
   align-items: stretch;
   width: 100%;
@@ -268,16 +269,16 @@
   background: color-mix(in srgb, #f5f5f5 6%, #000);
 }
 
-.formgong-phone__control:focus-within {
+.form-phone__control:focus-within {
   outline: 2px solid color-mix(in srgb, #f5f5f5 45%, transparent);
   outline-offset: 2px;
 }
 
-.formgong-phone__control--invalid {
+.form-phone__control--invalid {
   border-color: color-mix(in srgb, #f87171 65%, transparent);
 }
 
-.formgong-phone__country {
+.form-phone__country {
   display: inline-flex;
   flex-shrink: 0;
   align-items: center;
@@ -289,32 +290,32 @@
   background: transparent;
   color: #f5f5f5;
   font-family: inherit;
-  font-size: var(--formgong-control-font-size);
+  font-size: var(--form-control-font-size);
   line-height: 1.25;
   cursor: pointer;
 }
 
-.formgong-phone__country:hover {
+.form-phone__country:hover {
   background: color-mix(in srgb, #f5f5f5 8%, #000);
 }
 
-.formgong-phone__flag {
+.form-phone__flag {
   font-size: 1.1rem;
   line-height: 1;
 }
 
-.formgong-phone__dial-code {
-  font-size: var(--formgong-control-font-size);
+.form-phone__dial-code {
+  font-size: var(--form-control-font-size);
   font-variant-numeric: tabular-nums;
 }
 
-.formgong-phone__chevron {
+.form-phone__chevron {
   width: 0.875rem;
   height: 0.875rem;
   opacity: 0.65;
 }
 
-.formgong-phone__number {
+.form-phone__number {
   flex: 1 1 auto;
   min-width: 0;
   margin: 0;
@@ -323,15 +324,15 @@
   background: transparent;
   color: #f5f5f5;
   font-family: inherit;
-  font-size: var(--formgong-control-font-size);
+  font-size: var(--form-control-font-size);
   line-height: 1.25;
 }
 
-.formgong-phone__number:focus {
+.form-phone__number:focus {
   outline: none;
 }
 
-.formgong-phone__dropdown {
+.form-phone__dropdown {
   position: absolute;
   z-index: 40;
   top: calc(100% + 0.35rem);
@@ -345,11 +346,11 @@
   box-shadow: 0 8px 24px color-mix(in srgb, #000 55%, transparent);
 }
 
-.formgong-phone__search {
+.form-phone__search {
   margin-bottom: 0.35rem;
 }
 
-.formgong-phone__list {
+.form-phone__list {
   margin: 0;
   padding: 0;
   list-style: none;
@@ -359,11 +360,11 @@
   -ms-overflow-style: none;
 }
 
-.formgong-phone__list::-webkit-scrollbar {
+.form-phone__list::-webkit-scrollbar {
   display: none;
 }
 
-.formgong-phone__option {
+.form-phone__option {
   display: block;
   width: 100%;
   padding: 0.45rem 0.5rem;
@@ -377,16 +378,16 @@
   cursor: pointer;
 }
 
-.formgong-phone__option:hover,
-.formgong-phone__option--active {
+.form-phone__option:hover,
+.form-phone__option--active {
   background: color-mix(in srgb, #f5f5f5 10%, #000);
 }
 
-.formgong-phone__option--selected {
+.form-phone__option--selected {
   font-weight: 500;
 }
 
-.formgong-birthday {
+.form-birthday {
   display: flex;
   align-items: center;
   gap: 0.375rem;
@@ -394,7 +395,7 @@
   min-width: 0;
 }
 
-.formgong-birthday__segment {
+.form-birthday__segment {
   width: auto;
   min-width: 0;
   flex-shrink: 0;
@@ -402,23 +403,23 @@
   padding-inline: 0.5rem;
 }
 
-.formgong-birthday__day,
-.formgong-birthday__month {
+.form-birthday__day,
+.form-birthday__month {
   flex: 0 0 3.25rem;
 }
 
-.formgong-birthday__year {
+.form-birthday__year {
   flex: 1 1 4.75rem;
   min-width: 4.75rem;
   text-align: left;
 }
 
-.formgong-birthday__separator {
+.form-birthday__separator {
   flex-shrink: 0;
   color: color-mix(in srgb, #f5f5f5 55%, transparent);
   user-select: none;
 }
 
-.formgong-birthday--invalid .formgong-birthday__segment {
+.form-birthday--invalid .form-birthday__segment {
   border-color: #f87171;
 }

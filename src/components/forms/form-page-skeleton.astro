@@ -1,7 +1,7 @@
 ---
 import type { FormField, FormFieldType } from "@/lib/form-schema"
 
-import "@/styles/formgong.css"
+import "@/styles/form.css"
 
 interface Props {
   fields: FormField[]
@@ -13,6 +13,7 @@ const { fields, lang = "es" } = Astro.props
 const loadingMessage =
   lang === "es" ? "Cargando formulario…" : "Loading form…"
 
+const hasReferralField = fields.some((field) => field.type === "referral")
 const skeletonFields = fields.filter((field) => field.type !== "referral")
 
 function fieldSpansFullWidth(type: FormFieldType): boolean {
@@ -28,36 +29,51 @@ function fieldSpansFullWidth(type: FormFieldType): boolean {
 
 function skeletonFieldClassName(type: FormFieldType): string {
   return fieldSpansFullWidth(type)
-    ? "formgong-field formgong-field--full"
-    : "formgong-field"
+    ? "form-field form-field--full"
+    : "form-field"
 }
 ---
 
-<div class="formgong-form formgong-form--skeleton" aria-busy="true">
+<div class="form-form form-form--skeleton" aria-busy="true">
   <span class="sr-only">{loadingMessage}</span>
-  <fieldset class="formgong-fieldset" disabled aria-hidden="true">
+  <fieldset class="form-fieldset" disabled aria-hidden="true">
+    {
+      hasReferralField ? (
+        <div
+          class="form-field form-field--referral form-field--full"
+          data-referral-skeleton
+        >
+          <div class="form-referral-display" aria-hidden="true">
+            <div class="form-skeleton form-skeleton--referral-item">
+              <span class="form-skeleton form-skeleton--referral-icon" />
+              <span class="form-skeleton form-skeleton--referral-line" />
+            </div>
+          </div>
+        </div>
+      ) : null
+    }
     {
       skeletonFields.map((field) => (
         <div class={skeletonFieldClassName(field.type)}>
-          <span class="formgong-skeleton formgong-skeleton--label" />
+          <span class="form-skeleton form-skeleton--label" />
           {field.type === "tel" ? (
-            <div class="formgong-skeleton formgong-skeleton--phone">
-              <span class="formgong-skeleton formgong-skeleton--phone-country" />
-              <span class="formgong-skeleton formgong-skeleton--phone-number" />
+            <div class="form-skeleton form-skeleton--phone">
+              <span class="form-skeleton form-skeleton--phone-country" />
+              <span class="form-skeleton form-skeleton--phone-number" />
             </div>
           ) : field.type === "date" ? (
-            <div class="formgong-skeleton formgong-skeleton--birthday">
-              <span class="formgong-skeleton formgong-skeleton--birthday-segment" />
-              <span class="formgong-skeleton formgong-skeleton--birthday-sep" />
-              <span class="formgong-skeleton formgong-skeleton--birthday-segment" />
-              <span class="formgong-skeleton formgong-skeleton--birthday-sep" />
-              <span class="formgong-skeleton formgong-skeleton--birthday-segment formgong-skeleton--birthday-year" />
+            <div class="form-skeleton form-skeleton--birthday">
+              <span class="form-skeleton form-skeleton--birthday-segment" />
+              <span class="form-skeleton form-skeleton--birthday-sep" />
+              <span class="form-skeleton form-skeleton--birthday-segment" />
+              <span class="form-skeleton form-skeleton--birthday-sep" />
+              <span class="form-skeleton form-skeleton--birthday-segment form-skeleton--birthday-year" />
             </div>
           ) : (
             <span
               class:list={[
-                "formgong-skeleton formgong-skeleton--control",
-                field.type === "textarea" && "formgong-skeleton--textarea",
+                "form-skeleton form-skeleton--control",
+                field.type === "textarea" && "form-skeleton--textarea",
               ]}
             />
           )}
@@ -65,26 +81,37 @@ function skeletonFieldClassName(type: FormFieldType): string {
       ))
     }
 
-    <div class="formgong-field formgong-field--full">
-      <span class="formgong-skeleton formgong-skeleton--label formgong-skeleton--turnstile-label" />
-      <div class="formgong-skeleton formgong-skeleton--control formgong-skeleton--turnstile" />
+    <div class="form-field form-field--full">
+      <span class="form-skeleton form-skeleton--label form-skeleton--turnstile-label" />
+      <div class="form-skeleton form-skeleton--control form-skeleton--turnstile" />
     </div>
 
     <button
       type="button"
-      class="formgong-submit formgong-skeleton formgong-skeleton--submit"
+      class="form-submit form-skeleton form-skeleton--submit"
       disabled
       tabindex="-1"
     />
   </fieldset>
 </div>
 
+<script is:inline>
+  (function () {
+    var params = new URLSearchParams(location.search)
+    if (!(params.get("e") || "").trim()) {
+      document.querySelectorAll("[data-referral-skeleton]").forEach(function (el) {
+        el.remove()
+      })
+    }
+  })()
+</script>
+
 <style is:global>
-  .formgong-form--skeleton .formgong-fieldset[disabled] {
+  .form-form--skeleton .form-fieldset[disabled] {
     opacity: 1;
   }
 
-  .formgong-skeleton {
+  .form-skeleton {
     display: block;
     border-radius: 0.5rem;
     background: linear-gradient(
@@ -94,10 +121,10 @@ function skeletonFieldClassName(type: FormFieldType): string {
       color-mix(in srgb, #f5f5f5 8%, #000) 100%
     );
     background-size: 200% 100%;
-    animation: formgong-skeleton-shimmer 1.35s ease-in-out infinite;
+    animation: form-skeleton-shimmer 1.35s ease-in-out infinite;
   }
 
-  @keyframes formgong-skeleton-shimmer {
+  @keyframes form-skeleton-shimmer {
     0% {
       background-position: 100% 0;
     }
@@ -107,34 +134,34 @@ function skeletonFieldClassName(type: FormFieldType): string {
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .formgong-skeleton {
+    .form-skeleton {
       animation: none;
       background: color-mix(in srgb, #f5f5f5 10%, #000);
     }
   }
 
-  .formgong-skeleton--label {
+  .form-skeleton--label {
     width: 42%;
     max-width: 9rem;
     height: 0.75rem;
     margin-bottom: 0.375rem;
   }
 
-  .formgong-skeleton--turnstile-label {
+  .form-skeleton--turnstile-label {
     width: 7rem;
     max-width: 55%;
   }
 
-  .formgong-skeleton--control {
+  .form-skeleton--control {
     width: 100%;
-    height: calc(0.625rem * 2 + 1.25 * var(--formgong-control-font-size, 1rem));
+    height: calc(0.625rem * 2 + 1.25 * var(--form-control-font-size, 1rem));
   }
 
-  .formgong-skeleton--textarea {
+  .form-skeleton--textarea {
     height: 6rem;
   }
 
-  .formgong-skeleton--phone {
+  .form-skeleton--phone {
     display: flex;
     gap: 0;
     overflow: hidden;
@@ -143,11 +170,11 @@ function skeletonFieldClassName(type: FormFieldType): string {
     animation: none;
   }
 
-  .formgong-skeleton--phone-country,
-  .formgong-skeleton--phone-number {
-    height: calc(0.625rem * 2 + 1.25 * var(--formgong-control-font-size, 1rem));
+  .form-skeleton--phone-country,
+  .form-skeleton--phone-number {
+    height: calc(0.625rem * 2 + 1.25 * var(--form-control-font-size, 1rem));
     border-radius: 0;
-    animation: formgong-skeleton-shimmer 1.35s ease-in-out infinite;
+    animation: form-skeleton-shimmer 1.35s ease-in-out infinite;
     background: linear-gradient(
       90deg,
       color-mix(in srgb, #f5f5f5 8%, #000) 0%,
@@ -157,17 +184,17 @@ function skeletonFieldClassName(type: FormFieldType): string {
     background-size: 200% 100%;
   }
 
-  .formgong-skeleton--phone-country {
+  .form-skeleton--phone-country {
     flex: 0 0 5.5rem;
     border-right: 1px solid color-mix(in srgb, #f5f5f5 14%, transparent);
   }
 
-  .formgong-skeleton--phone-number {
+  .form-skeleton--phone-number {
     flex: 1 1 auto;
     min-width: 0;
   }
 
-  .formgong-skeleton--birthday {
+  .form-skeleton--birthday {
     display: flex;
     align-items: center;
     gap: 0.375rem;
@@ -175,17 +202,17 @@ function skeletonFieldClassName(type: FormFieldType): string {
     background: transparent;
   }
 
-  .formgong-skeleton--birthday-segment {
+  .form-skeleton--birthday-segment {
     flex: 0 0 3.25rem;
-    height: calc(0.625rem * 2 + 1.25 * var(--formgong-control-font-size, 1rem));
+    height: calc(0.625rem * 2 + 1.25 * var(--form-control-font-size, 1rem));
   }
 
-  .formgong-skeleton--birthday-year {
+  .form-skeleton--birthday-year {
     flex: 1 1 4.75rem;
     min-width: 4.75rem;
   }
 
-  .formgong-skeleton--birthday-sep {
+  .form-skeleton--birthday-sep {
     width: 0.35rem;
     height: 0.75rem;
     border-radius: 0.15rem;
@@ -193,17 +220,46 @@ function skeletonFieldClassName(type: FormFieldType): string {
     animation: none;
   }
 
-  .formgong-skeleton--turnstile {
+  .form-skeleton--turnstile {
     min-height: 4rem;
     height: 4rem;
   }
 
-  .formgong-skeleton--submit {
+  .form-skeleton--submit {
     width: 100%;
     height: calc(0.65rem * 2 + 1.25rem * 1.25);
     border: 0;
     margin-top: 0.5rem;
     opacity: 0.65;
     cursor: default;
+  }
+
+  /* Match shadcn Item outline sm (~41px) for guest-pass referral row */
+  .form-skeleton--referral-item {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 2.5625rem;
+    padding: 0.625rem 0.75rem;
+    border: 1px solid color-mix(in srgb, #f5f5f5 14%, transparent);
+    border-radius: 0.5rem;
+    animation: none;
+    background: transparent;
+  }
+
+  .form-skeleton--referral-icon {
+    flex-shrink: 0;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 9999px;
+  }
+
+  .form-skeleton--referral-line {
+    flex: 0 1 auto;
+    width: 12rem;
+    max-width: 55%;
+    height: 1rem;
   }
 </style>
