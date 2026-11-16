@@ -9,7 +9,7 @@ const livestackHref = "https://withlivestack.com?ref=teatroalicia"
   class="form-page__livestack"
   target="_blank"
   rel="noopener noreferrer"
-  aria-label="Con la tecnología de Livestack"
+  aria-label="Powered by Livestack"
 >
   <img
     src={livestackLogoUrl}
@@ -20,7 +20,7 @@ const livestackHref = "https://withlivestack.com?ref=teatroalicia"
     fetchpriority="low"
     decoding="async"
   />
-  <span class="form-page__livestack-label" aria-hidden="true">Con la tecnología de Livestack</span>
+  <span class="form-page__livestack-label" aria-hidden="true">Powered by Livestack</span>
 </a>
 
 <style>
@@ -56,6 +56,20 @@ const livestackHref = "https://withlivestack.com?ref=teatroalicia"
     width: auto;
     opacity: 0.88;
     transition: opacity 0.15s ease;
+  }
+
+  @media (max-width: 55.99rem) {
+    .form-page__livestack {
+      padding-top: 5.25rem;
+    }
+
+    .form-page__livestack img {
+      height: 0.75rem;
+    }
+
+    .form-page__livestack-label {
+      font-size: 0.625rem;
+    }
   }
 
   .form-page__livestack:hover img,

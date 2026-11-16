@@ -1,0 +1,22 @@
+---
+import type { ResourceHintOrigin } from "@/lib/third-party-resource-hints"
+
+interface Props {
+	origins: readonly ResourceHintOrigin[];
+}
+
+const { origins } = Astro.props;
+---
+
+{
+	origins.map((origin) => (
+		<>
+			<link
+				rel="preconnect"
+				href={origin.href}
+				{...(origin.crossOrigin ? { crossorigin: "anonymous" } : {})}
+			/>
+			<link rel="dns-prefetch" href={origin.href} />
+		</>
+	))
+}

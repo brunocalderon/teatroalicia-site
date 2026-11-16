@@ -1,8 +1,13 @@
 ---
 import MarketingHead from '@/components/pixels/MarketingHead.astro';
+import ResourceHints from '@/components/resource-hints.astro';
 import SchemaOrgJsonLd from '@/components/schema-org-json-ld.astro';
 import { FORM_PAGE_BACKGROUND_HD_SOURCES } from '@/lib/form-page-background';
 import type { MarketingPageTracking } from '@/lib/marketing-page-tracking';
+import {
+	formResourceHintOrigins,
+	marketingResourceHintOrigins,
+} from '@/lib/third-party-resource-hints';
 
 interface Props {
 	title?: string;
@@ -54,16 +59,10 @@ const loadHdBackdropAfterPageLoad =
 		<link rel="ard" href="/.well-known/ard.json" type="application/ard+json" />
 		<title>{title}</title>
 		{description ? <meta name="description" content={description} /> : null}
-		{
-			formThirdPartyHints ? (
-				<>
-					<link rel="preconnect" href="https://challenges.cloudflare.com" />
-					<link rel="preconnect" href="https://formgong.com" />
-					<link rel="dns-prefetch" href="https://challenges.cloudflare.com" />
-					<link rel="dns-prefetch" href="https://formgong.com" />
-				</>
-			) : null
-		}
+		<ResourceHints origins={marketingResourceHintOrigins} />
+		{formThirdPartyHints ? (
+			<ResourceHints origins={formResourceHintOrigins} />
+		) : null}
 		{
 			lcpImage ? (
 				<link
