@@ -652,7 +652,8 @@ body:has(.home-page .home-hero__carousel)::before {
 /* —— Venue (50/50 viewport split, copy aligned to 1280px grid) —— */
 
 .home-band--venue {
-  padding: 0;
+  padding-top: 4rem;
+  padding-bottom: 0;
 }
 
 .home-venue {
