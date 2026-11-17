@@ -71,10 +71,10 @@ export function buildArdManifest(
       type: "text/plain",
       url: absoluteUrl(origin, "/llms.txt"),
       description:
-        "Curated map of public Teatro Alicia pages and invitation forms for language models.",
+        "Curated discovery index for the Teatro Alicia public site (home and crawler rules).",
       representativeQueries: [
         "What pages does the Teatro Alicia site publish?",
-        "Where are event invitation forms listed?",
+        "Where is the Teatro Alicia llms.txt?",
         "Summarize Teatro Alicia public routes for agents.",
       ],
       tags: ["llms.txt", "discovery", "documentation"],
