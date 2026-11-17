@@ -22,7 +22,7 @@ export const venueConfig: VenueConfig = venueConfigSchema.parse({
     "Arriendo de espacios para eventos",
   ],
   logoPath: "/logo.svg",
-  imagePath: "/this-is-alicia.jpg",
+  imagePath: "/images/this-is-alicia.jpg",
   schemaTypes: [
     "EventVenue",
     "MusicVenue",

@@ -5,34 +5,24 @@ import type { VenueConfig } from "@/lib/venue-schema"
 interface Props {
   venue: VenueConfig
   home: HomeContent
+  /** CSS `background-image` values (optimized WebP) per carousel slide. */
+  slideBackgrounds: string[]
 }
 
-const { venue, home } = Astro.props
+const { venue, home, slideBackgrounds } = Astro.props
 const slogan = home.hero.slogan?.trim()
 ---
 
 <section class="home-hero" aria-labelledby="home-hero-title">
   <div class="home-hero__carousel" aria-hidden="true">
-    <div
-      class="home-hero__slide"
-      style="--home-hero-image: url('/alicia-home-1.jpg')"
-    >
-    </div>
-    <div
-      class="home-hero__slide"
-      style="--home-hero-image: url('/alicia-home-2.jpg')"
-    >
-    </div>
-    <div
-      class="home-hero__slide"
-      style="--home-hero-image: url('/alicia-home-3.jpg')"
-    >
-    </div>
-    <div
-      class="home-hero__slide"
-      style="--home-hero-image: url('/alicia-home-4.jpg')"
-    >
-    </div>
+    {
+      slideBackgrounds.map((backgroundImage) => (
+        <div
+          class="home-hero__slide"
+          style={`--home-hero-image: ${backgroundImage}`}
+        />
+      ))
+    }
   </div>
   <div class="home-hero__scrim" aria-hidden="true"></div>
   <div class="home-hero__inner">

@@ -652,7 +652,7 @@ body:has(.home-page .home-hero__carousel)::before {
 /* —— Venue (50/50 viewport split, copy aligned to 1280px grid) —— */
 
 .home-band--venue {
-  padding-top: 4rem;
+  padding-top: 0;
   padding-bottom: 0;
 }
 
@@ -848,6 +848,10 @@ body:has(.home-page .home-hero__carousel)::before {
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--home-fg);
+}
+
+.home-band--offerings {
+  padding-top: 0;
 }
 
 .home-band--offerings .home-band__inner {

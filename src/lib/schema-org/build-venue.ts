@@ -69,11 +69,19 @@ function buildContactPoint(config: VenueConfig): JsonLdObject | undefined {
   return point
 }
 
-export function buildVenueNode(config: VenueConfig): JsonLdObject {
+export type BuildVenueNodeOptions = {
+  /** Absolute image URL when the venue photo is emitted via `astro:assets`. */
+  imageUrl?: string
+}
+
+export function buildVenueNode(
+  config: VenueConfig,
+  options?: BuildVenueNodeOptions,
+): JsonLdObject {
   const logoUrl = canonicalAssetUrl(config.logoPath)
-  const imageUrl = config.imagePath
-    ? canonicalAssetUrl(config.imagePath)
-    : logoUrl
+  const imageUrl =
+    options?.imageUrl ??
+    (config.imagePath ? canonicalAssetUrl(config.imagePath) : logoUrl)
 
   const node: JsonLdObject = {
     "@type": config.schemaTypes,

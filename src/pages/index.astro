@@ -12,11 +12,17 @@ import Layout from "@/layouts/Layout.astro"
 import { resolveEventInvitationPath } from "@/lib/event-schema"
 import { formatEventSchedule } from "@/lib/format-event-display"
 import { buildHomeEventFeatureImage } from "@/lib/home-event-feature-image"
+import {
+  buildHomeHeroSlideBackground,
+  buildHomeVenuePhotoImage,
+  HOME_HERO_SLIDE_PATHS,
+} from "@/lib/home-marketing-image"
 import { getUpcomingEventEntries } from "@/lib/home-upcoming-events"
 import {
   hasBundledFormEventImage,
   resolveFormEventImageSource,
 } from "@/lib/form-event-image"
+import { resolveVenuePrimaryImageAbsoluteUrl } from "@/lib/venue-primary-image"
 import {
   appendHomeCarteleraUtm,
   homeCarteleraEventSlug,
@@ -38,6 +44,22 @@ const pageDescription = homeContent.meta.description
 
 const events = await getCollection("events")
 const upcomingEntries = getUpcomingEventEntries(events)
+
+const heroSlideBackgrounds = await Promise.all(
+  HOME_HERO_SLIDE_PATHS.map((path) =>
+    buildHomeHeroSlideBackground(resolveFormEventImageSource(path)),
+  ),
+)
+
+let venuePhoto: Awaited<ReturnType<typeof buildHomeVenuePhotoImage>> | undefined
+const venueImagePath = venueConfig.imagePath?.trim()
+if (venueImagePath && hasBundledFormEventImage(venueImagePath)) {
+  venuePhoto = await buildHomeVenuePhotoImage(
+    resolveFormEventImageSource(venueImagePath),
+  )
+}
+
+const venueImageUrl = await resolveVenuePrimaryImageAbsoluteUrl()
 
 const eventImageUrlBySlug: Record<string, string | undefined> = {}
 const eventFeatures: HomeEventFeatureData[] = []
@@ -88,6 +110,7 @@ const homeJsonLd = buildHomePageJsonLd({
   pageDescription: venueConfig.description,
   upcomingEvents: events.map((entry) => ({ id: entry.id, data: entry.data })),
   eventImageUrlBySlug,
+  venueImageUrl,
 })
 
 const instagramUrl = instagramUrlFromVenue(venueConfig)
@@ -103,13 +126,21 @@ const instagramUrl = instagramUrlFromVenue(venueConfig)
 >
   <HomeHeader />
   <main class="home-page">
-    <HomeHero venue={venueConfig} home={homeContent} />
+    <HomeHero
+      venue={venueConfig}
+      home={homeContent}
+      slideBackgrounds={heroSlideBackgrounds}
+    />
     <HomeEventsSection
       events={eventFeatures}
       home={homeContent}
       instagramUrl={instagramUrl}
     />
-    <HomeVenueSection venue={venueConfig} home={homeContent} />
+    <HomeVenueSection
+      venue={venueConfig}
+      home={homeContent}
+      venuePhoto={venuePhoto}
+    />
     <HomeOfferingsGrid venue={venueConfig} home={homeContent} />
     <HomeContactFooter venue={venueConfig} />
   </main>

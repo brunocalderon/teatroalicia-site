@@ -26,6 +26,7 @@ import {
 import type { FormEntryData } from "@/lib/form-schema"
 import { CANONICAL_SITE_ORIGIN } from "@/lib/schema-org/canonical-origin"
 import { buildInvitationPageJsonLd } from "@/lib/schema-org/build-invitation-page-json-ld"
+import { resolveVenuePrimaryImageAbsoluteUrl } from "@/lib/venue-primary-image"
 import { venueConfig } from "../../content/venue"
 import { sitePageBackdropCss } from "@/lib/site-page-backdrop-css"
 import { MARKETING_ENGAGE_MS } from "astro:env/client"
@@ -100,12 +101,14 @@ const formDescription = formMetaDescription(data)
 const eventImageUrl = formLcpImage
   ? new URL(formLcpImage.src, CANONICAL_SITE_ORIGIN).href
   : undefined
+const venueImageUrl = await resolveVenuePrimaryImageAbsoluteUrl()
 const formJsonLd = buildInvitationPageJsonLd({
   venue: venueConfig,
   data,
   pageTitle: data.title,
   pageDescription: formDescription,
   imageUrl: eventImageUrl,
+  venueImageUrl,
 })
 
 const formPageBackdropCss = sitePageBackdropCss("form-page")

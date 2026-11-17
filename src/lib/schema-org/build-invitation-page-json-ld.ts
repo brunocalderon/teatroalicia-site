@@ -16,6 +16,7 @@ export type InvitationPageJsonLdInput = {
   pageTitle: string
   pageDescription?: string
   imageUrl?: string
+  venueImageUrl?: string
 }
 
 /**
@@ -39,7 +40,7 @@ export function buildInvitationPageJsonLd(
 
   const nodes = [
     buildWebsiteNode(input.venue),
-    buildVenueNode(input.venue),
+    buildVenueNode(input.venue, { imageUrl: input.venueImageUrl }),
     built.event,
     ...built.organizers.filter(
       (node) => (node["@id"] as string) !== VENUE_ENTITY_ID,

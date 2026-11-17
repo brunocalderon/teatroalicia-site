@@ -27,6 +27,8 @@ export type HomePageJsonLdInput = {
   upcomingEvents?: Array<{ id: string; data: EventEntryData }>
   /** Optional absolute image URLs keyed by event `slug`. */
   eventImageUrlBySlug?: Record<string, string | undefined>
+  /** Optimized venue marketing photo (absolute URL). */
+  venueImageUrl?: string
   now?: Date
 }
 
@@ -65,7 +67,7 @@ export function buildHomePageJsonLd(
   }
 
   const nodes = [
-    buildVenueNode(venue),
+    buildVenueNode(venue, { imageUrl: input.venueImageUrl }),
     buildWebsiteNode(venue),
     buildWebPageNode({
       "@id": HOME_WEBPAGE_ENTITY_ID,

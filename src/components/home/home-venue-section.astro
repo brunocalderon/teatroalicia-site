@@ -1,16 +1,18 @@
 ---
 import { formatHomeContentTemplate } from "@/lib/home-content-format"
 import type { HomeContent } from "@/lib/home-content-schema"
+import type { HomeVenuePhotoImage } from "@/lib/home-marketing-image"
 import type { VenueConfig } from "@/lib/venue-schema"
 
 interface Props {
   venue: VenueConfig
   home: HomeContent
+  venuePhoto?: HomeVenuePhotoImage
 }
 
-const { venue, home } = Astro.props
+const { venue, home, venuePhoto } = Astro.props
 const capacity = venue.maximumAttendeeCapacity
-const venueImage = venue.imagePath?.trim() ?? "/background.jpg"
+const fallbackVenueImage = venue.imagePath?.trim() ?? "/background.jpg"
 const photoAlt = formatHomeContentTemplate(home.venueSection.photoAlt, {
   name: venue.name,
 })
@@ -20,15 +22,31 @@ const photoAlt = formatHomeContentTemplate(home.venueSection.photoAlt, {
   <hr class="home-rule" />
   <div class="home-venue">
     <div class="home-venue__media">
-      <img
-        class="home-venue__photo"
-        src={venueImage}
-        alt={photoAlt}
-        width="1200"
-        height="800"
-        loading="lazy"
-        decoding="async"
-      />
+      {
+        venuePhoto ? (
+          <img
+            class="home-venue__photo"
+            src={venuePhoto.src}
+            srcset={venuePhoto.srcSet}
+            sizes={venuePhoto.sizes}
+            alt={photoAlt}
+            width={venuePhoto.width}
+            height={venuePhoto.height}
+            loading="lazy"
+            decoding="async"
+          />
+        ) : (
+          <img
+            class="home-venue__photo"
+            src={fallbackVenueImage}
+            alt={photoAlt}
+            width="1200"
+            height="800"
+            loading="lazy"
+            decoding="async"
+          />
+        )
+      }
     </div>
     <div class="home-venue__copy">
       <div class="home-venue__copy-inner">
