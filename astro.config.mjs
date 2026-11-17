@@ -74,6 +74,13 @@ export default defineConfig({
         optional: true,
         default: "",
       }),
+      /** Instagram handle (optional) for the follow button on form thank-you pages. */
+      THANK_YOU_INSTAGRAM_USERNAME: envField.string({
+        context: "server",
+        access: "public",
+        optional: true,
+        default: "",
+      }),
     },
   },
 

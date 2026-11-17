@@ -18,13 +18,13 @@ messages:
   turnstileRequired: Completa la verificación de seguridad antes de enviar.
   connectionFailed: No pudimos enviar tu solicitud. Intenta de nuevo.
   formBody: |
-    _**Alicia Privé**_
+    _**Alicia Prime**_
 
     Completa tus datos para solicitar tu acceso de cortesía y ser parte de una noche especial.
 
     Los accesos son limitados.
   thankYouBody: |
-    Bienvenido a _**Alicia Privé**_. Estás listo para vivir una noche inolvidable.
+    Bienvenido a _**Alicia Prime**_. Estás listo para vivir una noche inolvidable.
 
     Recibirás tus accesos de cortesía por correo electrónico dentro de las próximas horas.
 fields:
