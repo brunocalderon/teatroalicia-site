@@ -2,13 +2,16 @@
 import HomeEventFeature, {
   type HomeEventFeatureData,
 } from "@/components/home/home-event-feature.astro"
+import { Separator } from "@/components/ui/separator"
+import type { HomeContent } from "@/lib/home-content-schema"
 
 interface Props {
   events: HomeEventFeatureData[]
+  home: HomeContent
   instagramUrl?: string
 }
 
-const { events, instagramUrl } = Astro.props
+const { events, home, instagramUrl } = Astro.props
 ---
 
 {
@@ -19,9 +22,16 @@ const { events, instagramUrl } = Astro.props
       aria-labelledby="home-featured-title"
     >
       <div class="home-featured__inner">
-        <h2 id="home-featured-title" class="home-featured__heading">Cartelera</h2>
+        <h2 id="home-featured-title" class="home-featured__heading">
+          {home.cartelera.heading}
+        </h2>
         {events.map((event, index) => (
-          <HomeEventFeature event={{ ...event, reversed: index % 2 === 1 }} />
+          <>
+            <HomeEventFeature event={{ ...event, reversed: index % 2 === 1 }} />
+            {index < events.length - 1 ? (
+              <Separator className="home-featured__event-separator" />
+            ) : null}
+          </>
         ))}
       </div>
     </section>
@@ -34,12 +44,9 @@ const { events, instagramUrl } = Astro.props
       <hr class="home-rule" />
       <div class="home-band__inner">
         <h2 id="home-events-empty" class="home-band__title">
-          Próximos eventos
+          {home.cartelera.emptyTitle}
         </h2>
-        <p class="home-band__lead">
-          Aún no hay eventos publicados en el sitio. Sigue la programación en
-          nuestras redes.
-        </p>
+        <p class="home-band__lead">{home.cartelera.emptyLead}</p>
         {instagramUrl ? (
           <a
             class="home-btn home-btn--outline"
@@ -47,10 +54,30 @@ const { events, instagramUrl } = Astro.props
             rel="noopener noreferrer"
             target="_blank"
           >
-            Ver Instagram
+            {home.cartelera.emptyInstagramCta}
           </a>
         ) : null}
       </div>
     </section>
   )
 }
+
+<style>
+  .home-featured__inner :global(.home-featured__event-separator) {
+    display: block;
+    flex-shrink: 0;
+    width: min(17.5rem, 78vw);
+    max-width: calc(100% - 2 * var(--home-gutter));
+    height: 1px;
+    margin: 0.25rem auto;
+    border: 0;
+    background: var(--home-line);
+    opacity: 1;
+  }
+
+  @media (min-width: 56rem) {
+    .home-featured__inner :global(.home-featured__event-separator) {
+      display: none;
+    }
+  }
+</style>

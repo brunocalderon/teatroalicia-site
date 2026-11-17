@@ -1,42 +1,46 @@
 ---
+import { formatHomeContentTemplate } from "@/lib/home-content-format"
+import type { HomeContent } from "@/lib/home-content-schema"
 import type { VenueConfig } from "@/lib/venue-schema"
 
 interface Props {
   venue: VenueConfig
+  home: HomeContent
 }
 
-const { venue } = Astro.props
+const { venue, home } = Astro.props
 const { amenities, contact, googleMapsUrl, address } = venue
 const contactFormHref = contact.contactFormUrl
   ? new URL(contact.contactFormUrl).pathname
   : "/contacto"
+const mapsBody = formatHomeContentTemplate(home.offerings.maps.body, {
+  streetAddress: address.streetAddress,
+  addressLocality: address.addressLocality,
+})
+const { offerings } = home
 ---
 
 <section class="home-band home-band--offerings" aria-labelledby="home-offerings-title">
   <hr class="home-rule" />
   <div class="home-band__inner home-band__inner--wide">
-    <p class="home-band__kicker">Servicios</p>
+    <p class="home-band__kicker">{home.offeringsSection.kicker}</p>
     <h2 id="home-offerings-title" class="home-band__title home-band__title--display">
-      Vive Teatro Alicia
+      {home.offeringsSection.title}
     </h2>
     <div class="home-offerings">
       <article class="home-offering">
-        <p class="home-offering__badge">Experiencia</p>
-        <h3 class="home-offering__title">Música en vivo</h3>
-        <p class="home-offering__body">
-          Conciertos, DJ sets y noches especiales pensadas para el audio y la
-          energía del público.
-        </p>
+        <p class="home-offering__badge">{offerings.liveMusic.badge}</p>
+        <h3 class="home-offering__title">{offerings.liveMusic.title}</h3>
+        <p class="home-offering__body">{offerings.liveMusic.body}</p>
       </article>
 
       {
         amenities.barFood ? (
           <article class="home-offering">
-            <p class="home-offering__badge">En el lugar</p>
-            <h3 class="home-offering__title">Bar y comida</h3>
+            <p class="home-offering__badge">{offerings.barFood.badge}</p>
+            <h3 class="home-offering__title">{offerings.barFood.title}</h3>
             <p class="home-offering__body">
-              {amenities.barFoodDescription ??
-                "Bar y servicio de comida durante los eventos."}
+              {amenities.barFoodDescription ?? offerings.barFood.bodyFallback}
             </p>
           </article>
         ) : null
@@ -48,19 +52,17 @@ const contactFormHref = contact.contactFormUrl
         rel="noopener noreferrer"
         target="_blank"
       >
-        <p class="home-offering__badge">Ubicación</p>
-        <h3 class="home-offering__title">Cómo llegar</h3>
-        <p class="home-offering__body">
-          {address.streetAddress}, {address.addressLocality}.
-        </p>
-        <span class="home-offering__cta">Abrir en Maps</span>
+        <p class="home-offering__badge">{offerings.maps.badge}</p>
+        <h3 class="home-offering__title">{offerings.maps.title}</h3>
+        <p class="home-offering__body">{mapsBody}</p>
+        <span class="home-offering__cta">{offerings.maps.cta}</span>
       </a>
 
       {
         amenities.cloakroom || amenities.parking ? (
           <article class="home-offering">
-            <p class="home-offering__badge">Comodidades</p>
-            <h3 class="home-offering__title">Servicios del recinto</h3>
+            <p class="home-offering__badge">{offerings.amenities.badge}</p>
+            <h3 class="home-offering__title">{offerings.amenities.title}</h3>
             <p class="home-offering__body">
               {[
                 amenities.cloakroom ? "Guardarropía" : null,
@@ -76,21 +78,17 @@ const contactFormHref = contact.contactFormUrl
       }
 
       <a class="home-offering home-offering--link" href={contactFormHref}>
-        <p class="home-offering__badge">Corporativo</p>
-        <h3 class="home-offering__title">Eventos corporativos</h3>
-        <p class="home-offering__body">
-          Activaciones y lanzamientos con un espacio versátil en Lo Barnechea.
-        </p>
-        <span class="home-offering__cta">Escríbenos</span>
+        <p class="home-offering__badge">{offerings.corporate.badge}</p>
+        <h3 class="home-offering__title">{offerings.corporate.title}</h3>
+        <p class="home-offering__body">{offerings.corporate.body}</p>
+        <span class="home-offering__cta">{offerings.corporate.cta}</span>
       </a>
 
       <a class="home-offering home-offering--link" href={contactFormHref}>
-        <p class="home-offering__badge">Privado</p>
-        <h3 class="home-offering__title">Eventos privados</h3>
-        <p class="home-offering__body">
-          Fiestas y celebraciones a medida con bar y servicios del recinto.
-        </p>
-        <span class="home-offering__cta">Consultar</span>
+        <p class="home-offering__badge">{offerings.private.badge}</p>
+        <h3 class="home-offering__title">{offerings.private.title}</h3>
+        <p class="home-offering__body">{offerings.private.body}</p>
+        <span class="home-offering__cta">{offerings.private.cta}</span>
       </a>
     </div>
   </div>

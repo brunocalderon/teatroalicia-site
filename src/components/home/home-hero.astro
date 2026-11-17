@@ -1,13 +1,14 @@
 ---
+import type { HomeContent } from "@/lib/home-content-schema"
 import type { VenueConfig } from "@/lib/venue-schema"
 
 interface Props {
   venue: VenueConfig
+  home: HomeContent
 }
 
-const { venue } = Astro.props
-const slogan = venue.slogan?.trim()
-const locality = `${venue.address.addressLocality}, Chile`
+const { venue, home } = Astro.props
+const slogan = home.hero.slogan?.trim()
 ---
 
 <section class="home-hero" aria-labelledby="home-hero-title">
@@ -35,11 +36,11 @@ const locality = `${venue.address.addressLocality}, Chile`
   </div>
   <div class="home-hero__scrim" aria-hidden="true"></div>
   <div class="home-hero__inner">
-    <p class="home-hero__kicker">{locality}</p>
+    <p class="home-hero__kicker">{home.hero.kicker}</p>
     <h1 id="home-hero-title" class="home-hero__title">
       {venue.name}
     </h1>
     {slogan ? <p class="home-hero__slogan">{slogan}</p> : null}
-    <p class="home-hero__lead">{venue.description}</p>
+    <p class="home-hero__lead">{home.hero.lead}</p>
   </div>
 </section>

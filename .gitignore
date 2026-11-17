@@ -1,6 +1,9 @@
 # build output
 dist/
 
+# Airtable browse images (fetched at build / content sync)
+public/airtable-assets/
+
 # lighthouse vitest reports
 tests/lighthouse/reports/
 

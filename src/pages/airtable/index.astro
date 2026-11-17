@@ -1,0 +1,32 @@
+---
+import Layout from "@/layouts/Layout.astro"
+import { loadAirtableBrowseRecords } from "@/lib/load-airtable-browse-records"
+import { sitePageBackdropCss } from "@/lib/site-page-backdrop-css"
+
+import "@/styles/airtable-browse.css"
+
+const records = await loadAirtableBrowseRecords()
+
+const backdropCss = sitePageBackdropCss("airtable-browse")
+const pageTitle = "Airtable — Teatro Alicia"
+---
+
+<Layout title={pageTitle} lang="es" deferredSiteBackdrop>
+  <main class="airtable-browse">
+    <h1 class="airtable-browse__title">Airtable</h1>
+    {records.length === 0 ? (
+      <p class="airtable-browse__empty">No hay registros cargados.</p>
+    ) : (
+      <ul class="airtable-browse__list">
+        {records.map((record) => (
+          <li>
+            <a href={`/airtable/${record.slug}`}>{record.slug}</a>
+          </li>
+        ))}
+      </ul>
+    )}
+    <a class="airtable-browse__back" href="/">Volver al inicio</a>
+  </main>
+</Layout>
+
+<style is:global set:html={backdropCss}></style>

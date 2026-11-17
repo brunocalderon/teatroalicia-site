@@ -4,7 +4,7 @@ Structured data is generated at build time and embedded as `<script type="applic
 
 ## Venue data
 
-Edit [`content/venue.ts`](../content/venue.ts), validated by [`src/lib/venue-schema.ts`](../src/lib/venue-schema.ts).
+Edit [`content/venue.ts`](../content/venue.ts), validated by [`src/lib/venue-schema.ts`](../src/lib/venue-schema.ts). Homepage marketing copy lives separately in [`content/home.ts`](../content/home.ts) (`src/lib/home-content-schema.ts`); JSON-LD for `/` uses venue facts only.
 
 Persistent venue `@id`: `https://teatroalicia.com/#teatro-alicia`
 

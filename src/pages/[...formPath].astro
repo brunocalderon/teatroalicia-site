@@ -4,7 +4,7 @@ import { getCollection, getEntry, render } from "astro:content"
 import { renderFormBodyMarkdown } from "@/lib/render-form-body-markdown"
 
 import { ConfigurableForm } from "@/components/forms/configurable-form"
-import FormLivestackBrand from "@/components/forms/form-livestack-brand.astro"
+import LivestackBrand from "@/components/livestack-brand.astro"
 import FormPageSkeleton from "@/components/forms/form-page-skeleton.astro"
 import SiteBrand from "@/components/site-brand.astro"
 import FormPageIntro from "@/components/forms/form-page-intro.astro"
@@ -232,7 +232,7 @@ const showHomeNav = data.path === "/contacto"
           </div>
         </div>
       </div>
-      {data.livestackFooter ? <FormLivestackBrand /> : null}
+      {data.livestackFooter ? <LivestackBrand /> : null}
     </main>
     <script
       is:inline

@@ -27,15 +27,14 @@ import { CANONICAL_SITE_ORIGIN } from "@/lib/schema-org/canonical-origin"
 import { buildHomePageJsonLd } from "@/lib/schema-org/build-home-json-ld"
 import { sitePageBackdropCss } from "@/lib/site-page-backdrop-css"
 import { instagramUrlFromVenue } from "@/lib/venue-social"
+import { homeContent } from "../../content/home"
 import { venueConfig } from "../../content/venue"
 
 import "@/styles/home.css"
 
 const homePageBackdropCss = sitePageBackdropCss("home-page")
-const homeDescription = venueConfig.description
-const pageTitle = venueConfig.slogan
-  ? `Teatro Alicia — ${venueConfig.slogan}`
-  : "Teatro Alicia"
+const pageTitle = homeContent.meta.title
+const pageDescription = homeContent.meta.description
 
 const events = await getCollection("events")
 const upcomingEntries = getUpcomingEventEntries(events)
@@ -85,8 +84,8 @@ for (const entry of upcomingEntries) {
 
 const homeJsonLd = buildHomePageJsonLd({
   venue: venueConfig,
-  pageTitle: "Teatro Alicia",
-  pageDescription: homeDescription,
+  pageTitle: venueConfig.name,
+  pageDescription: venueConfig.description,
   upcomingEvents: events.map((entry) => ({ id: entry.id, data: entry.data })),
   eventImageUrlBySlug,
 })
@@ -96,7 +95,7 @@ const instagramUrl = instagramUrlFromVenue(venueConfig)
 
 <Layout
   title={pageTitle}
-  description={homeDescription}
+  description={pageDescription}
   lang="es"
   tracking={marketingPageTracking.home}
   deferredSiteBackdrop
@@ -104,10 +103,14 @@ const instagramUrl = instagramUrlFromVenue(venueConfig)
 >
   <HomeHeader />
   <main class="home-page">
-    <HomeHero venue={venueConfig} />
-    <HomeEventsSection events={eventFeatures} instagramUrl={instagramUrl} />
-    <HomeVenueSection venue={venueConfig} />
-    <HomeOfferingsGrid venue={venueConfig} />
+    <HomeHero venue={venueConfig} home={homeContent} />
+    <HomeEventsSection
+      events={eventFeatures}
+      home={homeContent}
+      instagramUrl={instagramUrl}
+    />
+    <HomeVenueSection venue={venueConfig} home={homeContent} />
+    <HomeOfferingsGrid venue={venueConfig} home={homeContent} />
     <HomeContactFooter venue={venueConfig} />
   </main>
 </Layout>

@@ -364,6 +364,24 @@ body:has(.home-page .home-hero__carousel)::before {
   background: var(--home-surface);
 }
 
+@media (max-width: 55.999rem) {
+  .home-feature {
+    align-items: center;
+  }
+
+  .home-feature__media {
+    order: 1;
+    justify-content: center;
+    width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .home-feature__content {
+    order: 2;
+  }
+}
+
 @media (min-width: 56rem) {
   .home-feature {
     flex-direction: row;
@@ -372,8 +390,9 @@ body:has(.home-page .home-hero__carousel)::before {
   }
 
   .home-feature__media {
-    flex: 0 0 min(22rem, 38%);
-    max-width: 22rem;
+    /* 20rem poster + horizontal padding (up to 4rem + 1.5rem) */
+    flex: 0 0 min(25.5rem, 44%);
+    max-width: 25.5rem;
   }
 
   .home-feature__content {
@@ -414,10 +433,12 @@ body:has(.home-page .home-hero__carousel)::before {
 
 .home-feature__image {
   display: block;
-  width: auto;
-  max-width: min(17.5rem, 78vw);
+  flex-shrink: 0;
+  box-sizing: border-box;
+  width: min(17.5rem, 78vw);
   height: auto;
-  object-fit: contain;
+  aspect-ratio: 1;
+  object-fit: cover;
   object-position: center;
   box-shadow: 0 1.25rem 3rem rgba(0, 0, 0, 0.45);
   transition: transform 0.45s ease;
@@ -425,7 +446,11 @@ body:has(.home-page .home-hero__carousel)::before {
 
 @media (min-width: 56rem) {
   .home-feature__image {
-    max-width: 20rem;
+    width: auto;
+    max-width: min(20rem, 100%);
+    flex-shrink: 1;
+    aspect-ratio: auto;
+    object-fit: contain;
   }
 }
 
@@ -434,6 +459,7 @@ body:has(.home-page .home-hero__carousel)::before {
 }
 
 .home-feature__placeholder {
+  flex-shrink: 0;
   width: min(17.5rem, 78vw);
   aspect-ratio: 1;
   background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
@@ -457,6 +483,22 @@ body:has(.home-page .home-hero__carousel)::before {
 @media (min-width: 56rem) {
   .home-feature__content {
     padding: 3.5rem clamp(2rem, 5vw, 4rem);
+  }
+}
+
+@media (max-width: 55.999rem) {
+  .home-feature__content {
+    box-sizing: border-box;
+    width: min(17.5rem, 78vw);
+    max-width: 100%;
+    align-self: center;
+    align-items: flex-start;
+    text-align: left;
+    padding: 1.5rem 0 2.5rem;
+  }
+
+  .home-feature__content .home-btn {
+    align-self: flex-start;
   }
 }
 
@@ -870,4 +912,9 @@ body:has(.home-page .home-hero__carousel)::before {
 .home-footer__nav a:focus-visible {
   outline: 2px solid var(--home-fg);
   outline-offset: 3px;
+}
+
+.home-footer .livestack-brand {
+  margin-top: 0;
+  padding: 2.5rem var(--home-gutter) 0;
 }

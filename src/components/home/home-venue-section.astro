@@ -1,13 +1,19 @@
 ---
+import { formatHomeContentTemplate } from "@/lib/home-content-format"
+import type { HomeContent } from "@/lib/home-content-schema"
 import type { VenueConfig } from "@/lib/venue-schema"
 
 interface Props {
   venue: VenueConfig
+  home: HomeContent
 }
 
-const { venue } = Astro.props
+const { venue, home } = Astro.props
 const capacity = venue.maximumAttendeeCapacity
 const venueImage = venue.imagePath?.trim() ?? "/background.jpg"
+const photoAlt = formatHomeContentTemplate(home.venueSection.photoAlt, {
+  name: venue.name,
+})
 ---
 
 <section class="home-band home-band--venue" aria-labelledby="home-venue-title">
@@ -17,7 +23,7 @@ const venueImage = venue.imagePath?.trim() ?? "/background.jpg"
       <img
         class="home-venue__photo"
         src={venueImage}
-        alt={`Interior y ambiente de ${venue.name}`}
+        alt={photoAlt}
         width="1200"
         height="800"
         loading="lazy"
@@ -26,19 +32,19 @@ const venueImage = venue.imagePath?.trim() ?? "/background.jpg"
     </div>
     <div class="home-venue__copy">
       <div class="home-venue__copy-inner">
-        <p class="home-band__kicker">El recinto</p>
+        <p class="home-band__kicker">{home.venueSection.kicker}</p>
         <h2
           id="home-venue-title"
           class="home-band__title home-band__title--display"
         >
-          El espacio
+          {home.venueSection.title}
         </h2>
-        <p class="home-venue__text">{venue.description}</p>
+        <p class="home-venue__text">{home.venueSection.body}</p>
         {
           capacity ? (
             <p class="home-venue__text home-venue__text--muted">
-              Hasta {capacity.toLocaleString("es-CL")} personas según el formato
-              del evento.
+              Hasta {capacity.toLocaleString("es-CL")}{" "}
+              {home.venueSection.capacityNote}
             </p>
           ) : null
         }

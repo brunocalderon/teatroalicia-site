@@ -15,6 +15,9 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 // https://astro.build/config
 export default defineConfig({
+  /** Lossless HTML minification on `astro build` (JS/CSS via Vite below). */
+  compressHTML: true,
+
   integrations: [react(), deferCssIntegration(), contentSecurityPolicyIntegration()],
 
   devToolbar: {
@@ -81,6 +84,34 @@ export default defineConfig({
         optional: true,
         default: "",
       }),
+      /** Personal access token with data.records:read for the CMS pages base. */
+      AIRTABLE_TOKEN: envField.string({
+        context: "server",
+        access: "secret",
+        optional: true,
+        default: "",
+      }),
+      /** Airtable base ID for `cmsPages`. */
+      AIRTABLE_BASE_ID: envField.string({
+        context: "server",
+        access: "public",
+        optional: true,
+        default: "",
+      }),
+      /** Airtable table for `/airtable` (table ID or name). */
+      AIRTABLE_TABLE_ID: envField.string({
+        context: "server",
+        access: "public",
+        optional: true,
+        default: "",
+      }),
+      /** Airtable table for `cmsPages` under `/info/…` (omit to disable). */
+      AIRTABLE_CMS_TABLE_ID: envField.string({
+        context: "server",
+        access: "public",
+        optional: true,
+        default: "",
+      }),
     },
   },
 
@@ -93,7 +124,10 @@ export default defineConfig({
 
     plugins: [tailwindcss(), cspDevServerPlugin()],
 
-  build: {
+    build: {
+      /** Production client bundles only (`astro build`); dev stays unminified. */
+      minify: "esbuild",
+      cssMinify: "esbuild",
       assetsInlineLimit: (filePath) => {
         if (filePath.includes("livestack-logo-white.")) {
           return false
