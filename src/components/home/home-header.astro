@@ -1,0 +1,22 @@
+---
+import "@/styles/home-header.css"
+
+import SiteBrand from "@/components/site-brand.astro"
+
+interface Props {
+  /** Cartelera anchor on `/`; hash on home. */
+  carteleraHref?: string
+}
+
+const { carteleraHref = "#cartelera" } = Astro.props
+---
+
+<header class="home-header">
+  <div class="home-header__bar">
+    <SiteBrand align="start" />
+    <nav class="home-nav" aria-label="Principal">
+      <a class="home-nav__link" href={carteleraHref}>Cartelera</a>
+      <a class="home-nav__link" href="/contacto">Contacto</a>
+    </nav>
+  </div>
+</header>

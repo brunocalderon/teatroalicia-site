@@ -1,6 +1,7 @@
 import { getCollection } from "astro:content"
 import type { APIRoute } from "astro"
 
+import { collectInvitationFormEntries } from "@/lib/invitation-form-entries"
 import {
   buildFormReferralsCsv,
   formReferralsCsvFilename,
@@ -11,10 +12,12 @@ export const prerender = true
 
 export async function getStaticPaths() {
   const forms = await getCollection("forms")
+  const events = await getCollection("events")
+  const invitationEntries = collectInvitationFormEntries(forms, events)
 
-  return forms
+  return invitationEntries
     .filter((entry) =>
-      entry.data.fields.some((field) => field.type === "referral")
+      entry.data.fields.some((field) => field.type === "referral"),
     )
     .map((entry) => ({
       params: {

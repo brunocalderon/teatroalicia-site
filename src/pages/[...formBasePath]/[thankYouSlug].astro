@@ -2,7 +2,13 @@
 import { getCollection, getEntry } from "astro:content"
 
 import FormThankYouPage from "@/components/forms/form-thank-you-page.astro"
-import { assertFormsCollectionIntegrity } from "@/lib/form-schema"
+import { collectInvitationFormEntries } from "@/lib/invitation-form-entries"
+import { resolveInvitationFormData } from "@/lib/resolve-invitation-form-entry"
+import {
+  assertFormsCollectionIntegrity,
+  type FormEntryData,
+} from "@/lib/form-schema"
+import type { InvitationContentCollection } from "@/lib/invitation-form-entries"
 import {
   DEFAULT_THANK_YOU_BODY,
   parseThankYouParagraphs,
@@ -13,29 +19,37 @@ import { renderFormBodyMarkdown } from "@/lib/render-form-body-markdown"
 
 export async function getStaticPaths() {
   const forms = await getCollection("forms")
-  assertFormsCollectionIntegrity(forms)
+  const events = await getCollection("events")
+  const invitationEntries = collectInvitationFormEntries(forms, events)
+  assertFormsCollectionIntegrity(
+    invitationEntries.map((entry) => ({ id: entry.id, data: entry.data })),
+  )
 
-  return forms.map((entry) => {
+  return invitationEntries.map((entry) => {
     const { formBasePath, thankYouSlug } = thankYouRouteParams(
       entry.data.path,
-      entry.data.thankYouPath
+      entry.data.thankYouPath,
     )
 
     return {
       params: { formBasePath, thankYouSlug },
-      props: { entry },
+      props: {
+        collection: entry.collection,
+        entryId: entry.id,
+        data: entry.data,
+      },
     }
   })
 }
 
 type Props = {
-  entry: Awaited<ReturnType<typeof getCollection<"forms">>>[number]
+  collection: InvitationContentCollection
+  entryId: string
+  data: FormEntryData
 }
 
-const { entry: entryFromProps } = Astro.props as Props
-const entry =
-  (await getEntry("forms", entryFromProps.id)) ?? entryFromProps
-const { data } = entry
+const { collection, entryId, data: dataFromProps } = Astro.props as Props
+const data = await resolveInvitationFormData(collection, entryId, dataFromProps)
 
 const thankYouBody = data.messages?.thankYouBody ?? DEFAULT_THANK_YOU_BODY
 const thankYouParagraphs = parseThankYouParagraphs(thankYouBody)

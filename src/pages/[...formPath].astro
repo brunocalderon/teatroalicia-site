@@ -8,15 +8,22 @@ import FormLivestackBrand from "@/components/forms/form-livestack-brand.astro"
 import FormPageSkeleton from "@/components/forms/form-page-skeleton.astro"
 import SiteBrand from "@/components/site-brand.astro"
 import FormPageIntro from "@/components/forms/form-page-intro.astro"
+import HomeHeader from "@/components/home/home-header.astro"
 import Layout from "@/layouts/Layout.astro"
 import { resolveFormEventImageSource } from "@/lib/form-event-image"
 import { buildFormSplitVisualImage } from "@/lib/form-split-visual-image"
+import {
+  collectInvitationFormEntries,
+  type InvitationContentCollection,
+} from "@/lib/invitation-form-entries"
+import { resolveInvitationFormData } from "@/lib/resolve-invitation-form-entry"
 import {
   assertFormsCollectionIntegrity,
   defaultNameFields,
   formMetaDescription,
   warnFormSchemaOrgFields,
 } from "@/lib/form-schema"
+import type { FormEntryData } from "@/lib/form-schema"
 import { CANONICAL_SITE_ORIGIN } from "@/lib/schema-org/canonical-origin"
 import { buildInvitationPageJsonLd } from "@/lib/schema-org/build-invitation-page-json-ld"
 import { venueConfig } from "../../content/venue"
@@ -27,25 +34,35 @@ import { invitationFormTracking } from "@/lib/marketing-page-tracking"
 
 export async function getStaticPaths() {
   const forms = await getCollection("forms")
-  assertFormsCollectionIntegrity(forms)
+  const events = await getCollection("events")
+  const invitationEntries = collectInvitationFormEntries(forms, events)
+  assertFormsCollectionIntegrity(
+    invitationEntries.map((entry) => ({ id: entry.id, data: entry.data })),
+  )
 
-  warnFormSchemaOrgFields(forms)
+  warnFormSchemaOrgFields(
+    invitationEntries.map((entry) => ({ id: entry.id, data: entry.data })),
+  )
 
-  return forms.map((entry) => ({
+  return invitationEntries.map((entry) => ({
     params: { formPath: entry.data.path.replace(/^\//, "") },
-    props: { entry },
+    props: {
+      collection: entry.collection,
+      entryId: entry.id,
+      data: entry.data,
+    },
   }))
 }
 
 type Props = {
-  entry: Awaited<ReturnType<typeof getCollection<"forms">>>[number]
+  collection: InvitationContentCollection
+  entryId: string
+  data: FormEntryData
 }
 
-const { entry: entryFromProps } = Astro.props as Props
-/** Re-fetch so dev picks up new frontmatter (e.g. `image`) without a full server restart. */
-const entry =
-  (await getEntry("forms", entryFromProps.id)) ?? entryFromProps
-const { data } = entry
+const { collection, entryId, data: dataFromProps } = Astro.props as Props
+/** Re-fetch so dev picks up new frontmatter without a full server restart. */
+const data = await resolveInvitationFormData(collection, entryId, dataFromProps)
 const hasReferralField = data.fields.some((field) => field.type === "referral")
 
 const formBodyMarkdown = data.messages?.formBody?.trim()
@@ -54,11 +71,14 @@ const formBodyHtml = formBodyMarkdown
   : undefined
 
 let renderedBody: Awaited<ReturnType<typeof render>> | null = null
-if (!formBodyMarkdown) {
+if (!formBodyMarkdown && collection === "forms") {
+  const formEntry = await getEntry("forms", entryId)
   const legacyBody =
-    "body" in entry && typeof entry.body === "string" ? entry.body.trim() : ""
-  if (legacyBody) {
-    renderedBody = await render(entry)
+    formEntry && "body" in formEntry && typeof formEntry.body === "string"
+      ? formEntry.body.trim()
+      : ""
+  if (legacyBody && formEntry) {
+    renderedBody = await render(formEntry)
   }
 }
 
@@ -89,6 +109,7 @@ const formJsonLd = buildInvitationPageJsonLd({
 })
 
 const formPageBackdropCss = sitePageBackdropCss("form-page")
+const showHomeNav = data.path === "/contacto"
 ---
 
 <Layout
@@ -115,7 +136,18 @@ const formPageBackdropCss = sitePageBackdropCss("form-page")
         </>
       ) : null
     }
-    <main class:list={["form-page", data.image && "form-page--split"]}>
+    {
+      showHomeNav ? (
+        <HomeHeader carteleraHref="/#cartelera" />
+      ) : null
+    }
+    <main
+      class:list={[
+        "form-page",
+        data.image && "form-page--split",
+        showHomeNav && "form-page--with-home-nav",
+      ]}
+    >
       <div class:list={[data.image ? "form-page__split" : "form-page__stack"]}>
         {data.image ? (
           <>
@@ -157,7 +189,7 @@ const formPageBackdropCss = sitePageBackdropCss("form-page")
         ) : (
           <>
             <div class="form-page__masthead">
-              <SiteBrand align="start" />
+              {showHomeNav ? null : <SiteBrand align="start" />}
               <header class="form-page__header">
                 <h1>{data.title}</h1>
               </header>
@@ -394,6 +426,16 @@ const formPageBackdropCss = sitePageBackdropCss("form-page")
 
   .form-page:not(.form-page--split) {
     max-width: 52rem;
+  }
+
+  .form-page--with-home-nav {
+    margin-top: calc(2rem + 4.25rem);
+  }
+
+  @media (min-width: 56rem) {
+    .form-page--with-home-nav {
+      margin-top: calc(2rem + 4.75rem);
+    }
   }
 
   .form-page__header h1 {

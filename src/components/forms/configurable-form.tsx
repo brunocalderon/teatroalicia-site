@@ -339,7 +339,8 @@ export function ConfigurableForm({
     thankYouPath,
   ])
 
-  const fomoToastsEnabled = lang === "es"
+  const fomoToastsEnabled =
+    lang === "es" && Boolean(eventId?.trim())
 
   return (
     <>

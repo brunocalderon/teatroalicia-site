@@ -1,4 +1,8 @@
-import type { FormEntryData, FormTicketOffer } from "@/lib/form-schema"
+import {
+  resolvePublicTicketUrl,
+  type FormEntryData,
+  type FormTicketOffer,
+} from "@/lib/form-schema"
 
 import { canonicalPageUrl } from "./canonical-origin"
 import type { JsonLdObject } from "./json-ld-types"
@@ -50,14 +54,15 @@ export function buildEventOffers(data: FormEntryData): JsonLdObject[] {
     offers.push(ticketOfferNode(ticket))
   }
 
-  if (data.ticketUrl) {
+  const publicTicketUrl = resolvePublicTicketUrl(data)
+  if (publicTicketUrl) {
     const hasUrlOffer = offers.some(
-      (offer) => offer.url === data.ticketUrl,
+      (offer) => offer.url === publicTicketUrl,
     )
     if (!hasUrlOffer) {
       offers.push({
         "@type": "Offer",
-        url: data.ticketUrl,
+        url: publicTicketUrl,
         priceCurrency: "CLP",
         availability: AVAILABILITY_URL.InStock,
       })

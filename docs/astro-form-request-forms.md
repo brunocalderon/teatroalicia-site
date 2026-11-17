@@ -26,18 +26,35 @@ Shared helpers in this repo:
 | Default UI copy | `src/lib/form-copy.ts` |
 | Turnstile widget | `src/components/forms/turnstile-field.tsx` |
 | Hidden `access_key` / honeypot | `src/components/forms/form-hidden-fields.tsx` |
-| Markdown form configs + schema | `content/forms/*.md`, `src/lib/form-schema.ts` |
+| Markdown form configs + schema | `content/forms/*.md`, `content/events/*.md` (optional `invitation`), `src/lib/form-schema.ts`, `src/lib/event-schema.ts` |
 | Generic form renderer | `src/components/forms/configurable-form.tsx` |
 | Composable field types | `src/components/forms/fields/` (`registry.tsx`, per-type components) |
 | Generated form routes | `src/pages/[...formPath].astro` |
 | Generated thank-you routes | `src/pages/[...formBasePath]/[thankYouSlug].astro` (`form-thank-you-page.astro`) |
 | Referral promoter CSV | `src/pages/[...formBasePath]/referrals/csv.ts` |
 
+## Events vs invitation forms
+
+| Content | Collection | Routes |
+| --- | --- | --- |
+| Cartelera + schema (`slug`, `eventId`, `eventStart`, optional `ticketLink`, `image`, …) | `events` | Home cartelera, homepage JSON-LD |
+| Guest-pass Formgong UI | nested `invitation` on an event **or** standalone `content/forms/*.md` | `/i/{slug}` (default when `invitation.path` omitted) and `{path}/gracias` |
+
+Ticket-only events omit `invitation`; they still appear on `/` when `eventStart` is upcoming. See [`content/events/murano/murano.md`](../content/events/murano/murano.md) for event + invitation.
+
 ## Adding a form (default path)
 
-1. Create `content/forms/<id>.md` with frontmatter: `title`, `path`, `token` (Formgong `fk_…` access key), and `fields` (see schema in `src/lib/form-schema.ts`).
-2. Optional: `eventId` (stable event slug posted as hidden field `eventId` on submit), `lang`, `submitLabel`, `thankYouPath` (defaults to `{path}/gracias`), `nameFields`, `messages` (`formBody` / `thankYouBody` markdown in frontmatter, or a legacy markdown body below the closing `---`), `image` + `imageAlt` (event poster on the left; form panel on the right), `livestackFooter` (defaults to `true`; set `false` to hide the Livestack footer). Set `image` to `/images/<filename>` and place the file in `src/assets/images/` (build emits a hashed URL under `/_astro/`).
+**Standalone (e.g. contact):**
+
+1. Create `content/forms/<id>.md` with frontmatter: `title`, `path`, `token` (Formgong `fk_…` access key), and `fields` (see `src/lib/form-schema.ts`).
+2. Optional: `lang`, `submitLabel`, `thankYouPath` (defaults to `{path}/gracias`), `nameFields`, `messages` (`formBody` / `thankYouBody` in frontmatter, or a legacy markdown body below the closing `---`), `image` + `imageAlt`, `livestackFooter`.
 3. Build or run dev — Astro generates the form page at `path` and the thank-you page at `thankYouPath`.
+
+**Event guest-pass:**
+
+1. Create `content/events/{slug}/{slug}.md` with required event fields (`slug`, `title`, `eventId`, `eventStart`, …) and a nested `invitation:` block (`token`, `fields`, optional `path`, `messages`, …). The folder name must match `slug`. Default invitation URL is `/i/{slug}`.
+2. Optional poster: `content/events/{slug}/{slug}.jpg` with `image: /events/{slug}/{slug}.jpg` (applies to invitation split layout and home cartelera).
+3. Build generates `/i/...` and thank-you from `invitation.thankYouPath` (default `{invitation.path}/gracias`).
 
 Example:
 

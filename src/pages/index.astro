@@ -1,65 +1,115 @@
 ---
-import { venueConfig } from "../../content/venue"
-import SiteBrand from "@/components/site-brand.astro"
+import { getCollection } from "astro:content"
+
+import HomeContactFooter from "@/components/home/home-contact-footer.astro"
+import type { HomeEventFeatureData } from "@/components/home/home-event-feature.astro"
+import HomeEventsSection from "@/components/home/home-events-section.astro"
+import HomeHeader from "@/components/home/home-header.astro"
+import HomeHero from "@/components/home/home-hero.astro"
+import HomeOfferingsGrid from "@/components/home/home-offerings-grid.astro"
+import HomeVenueSection from "@/components/home/home-venue-section.astro"
 import Layout from "@/layouts/Layout.astro"
+import { resolveEventInvitationPath } from "@/lib/event-schema"
+import { formatEventSchedule } from "@/lib/format-event-display"
+import { buildHomeEventFeatureImage } from "@/lib/home-event-feature-image"
+import { getUpcomingEventEntries } from "@/lib/home-upcoming-events"
+import {
+  hasBundledFormEventImage,
+  resolveFormEventImageSource,
+} from "@/lib/form-event-image"
+import {
+  appendHomeCarteleraUtm,
+  homeCarteleraEventSlug,
+} from "@/lib/home-cartelera-utm"
+import { resolvePublicTicketUrl } from "@/lib/form-schema"
 import { marketingPageTracking } from "@/lib/marketing-page-tracking"
+import { CANONICAL_SITE_ORIGIN } from "@/lib/schema-org/canonical-origin"
 import { buildHomePageJsonLd } from "@/lib/schema-org/build-home-json-ld"
 import { sitePageBackdropCss } from "@/lib/site-page-backdrop-css"
+import { instagramUrlFromVenue } from "@/lib/venue-social"
+import { venueConfig } from "../../content/venue"
+
+import "@/styles/home.css"
 
 const homePageBackdropCss = sitePageBackdropCss("home-page")
 const homeDescription = venueConfig.description
+const pageTitle = venueConfig.slogan
+  ? `Teatro Alicia — ${venueConfig.slogan}`
+  : "Teatro Alicia"
+
+const events = await getCollection("events")
+const upcomingEntries = getUpcomingEventEntries(events)
+
+const eventImageUrlBySlug: Record<string, string | undefined> = {}
+const eventFeatures: HomeEventFeatureData[] = []
+
+for (const entry of upcomingEntries) {
+  const { data } = entry
+  const schedule = data.eventStart
+    ? formatEventSchedule(data.eventStart, data.eventEnd)
+    : { dateLine: "", timeLine: "" }
+
+  let image: Awaited<ReturnType<typeof buildHomeEventFeatureImage>> | undefined
+  if (data.image && hasBundledFormEventImage(data.image)) {
+    const source = resolveFormEventImageSource(data.image)
+    image = await buildHomeEventFeatureImage(source)
+    eventImageUrlBySlug[data.slug] = new URL(
+      image.src,
+      CANONICAL_SITE_ORIGIN,
+    ).href
+  }
+
+  const ticketUrl = resolvePublicTicketUrl(data)
+  const invitationPath = data.invitation
+    ? resolveEventInvitationPath(data)
+    : undefined
+  const baseCtaHref = ticketUrl ?? invitationPath ?? "#"
+  const ctaHref = appendHomeCarteleraUtm(
+    baseCtaHref,
+    homeCarteleraEventSlug(data),
+  )
+  const ctaLabel = ticketUrl
+    ? "Comprar tickets"
+    : data.invitation?.submitLabel?.trim() || "Solicitar acceso"
+  eventFeatures.push({
+    title: data.title,
+    ctaHref,
+    ctaExternal: Boolean(ticketUrl),
+    ctaLabel,
+    dateLine: schedule.dateLine,
+    timeLine: schedule.timeLine,
+    imageAlt: data.imageAlt,
+    image,
+  })
+}
+
 const homeJsonLd = buildHomePageJsonLd({
   venue: venueConfig,
   pageTitle: "Teatro Alicia",
   pageDescription: homeDescription,
+  upcomingEvents: events.map((entry) => ({ id: entry.id, data: entry.data })),
+  eventImageUrlBySlug,
 })
+
+const instagramUrl = instagramUrlFromVenue(venueConfig)
 ---
 
 <Layout
-  title="Teatro Alicia"
+  title={pageTitle}
   description={homeDescription}
   lang="es"
   tracking={marketingPageTracking.home}
   deferredSiteBackdrop
   jsonLd={homeJsonLd}
 >
+  <HomeHeader />
   <main class="home-page">
-    <div class="home-page__content">
-      <SiteBrand />
-      <h1>Pronto</h1>
-    </div>
+    <HomeHero venue={venueConfig} />
+    <HomeEventsSection events={eventFeatures} instagramUrl={instagramUrl} />
+    <HomeVenueSection venue={venueConfig} />
+    <HomeOfferingsGrid venue={venueConfig} />
+    <HomeContactFooter venue={venueConfig} />
   </main>
 </Layout>
 
 <style is:global set:html={homePageBackdropCss}></style>
-
-<style>
-  .home-page {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-sizing: border-box;
-    min-height: 100dvh;
-    padding: 2rem 1.5rem;
-    background-color: color-mix(in srgb, #0a0a0a 80%, transparent);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-  }
-
-  .home-page__content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2rem;
-    text-align: center;
-  }
-
-  h1 {
-    margin: 0;
-    font-size: clamp(1.75rem, 5vw, 2.5rem);
-    font-weight: 400;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: #f5f5f5;
-  }
-</style>

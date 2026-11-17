@@ -44,6 +44,7 @@ export const venueConfig: VenueConfig = venueConfigSchema.parse({
   googlePlaceId: "ChIJYyhp4ZDLYpYRHdxMVMnchHk",
   contact: {
     email: "contacto@teatroalicia.cl",
+    contactFormUrl: "https://teatroalicia.com/contacto",
     // telephone: "+56992724680",
     // whatsappTelephone: "+56989012354",
     // whatsappUrl: "https://wa.me/56989012354",

@@ -1,6 +1,8 @@
+import type { EventEntryData } from "@/lib/event-schema"
 import type { FormEntryData } from "@/lib/form-schema"
+import { getUpcomingEventEntriesForSchema } from "@/lib/home-upcoming-events"
+import { isUpcomingEventStart } from "@/lib/schema-org/event-datetime"
 
-import { isUpcomingEventStart } from "./event-datetime"
 import { eventEntityId } from "./ids"
 import type { JsonLdObject } from "./json-ld-types"
 import { UPCOMING_EVENTS_LIST_ID } from "./ids"
@@ -10,12 +12,18 @@ export type FormEntryForSchema = {
   data: FormEntryData
 }
 
+export type EventEntryForSchema = {
+  id: string
+  data: EventEntryData
+}
+
+/** Legacy: invitation/form markdown shaped as `FormEntryData` (unit tests). */
 export function buildUpcomingEventsItemList(
   forms: FormEntryForSchema[],
   now: Date = new Date(),
 ): JsonLdObject | undefined {
   const upcoming = forms
-    .filter((entry) => entry.data.eventStart && entry.data.eventId)
+    .filter((entry) => entry.data.eventStart?.trim() && entry.data.eventId?.trim())
     .filter((entry) => isUpcomingEventStart(entry.data.eventStart!, now))
     .sort((a, b) => {
       const aTime = new Date(a.data.eventStart!).getTime()
@@ -23,7 +31,21 @@ export function buildUpcomingEventsItemList(
       return aTime - bTime
     })
 
-  if (upcoming.length === 0) {
+  return buildItemListBody(
+    upcoming.map((entry) => entry.data.eventId!),
+  )
+}
+
+export function buildUpcomingEventsItemListFromEvents(
+  events: EventEntryForSchema[],
+  now: Date = new Date(),
+): JsonLdObject | undefined {
+  const upcoming = getUpcomingEventEntriesForSchema(events, now)
+  return buildItemListBody(upcoming.map((entry) => entry.data.eventId))
+}
+
+function buildItemListBody(eventIds: string[]): JsonLdObject | undefined {
+  if (eventIds.length === 0) {
     return undefined
   }
 
@@ -31,13 +53,13 @@ export function buildUpcomingEventsItemList(
     "@type": "ItemList",
     "@id": UPCOMING_EVENTS_LIST_ID,
     name: "Próximos eventos en Teatro Alicia",
-    numberOfItems: upcoming.length,
+    numberOfItems: eventIds.length,
     itemListOrder: "https://schema.org/ItemListOrderAscending",
-    itemListElement: upcoming.map((entry, index) => ({
+    itemListElement: eventIds.map((eventId, index) => ({
       "@type": "ListItem",
       position: index + 1,
       item: {
-        "@id": eventEntityId(entry.data.eventId!),
+        "@id": eventEntityId(eventId),
       },
     })),
   }

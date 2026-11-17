@@ -103,10 +103,11 @@ describe("schema.org JSON-LD", () => {
     expect(missingId).toBeUndefined()
   })
 
-  it("builds homepage graph without embedding event nodes", () => {
+  it("builds homepage graph without embedding event nodes when no upcoming forms", () => {
     const graph = buildHomePageJsonLd({
       venue: venueConfig,
       pageTitle: "Teatro Alicia",
+      upcomingForms: [],
     })
     const nodes = graph["@graph"] as Record<string, unknown>[]
     expect(nodes).toHaveLength(3)
@@ -115,6 +116,47 @@ describe("schema.org JSON-LD", () => {
     expect(
       nodes.some((n) => n["@type"] === "ItemList"),
     ).toBe(false)
+  })
+
+  it("builds homepage graph with ItemList and Event nodes for upcoming events", () => {
+    const now = new Date("2026-06-01T12:00:00-03:00")
+    const graph = buildHomePageJsonLd({
+      venue: venueConfig,
+      pageTitle: "Teatro Alicia",
+      upcomingEvents: [
+        {
+          id: "murano",
+          data: {
+            slug: "murano",
+            title: muranoFormData.title,
+            path: undefined,
+            eventId: muranoFormData.eventId!,
+            eventStart: muranoFormData.eventStart!,
+            eventEnd: muranoFormData.eventEnd,
+            eventKind: muranoFormData.eventKind,
+            lang: muranoFormData.lang,
+            invitation: {
+              path: muranoFormData.path,
+              token: muranoFormData.token,
+              lang: muranoFormData.lang,
+              submitLabel: muranoFormData.submitLabel,
+              thankYouPath: muranoFormData.thankYouPath,
+              fields: muranoFormData.fields,
+              invitationOnly: muranoFormData.invitationOnly,
+            },
+          } as import("@/lib/event-schema").EventEntryData,
+        },
+      ],
+      now,
+    })
+    const nodes = graph["@graph"] as Record<string, unknown>[]
+    expect(nodes.some((n) => n["@type"] === "ItemList")).toBe(true)
+    expect(nodes.some((n) => n["@id"] === UPCOMING_EVENTS_LIST_ID)).toBe(true)
+    expect(
+      nodes.some((n) => n["@id"] === eventEntityId(muranoFormData.eventId!)),
+    ).toBe(true)
+    const webpage = nodes.find((n) => n["@id"] === HOME_WEBPAGE_ENTITY_ID)
+    expect(webpage?.mainEntity).toEqual({ "@id": UPCOMING_EVENTS_LIST_ID })
   })
 
   it("builds invitation page graph with webpage mainEntity event and venue", () => {

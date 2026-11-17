@@ -1,0 +1,48 @@
+---
+import type { VenueConfig } from "@/lib/venue-schema"
+
+interface Props {
+  venue: VenueConfig
+}
+
+const { venue } = Astro.props
+const capacity = venue.maximumAttendeeCapacity
+const venueImage = venue.imagePath?.trim() ?? "/background.jpg"
+---
+
+<section class="home-band home-band--venue" aria-labelledby="home-venue-title">
+  <hr class="home-rule" />
+  <div class="home-venue">
+    <div class="home-venue__media">
+      <img
+        class="home-venue__photo"
+        src={venueImage}
+        alt={`Interior y ambiente de ${venue.name}`}
+        width="1200"
+        height="800"
+        loading="lazy"
+        decoding="async"
+      />
+    </div>
+    <div class="home-venue__copy">
+      <div class="home-venue__copy-inner">
+        <p class="home-band__kicker">El recinto</p>
+        <h2
+          id="home-venue-title"
+          class="home-band__title home-band__title--display"
+        >
+          El espacio
+        </h2>
+        <p class="home-venue__text">{venue.description}</p>
+        {
+          capacity ? (
+            <p class="home-venue__text home-venue__text--muted">
+              Hasta {capacity.toLocaleString("es-CL")} personas según el formato
+              del evento.
+            </p>
+          ) : null
+        }
+      </div>
+    </div>
+  </div>
+</section>

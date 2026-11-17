@@ -1,0 +1,56 @@
+---
+import HomeEventFeature, {
+  type HomeEventFeatureData,
+} from "@/components/home/home-event-feature.astro"
+
+interface Props {
+  events: HomeEventFeatureData[]
+  instagramUrl?: string
+}
+
+const { events, instagramUrl } = Astro.props
+---
+
+{
+  events.length > 0 ? (
+    <section
+      id="cartelera"
+      class="home-featured"
+      aria-labelledby="home-featured-title"
+    >
+      <div class="home-featured__inner">
+        <h2 id="home-featured-title" class="home-featured__heading">Cartelera</h2>
+        {events.map((event, index) => (
+          <HomeEventFeature event={{ ...event, reversed: index % 2 === 1 }} />
+        ))}
+      </div>
+    </section>
+  ) : (
+    <section
+      id="cartelera"
+      class="home-band home-band--empty"
+      aria-labelledby="home-events-empty"
+    >
+      <hr class="home-rule" />
+      <div class="home-band__inner">
+        <h2 id="home-events-empty" class="home-band__title">
+          Próximos eventos
+        </h2>
+        <p class="home-band__lead">
+          Aún no hay eventos publicados en el sitio. Sigue la programación en
+          nuestras redes.
+        </p>
+        {instagramUrl ? (
+          <a
+            class="home-btn home-btn--outline"
+            href={instagramUrl}
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Ver Instagram
+          </a>
+        ) : null}
+      </div>
+    </section>
+  )
+}

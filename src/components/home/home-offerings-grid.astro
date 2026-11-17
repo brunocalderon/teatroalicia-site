@@ -1,0 +1,97 @@
+---
+import type { VenueConfig } from "@/lib/venue-schema"
+
+interface Props {
+  venue: VenueConfig
+}
+
+const { venue } = Astro.props
+const { amenities, contact, googleMapsUrl, address } = venue
+const contactFormHref = contact.contactFormUrl
+  ? new URL(contact.contactFormUrl).pathname
+  : "/contacto"
+---
+
+<section class="home-band home-band--offerings" aria-labelledby="home-offerings-title">
+  <hr class="home-rule" />
+  <div class="home-band__inner home-band__inner--wide">
+    <p class="home-band__kicker">Servicios</p>
+    <h2 id="home-offerings-title" class="home-band__title home-band__title--display">
+      Vive Teatro Alicia
+    </h2>
+    <div class="home-offerings">
+      <article class="home-offering">
+        <p class="home-offering__badge">Experiencia</p>
+        <h3 class="home-offering__title">Música en vivo</h3>
+        <p class="home-offering__body">
+          Conciertos, DJ sets y noches especiales pensadas para el audio y la
+          energía del público.
+        </p>
+      </article>
+
+      {
+        amenities.barFood ? (
+          <article class="home-offering">
+            <p class="home-offering__badge">En el lugar</p>
+            <h3 class="home-offering__title">Bar y comida</h3>
+            <p class="home-offering__body">
+              {amenities.barFoodDescription ??
+                "Bar y servicio de comida durante los eventos."}
+            </p>
+          </article>
+        ) : null
+      }
+
+      <a
+        class="home-offering home-offering--link"
+        href={googleMapsUrl}
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        <p class="home-offering__badge">Ubicación</p>
+        <h3 class="home-offering__title">Cómo llegar</h3>
+        <p class="home-offering__body">
+          {address.streetAddress}, {address.addressLocality}.
+        </p>
+        <span class="home-offering__cta">Abrir en Maps</span>
+      </a>
+
+      {
+        amenities.cloakroom || amenities.parking ? (
+          <article class="home-offering">
+            <p class="home-offering__badge">Comodidades</p>
+            <h3 class="home-offering__title">Servicios del recinto</h3>
+            <p class="home-offering__body">
+              {[
+                amenities.cloakroom ? "Guardarropía" : null,
+                amenities.parking
+                  ? (amenities.parkingDescription ?? "Estacionamiento cercano")
+                  : null,
+              ]
+                .filter(Boolean)
+                .join(" · ")}
+            </p>
+          </article>
+        ) : null
+      }
+
+      <a class="home-offering home-offering--link" href={contactFormHref}>
+        <p class="home-offering__badge">Corporativo</p>
+        <h3 class="home-offering__title">Eventos corporativos</h3>
+        <p class="home-offering__body">
+          Activaciones y lanzamientos con un espacio versátil en Lo Barnechea.
+        </p>
+        <span class="home-offering__cta">Escríbenos</span>
+      </a>
+
+      <a class="home-offering home-offering--link" href={contactFormHref}>
+        <p class="home-offering__badge">Privado</p>
+        <h3 class="home-offering__title">Eventos privados</h3>
+        <p class="home-offering__body">
+          Fiestas y celebraciones a medida con bar y servicios del recinto.
+        </p>
+        <span class="home-offering__cta">Consultar</span>
+      </a>
+    </div>
+  </div>
+</section>

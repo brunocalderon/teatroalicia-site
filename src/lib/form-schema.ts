@@ -60,7 +60,7 @@ export const formMessagesSchema = z
   })
   .optional()
 
-function sitePathSchema(label: string) {
+export function sitePathSchema(label: string) {
   return z
     .string()
     .min(1)
@@ -86,7 +86,7 @@ function sitePathSchema(label: string) {
     })
 }
 
-const tokenSchema = z
+export const tokenSchema = z
   .string()
   .min(1)
   .superRefine((value, ctx) => {
@@ -98,7 +98,7 @@ const tokenSchema = z
     }
   })
 
-const eventIdSchema = z
+export const eventIdSchema = z
   .string()
   .min(1)
   .superRefine((value, ctx) => {
@@ -111,7 +111,7 @@ const eventIdSchema = z
     }
   })
 
-const eventDateTimeSchema = z
+export const eventDateTimeSchema = z
   .string()
   .min(1)
   .superRefine((value, ctx) => {
@@ -209,6 +209,8 @@ export const formEntrySchema = z
     organizerIsVenue: z.boolean().optional().default(false),
     /** External ticket sales URL for this show. */
     ticketUrl: z.string().url().optional(),
+    /** Alias for `ticketUrl` in form markdown (home CTA + offers). */
+    ticketLink: z.string().url().optional(),
     /** Structured paid ticket offers with verified price data. */
     ticketOffers: z.array(formTicketOfferSchema).optional(),
     /** When true, schema includes guest-pass application (not free admission). */
@@ -222,7 +224,7 @@ export const formEntrySchema = z
     thankYouPath: sitePathSchema("thankYouPath").optional(),
     nameFields: z.array(z.string().min(1)).optional(),
     messages: formMessagesSchema,
-    /** Public path under `/images/`; file lives in `src/assets/images/` and is emitted hashed at build. */
+    /** Public path `/images/…` (src/assets/images) or `/events/{slug}/…` (poster beside event markdown). */
     image: sitePathSchema("image").optional(),
     imageAlt: z.string().min(1).optional(),
     /** When false, omits the “powered by Livestack” footer on the form page. */
@@ -317,7 +319,7 @@ export function assertFormsCollectionIntegrity(entries: FormCollectionEntry[]): 
     const { image } = entry.data
     if (image && !hasBundledFormEventImage(image)) {
       throw new Error(
-        `Form image "${image}" in ${entry.id} has no matching file in src/assets/images/`,
+        `Form image "${image}" in ${entry.id} has no matching bundled image (content/events or src/assets/images)`,
       )
     }
   }
@@ -349,6 +351,18 @@ export function formEntryHasFileField(fields: readonly FormField[]): boolean {
 }
 
 export { defaultNameFields } from "@/lib/form-name-fields"
+
+/** Passline or other public checkout URL from form frontmatter. */
+export function resolvePublicTicketUrl(
+  data: Pick<FormEntryData, "ticketUrl" | "ticketLink">,
+): string | undefined {
+  const fromTicketUrl = data.ticketUrl?.trim()
+  if (fromTicketUrl) {
+    return fromTicketUrl
+  }
+  const fromTicketLink = data.ticketLink?.trim()
+  return fromTicketLink || undefined
+}
 
 /** `<meta name="description">` for invitation form routes. */
 export function formMetaDescription(

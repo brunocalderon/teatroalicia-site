@@ -10,9 +10,11 @@ Persistent venue `@id`: `https://teatroalicia.com/#teatro-alicia`
 
 Do not add self-serving `aggregateRating`, generic ticket `makesOffer`, or fixed `openingHoursSpecification` when hours are event-driven. Use `openingHoursNote` + `additionalProperty` instead.
 
-## Event data (invitation forms)
+## Event data (`content/events/`)
 
-Optional frontmatter in [`content/forms/`](../content/forms/):
+Required for cartelera and homepage `ItemList` / `Event` nodes. Invitation JSON-LD on `/i/...` uses the same event fields plus nested `invitation` when present. Standalone [`content/forms/`](../content/forms/) pages skip event graphs unless they define `eventStart` / `eventId`.
+
+Frontmatter on event markdown:
 
 | Field | Description |
 |-------|-------------|
@@ -34,7 +36,7 @@ Event `@id`: `https://teatroalicia.com/#event-{eventId}`
 | Invitation form | `WebSite`, venue, `WebPage`, full event, organizers/performers when defined |
 | Thank-you | None |
 
-Upcoming `ItemList` (`#upcoming-events`) is emitted only on pages that actually list upcoming events (not on the current homepage).
+Upcoming `ItemList` (`#upcoming-events`) is emitted on the homepage when it lists upcoming events, with full `Event` nodes in the same graph.
 
 Builders: [`src/lib/schema-org/`](../src/lib/schema-org/).
 

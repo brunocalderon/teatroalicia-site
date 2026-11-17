@@ -1,0 +1,99 @@
+---
+import type { HomeEventFeatureImage } from "@/lib/home-event-feature-image"
+
+export type HomeEventFeatureData = {
+  title: string
+  ctaHref: string
+  ctaExternal?: boolean
+  ctaLabel: string
+  dateLine: string
+  timeLine: string
+  imageAlt?: string
+  image?: HomeEventFeatureImage
+  reversed?: boolean
+}
+
+interface Props {
+  event: HomeEventFeatureData
+}
+
+const { event } = Astro.props
+const ctaLinkAttrs = event.ctaExternal
+  ? { target: "_blank", rel: "noopener noreferrer" as const }
+  : {}
+---
+
+<article
+  class:list={["home-feature", event.reversed && "home-feature--reversed"]}
+>
+  {
+    !event.reversed ? (
+      <a
+        class="home-feature__media"
+        href={event.ctaHref}
+        {...ctaLinkAttrs}
+        tabindex="-1"
+        aria-hidden="true"
+      >
+        {
+          event.image ? (
+            <img
+              class="home-feature__image"
+              src={event.image.src}
+              srcset={event.image.srcSet}
+              sizes={event.image.sizes}
+              width={event.image.width}
+              height={event.image.height}
+              alt=""
+              loading="lazy"
+              decoding="async"
+            />
+          ) : (
+            <div class="home-feature__placeholder" />
+          )
+        }
+      </a>
+    ) : null
+  }
+  <div class="home-feature__content">
+    <h2 class="home-feature__title">
+      <a href={event.ctaHref} {...ctaLinkAttrs}>
+        {event.title}
+      </a>
+    </h2>
+    {event.dateLine ? <p class="home-feature__date">{event.dateLine}</p> : null}
+    {event.timeLine ? <p class="home-feature__time">{event.timeLine}</p> : null}
+    <a class="home-btn home-btn--primary" href={event.ctaHref} {...ctaLinkAttrs}>
+      {event.ctaLabel}
+    </a>
+  </div>
+  {
+    event.reversed ? (
+      <a
+        class="home-feature__media"
+        href={event.ctaHref}
+        {...ctaLinkAttrs}
+        tabindex="-1"
+        aria-hidden="true"
+      >
+        {
+          event.image ? (
+            <img
+              class="home-feature__image"
+              src={event.image.src}
+              srcset={event.image.srcSet}
+              sizes={event.image.sizes}
+              width={event.image.width}
+              height={event.image.height}
+              alt=""
+              loading="lazy"
+              decoding="async"
+            />
+          ) : (
+            <div class="home-feature__placeholder" />
+          )
+        }
+      </a>
+    ) : null
+  }
+</article>
