@@ -24,17 +24,23 @@ const formPageBackdropCss = sitePageBackdropCss("form-page")
   formThirdPartyHints
 >
   <main class="form-page form-page--thank-you">
-    <div class="form-page__masthead">
-      <SiteBrand align="start" />
-      <h1>{title}</h1>
-    </div>
-    <div class="form-page__thank-you-content">
-      <ThankYouBody
-        client:only="react"
-        paragraphsHtml={paragraphsHtml}
-        locale={lang}
-        marketingTracking={marketingTracking}
-      />
+    <div class="form-page__split">
+      <div class="form-page__masthead form-page__split-masthead">
+        <SiteBrand align="start" />
+        <header class="form-page__header">
+          <h1>{title}</h1>
+        </header>
+      </div>
+      <div class="form-page__split-lead form-page__thank-you-lead">
+        <div class="form-page__thank-you-content">
+          <ThankYouBody
+            client:only="react"
+            paragraphsHtml={paragraphsHtml}
+            locale={lang}
+            marketingTracking={marketingTracking}
+          />
+        </div>
+      </div>
     </div>
   </main>
 </Layout>
@@ -60,14 +66,21 @@ const formPageBackdropCss = sitePageBackdropCss("form-page")
     border-radius: 1rem;
   }
 
-  @media (max-width: 55.99rem) {
-    .form-page {
-      width: calc(100% - 1.5rem);
-      margin-block: 0.75rem;
-      margin-inline: auto;
-      min-height: calc(100dvh - 1.5rem);
-      padding: 1.25rem 1rem 2rem;
-    }
+  .form-page.form-page--thank-you {
+    min-height: 0;
+  }
+
+  .form-page--thank-you .form-page__split {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    flex: 0 0 auto;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .form-page__thank-you-lead {
+    min-width: 0;
   }
 
   .form-page__masthead {
@@ -76,25 +89,59 @@ const formPageBackdropCss = sitePageBackdropCss("form-page")
     align-items: center;
     gap: 1rem 1.5rem;
     min-width: 0;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0;
   }
 
-  .form-page.form-page--thank-you {
-    max-width: min(100%, 36rem);
-    min-height: 0;
-    padding: 1.5rem 1.5rem 2rem;
+  .form-page__masthead .form-page__header {
+    flex: 1;
+    min-width: 0;
   }
 
-  .form-page--thank-you h1 {
-    margin: 0 0 1rem;
+  .form-page__masthead h1,
+  .form-page__masthead .form-page__header h1 {
+    margin: 0;
     font-size: clamp(1.25rem, 3vw, 1.75rem);
     font-weight: 500;
     letter-spacing: 0.03em;
     line-height: 1.25;
   }
 
-  .form-page--thank-you .form-page__thank-you-content {
-    margin-top: 2rem;
+  @media (min-width: 56rem) {
+    .form-page.form-page--thank-you {
+      max-width: min(100%, 36rem);
+    }
+
+    .form-page--thank-you .form-page__split {
+      gap: 2rem;
+    }
+  }
+
+  @media (max-width: 55.99rem) {
+    .form-page {
+      width: calc(100% - 1.5rem);
+      margin-block: 0.75rem;
+      margin-inline: auto;
+      min-height: calc(100dvh - 1.5rem);
+      padding: 1.25rem 1rem 2rem;
+    }
+
+    .form-page.form-page--thank-you {
+      padding: 1rem 1rem 2rem;
+    }
+
+    .form-page--thank-you .form-page__split-masthead {
+      flex-direction: row;
+      align-items: center;
+      gap: 0.875rem 1rem;
+      margin-top: 0;
+      margin-bottom: 1rem;
+    }
+
+    .form-page--thank-you .form-page__split-masthead h1 {
+      font-size: clamp(1.125rem, 5vw, 1.5rem);
+      line-height: 1.2;
+      overflow-wrap: anywhere;
+    }
   }
 
   .form-page--thank-you .form-page__thank-you-content :global(.form-page__thank-you-body) {

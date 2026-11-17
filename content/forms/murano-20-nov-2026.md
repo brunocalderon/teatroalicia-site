@@ -24,7 +24,7 @@ messages:
 
     Los accesos son limitados.
   thankYouBody: |
-    Bienvenido a _**Alicia Privé**_, estás listo para vivir una noche inolvidable!
+    Bienvenido a _**Alicia Privé**_. Estás listo para vivir una noche inolvidable.
 
     Recibirás tus accesos de cortesía por correo electrónico dentro de las próximas horas.
 fields:

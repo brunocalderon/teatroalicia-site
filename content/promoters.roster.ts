@@ -59,7 +59,7 @@ export const promotersRoster: PromoterRosterEntry[] = [
   },
   {
     id: "dukes",
-    name: "DUKES",
+    name: "Dukes",
     active: false,
     ticket_sale_enabled: true,
     guest_pass_enabled: false,
@@ -115,7 +115,7 @@ export const promotersRoster: PromoterRosterEntry[] = [
   },
   {
     id: "fernando-de-la-cerda",
-    name: "Fernando de la cerda",
+    name: "Fernando De La Cerda",
     active: false,
     ticket_sale_enabled: true,
     guest_pass_enabled: false,
@@ -136,7 +136,7 @@ export const promotersRoster: PromoterRosterEntry[] = [
   },
   {
     id: "invitado-cumpleanos",
-    name: "Invitado_cumpleaños",
+    name: "Invitado Cumpleaños",
     active: false,
     ticket_sale_enabled: true,
     guest_pass_enabled: false,
@@ -159,13 +159,6 @@ export const promotersRoster: PromoterRosterEntry[] = [
     id: "loreto-borquez",
     name: "Loreto Borquez",
     active: true,
-    ticket_sale_enabled: true,
-    guest_pass_enabled: true,
-  },
-  {
-    id: "loreto-borquez-2",
-    name: "Loreto Borquez",
-    active: false,
     ticket_sale_enabled: true,
     guest_pass_enabled: true,
   },
@@ -220,7 +213,7 @@ export const promotersRoster: PromoterRosterEntry[] = [
   },
   {
     id: "patyfinger",
-    name: "PatyFinger",
+    name: "Paty Finger",
     active: true,
     ticket_sale_enabled: true,
     guest_pass_enabled: true,
