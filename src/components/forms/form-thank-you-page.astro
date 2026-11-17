@@ -16,14 +16,23 @@ export interface Props {
   lang: string
   paragraphsHtml: string[]
   marketingTracking: MarketingPageTracking
+  thankYouInstagram?: boolean
 }
 
-const { title, lang, paragraphsHtml, marketingTracking } = Astro.props
+const {
+  title,
+  lang,
+  paragraphsHtml,
+  marketingTracking,
+  thankYouInstagram,
+} = Astro.props
+
+const showThankYouInstagram = thankYouInstagram === true
 
 const formPageBackdropCss = sitePageBackdropCss("form-page")
-const thankYouInstagramUsername = normalizeInstagramUsername(
-  THANK_YOU_INSTAGRAM_USERNAME
-)
+const thankYouInstagramUsername = showThankYouInstagram
+  ? normalizeInstagramUsername(THANK_YOU_INSTAGRAM_USERNAME)
+  : ""
 const thankYouInstagramHref = thankYouInstagramUsername
   ? instagramProfileUrl(thankYouInstagramUsername)
   : undefined

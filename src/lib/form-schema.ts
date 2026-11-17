@@ -229,6 +229,8 @@ export const formEntrySchema = z
     imageAlt: z.string().min(1).optional(),
     /** When false, omits the “powered by Livestack” footer on the form page. */
     livestackFooter: z.boolean().optional().default(true),
+    /** When false, hides the Instagram follow link on the thank-you page. */
+    thankYouInstagram: z.boolean().optional().default(true),
     fields: z.array(formFieldSchema).min(1),
   })
   .transform((data) => ({

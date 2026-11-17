@@ -1,6 +1,8 @@
-import type { CollectionEntry } from "astro:content"
+import type { FormEntryData } from "@/lib/form-schema"
 
-type FormEntry = CollectionEntry<"forms">
+type LlmsInvitationEntry = {
+  data: Pick<FormEntryData, "title" | "path" | "thankYouPath" | "lang">
+}
 
 function absoluteUrl(origin: string, pathname: string): string {
   const path = pathname.startsWith("/") ? pathname : `/${pathname}`
@@ -10,13 +12,13 @@ function absoluteUrl(origin: string, pathname: string): string {
 /**
  * Root llms.txt body (llmstxt.org v2). Served at `/llms.txt` with `text/plain; charset=utf-8`.
  */
-export function buildLlmsTxt(origin: string, forms: FormEntry[]): string {
+export function buildLlmsTxt(origin: string, forms: LlmsInvitationEntry[]): string {
   const lines: string[] = [
     "# Teatro Alicia",
     "",
     "> Sitio del Teatro Alicia (Santiago, Chile): página de inicio y formularios públicos de solicitud de invitaciones y tickets de cortesía a eventos.",
     "",
-    "Las rutas públicas se generan en el build a partir de `content/forms/*.md`. Los envíos usan Formgong y Cloudflare Turnstile en las páginas de formulario. No publiques tokens ni claves de API.",
+    "Las rutas públicas se generan en el build a partir de `content/forms/*.md` y de bloques `invitation` en `content/events/**/*.md`. Los envíos usan Formgong y Cloudflare Turnstile en las páginas de formulario. No publiques tokens ni claves de API.",
     "",
     "## Pages",
     "",

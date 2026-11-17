@@ -1,14 +1,22 @@
 import type { APIRoute } from "astro"
 import { getCollection } from "astro:content"
 
+import { collectInvitationFormEntries } from "@/lib/invitation-form-entries"
+
 export const prerender = true
 
 export const GET: APIRoute = async () => {
   const forms = await getCollection("forms")
+  const events = await getCollection("events")
+  const invitationEntries = collectInvitationFormEntries(forms, events)
   const lines = ["User-agent: *", "Allow: /"]
 
-  for (const form of forms) {
-    lines.push(`Disallow: ${form.data.path}/referrals/csv`)
+  const csvPaths = invitationEntries
+    .map((entry) => entry.data.path)
+    .sort((a, b) => a.localeCompare(b))
+
+  for (const path of csvPaths) {
+    lines.push(`Disallow: ${path}/referrals/csv`)
   }
 
   lines.push("")

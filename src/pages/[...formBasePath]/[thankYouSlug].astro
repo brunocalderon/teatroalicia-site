@@ -57,6 +57,8 @@ const thankYouParagraphsHtml = await Promise.all(
   thankYouParagraphs.map((paragraph) => renderFormBodyMarkdown(paragraph))
 )
 const thankYouTitle = data.messages?.thankYouTitle ?? data.title
+const showThankYouInstagram =
+  data.thankYouInstagram !== false && data.path.trim() !== "/contacto"
 ---
 
 <FormThankYouPage
@@ -64,4 +66,5 @@ const thankYouTitle = data.messages?.thankYouTitle ?? data.title
   lang={data.lang}
   paragraphsHtml={thankYouParagraphsHtml}
   marketingTracking={marketingPageTracking.thankYou}
+  thankYouInstagram={showThankYouInstagram}
 />

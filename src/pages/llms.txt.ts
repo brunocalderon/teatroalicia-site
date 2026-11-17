@@ -11,13 +11,7 @@ export const GET: APIRoute = async () => {
   const forms = await getCollection("forms")
   const events = await getCollection("events")
   const invitationEntries = collectInvitationFormEntries(forms, events)
-  const body = buildLlmsTxt(
-    resolveSiteOrigin(),
-    invitationEntries.map((entry) => ({
-      id: entry.id,
-      data: entry.data,
-    })),
-  )
+  const body = buildLlmsTxt(resolveSiteOrigin(), invitationEntries)
 
   return new Response(body, {
     headers: {

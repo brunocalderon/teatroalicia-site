@@ -1,6 +1,10 @@
 @import "@fontsource-variable/geist";
 @import "./home-header.css";
 
+body:has(.home-page .home-hero__carousel)::before {
+  opacity: 0;
+}
+
 .home-page {
   --home-max: 75rem;
   --home-content-max: 80rem; /* 1280px — aligns with nav */
@@ -39,12 +43,232 @@
   min-height: 100svh;
   padding: 6.5rem var(--home-gutter) 3.5rem;
   margin: 0;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/** 4 slides × 5s visible (20s loop), crossfade + Ken Burns (pure CSS). */
+.home-hero__carousel {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-color: #000;
+}
+
+.home-hero__slide {
+  position: absolute;
+  inset: 0;
+  background-image: var(--home-hero-image);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0;
+  transform: scale(1);
+  will-change: opacity, transform;
+}
+
+.home-hero__slide:nth-child(1) {
+  transform-origin: 42% 38%;
+  animation:
+    home-hero-fade-1 20s ease-in-out infinite,
+    home-hero-ken-1 20s linear -1s infinite;
+}
+
+.home-hero__slide:nth-child(2) {
+  transform-origin: 55% 45%;
+  animation:
+    home-hero-fade-2 20s ease-in-out infinite,
+    home-hero-ken-2 20s linear infinite;
+}
+
+.home-hero__slide:nth-child(3) {
+  transform-origin: 48% 52%;
+  animation:
+    home-hero-fade-3 20s ease-in-out infinite,
+    home-hero-ken-3 20s linear infinite;
+}
+
+.home-hero__slide:nth-child(4) {
+  transform-origin: 50% 42%;
+  animation:
+    home-hero-fade-4 20s ease-in-out infinite,
+    home-hero-ken-4 20s linear infinite;
+}
+
+/* Overlapping fades: outgoing + incoming opacities cross mid-transition. */
+@keyframes home-hero-fade-1 {
+  0%,
+  22.5% {
+    opacity: 1;
+  }
+
+  25%,
+  97.5% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes home-hero-fade-2 {
+  0%,
+  22.5% {
+    opacity: 0;
+  }
+
+  25%,
+  47.5% {
+    opacity: 1;
+  }
+
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes home-hero-fade-3 {
+  0%,
+  47.5% {
+    opacity: 0;
+  }
+
+  50%,
+  72.5% {
+    opacity: 1;
+  }
+
+  75%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes home-hero-fade-4 {
+  0%,
+  72.5% {
+    opacity: 0;
+  }
+
+  75%,
+  97.5% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Ken Burns: ~1s pre-roll (5% of loop) before each fade-in while opacity is 0. */
+@keyframes home-hero-ken-1 {
+  0%,
+  100% {
+    transform: scale(1.04);
+  }
+
+  22.5% {
+    transform: scale(1.09);
+  }
+
+  25% {
+    transform: scale(1.1);
+  }
+
+  58% {
+    transform: scale(1.05);
+  }
+
+  92.5% {
+    transform: scale(1);
+  }
+
+  97.5% {
+    transform: scale(1.02);
+  }
+}
+
+@keyframes home-hero-ken-2 {
+  0%,
+  20%,
+  100% {
+    transform: scale(1);
+  }
+
+  25% {
+    transform: scale(1.02);
+  }
+
+  47.5% {
+    transform: scale(1.08);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+@keyframes home-hero-ken-3 {
+  0%,
+  45%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.02);
+  }
+
+  72.5% {
+    transform: scale(1.08);
+  }
+
+  75% {
+    transform: scale(1.1);
+  }
+}
+
+@keyframes home-hero-ken-4 {
+  0%,
+  100% {
+    transform: scale(1.1);
+  }
+
+  70% {
+    transform: scale(1);
+  }
+
+  75% {
+    transform: scale(1.02);
+  }
+
+  95% {
+    transform: scale(1.08);
+  }
+
+  97.5% {
+    transform: scale(1.1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-hero__slide {
+    animation: none;
+    opacity: 0;
+  }
+
+  .home-hero__slide:first-child {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .home-hero__scrim {
   position: absolute;
   inset: 0;
-  z-index: 0;
+  z-index: 1;
   background: linear-gradient(
     180deg,
     color-mix(in srgb, #000 25%, transparent) 0%,
