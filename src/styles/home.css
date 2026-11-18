@@ -740,20 +740,12 @@ body:has(.home-page #cartelera .home-hero__carousel)::before {
   color: color-mix(in srgb, var(--home-fg) 92%, transparent);
 }
 
-.home-venue__kicker {
-  margin-top: 1.75rem;
-}
-
 .home-venue__copy-inner .home-band__kicker {
   margin-bottom: 0.5rem;
 }
 
 .home-venue__copy-inner .home-band__title {
   margin-bottom: 1rem;
-}
-
-.home-venue__copy-inner h3.home-band__title {
-  font-size: clamp(1.5rem, 3.5vw, 2rem);
 }
 
 /* —— Offerings grid (Marquee “Available now” tiles) —— */

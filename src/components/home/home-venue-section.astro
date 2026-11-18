@@ -20,6 +20,11 @@ const slogan = home.hero.slogan?.trim()
 const lead = home.hero.lead.trim()
 const venueBody = home.venueSection.body.trim()
 const showVenueBody = venueBody !== lead
+const capacityLine = capacity
+  ? formatHomeContentTemplate(home.venueSection.capacityNote, {
+      capacity: capacity.toLocaleString("es-CL"),
+    })
+  : undefined
 ---
 
 <section class="home-band home-band--venue" aria-labelledby="home-venue-title">
@@ -63,19 +68,13 @@ const showVenueBody = venueBody !== lead
         </h2>
         {slogan ? <p class="home-venue__slogan">{slogan}</p> : null}
         <p class="home-venue__text">{lead}</p>
-        <p class="home-band__kicker home-venue__kicker">{home.venueSection.kicker}</p>
-        <h3 class="home-band__title">{home.venueSection.title}</h3>
+        <p class="home-venue__slogan">{home.venueSection.title}</p>
         {showVenueBody ? (
           <p class="home-venue__text">{home.venueSection.body}</p>
         ) : null}
-        {
-          capacity ? (
-            <p class="home-venue__text home-venue__text--muted">
-              Hasta {capacity.toLocaleString("es-CL")}{" "}
-              {home.venueSection.capacityNote}
-            </p>
-          ) : null
-        }
+        {capacityLine ? (
+          <p class="home-venue__text home-venue__text--muted">{capacityLine}</p>
+        ) : null}
       </div>
     </div>
   </div>
