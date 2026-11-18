@@ -9,6 +9,13 @@ export interface PromoterRosterEntry {
 // Duplicate name slugs receive a numeric suffix to preserve unique IDs.
 export const promotersRoster: PromoterRosterEntry[] = [
   {
+    id: "alejandra-rojas",
+    name: "Alejandra Rojas",
+    active: true,
+    ticket_sale_enabled: true,
+    guest_pass_enabled: true,
+  },
+  {
     id: "ana-maria-rojas",
     name: "Ana Maria Rojas",
     active: false,
