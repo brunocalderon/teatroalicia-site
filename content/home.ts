@@ -27,10 +27,10 @@ export const homeContent: HomeContent = homeContentSchema.parse({
   },
   venueSection: {
     kicker: "El recinto",
-    title: "El espacio",
-    body: "Teatro Alicia es un espacio de eventos y conciertos en Lo Barnechea, Santiago: música en vivo, experiencias nocturnas y programación cultural con bar, guardarropía y estacionamiento.",
+    title: "Los espacios",
+    body: "Teatro Alicia es un recinto de eventos y conciertos en la comuna de Lo Barnechea, Santiago: Nuestra oferta de eventos cuenta con fiestas, música en vivo, experiencias nocturnas y programación cultural. Contamos con servicios de bar, guardarropía y estacionamiento en el exterior del recinto.",
     capacityNote:
-      "Múltiples espacios versátiles, con capacidad total de hasta {capacity} personas, de acuerdo a los espacios utilizados y el formato del evento.",
+      "Espacios versátiles que se adaptan a cada experiencia, con capacidad total de hasta 1.500 personas, según la configuración y el formato de tu evento.",
     photoAlt: "Interior y ambiente de {name}",
   },
   offeringsSection: {
