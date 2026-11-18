@@ -4,7 +4,7 @@ export const UMAMI_CARTELERA_TICKET_EVENT = "Home Cartelera Ticket Click"
 
 export type UmamiCarteleraTicketPayload = {
   event_title: string
-  event_campaign: string
+  event_id: string
   ticket_url: string
 }
 
@@ -29,7 +29,7 @@ export function trackUmamiCarteleraTicketClick(
 
   umami.track(UMAMI_CARTELERA_TICKET_EVENT, {
     event_title: payload.event_title,
-    event_campaign: payload.event_campaign,
+    event_id: payload.event_id,
     ticket_url: payload.ticket_url,
     ...(promoter
       ? {

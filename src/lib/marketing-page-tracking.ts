@@ -25,6 +25,7 @@ export const marketingPageTracking = {
     contentName: "Teatro Alicia",
     contentCategory: "Marketing",
     pageType: "Landing Teatro Alicia",
+    umamiEventName: "Home Visit",
   },
   thankYou: {
     contentName: "Invitation Received",
@@ -71,6 +72,29 @@ function attachMetaAdvancedMatching(userData: MetaPixelUserData | undefined): vo
     return
   }
   fbq("init", pixelId, userData)
+}
+
+export type MetaCarteleraTicketPayload = {
+  event_title: string
+  event_id: string
+}
+
+/** Home cartelera ticket CTA: explicit ViewContent (not automatic link click). */
+export function trackMetaCarteleraTicketViewContent(
+  payload: MetaCarteleraTicketPayload,
+): void {
+  const fbq = getMetaFbq()
+  if (!fbq) {
+    return
+  }
+  fbq("track", "ViewContent", {
+    content_name: payload.event_title,
+    content_category: "Cartelera Ticket",
+    content_ids: payload.event_id,
+    content_type: "product",
+    city: MARKETING_TRACKING_CITY,
+    page_type: "Home Cartelera",
+  })
 }
 
 /** Form submit: persist PII and fire Lead before Formgong POST. */
