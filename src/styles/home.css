@@ -1,7 +1,7 @@
 @import "@fontsource-variable/geist";
 @import "./home-header.css";
 
-body:has(.home-page .home-hero__carousel)::before {
+body:has(.home-page #cartelera .home-hero__carousel)::before {
   opacity: 0;
 }
 
@@ -33,19 +33,16 @@ body:has(.home-page .home-hero__carousel)::before {
   scroll-margin-top: 5rem;
 }
 
-/* —— Hero (full bleed, Marquee-style) —— */
-
-.home-hero {
-  position: relative;
-  display: flex;
-  align-items: flex-end;
-  min-height: 100dvh;
-  min-height: 100svh;
-  padding: 6.5rem var(--home-gutter) 3.5rem;
-  margin: 0;
-  overflow: hidden;
-  isolation: isolate;
+#cartelera {
+  padding-bottom: 10rem;
 }
+
+/* Cartelera first under fixed home header */
+.home-page > #cartelera:first-child {
+  padding-top: 5rem;
+}
+
+/* —— Hero (full bleed, Marquee-style) —— */
 
 /** 4 slides × 5s visible (20s loop), crossfade + Ken Burns (pure CSS). */
 .home-hero__carousel {
@@ -279,67 +276,19 @@ body:has(.home-page .home-hero__carousel)::before {
   pointer-events: none;
 }
 
-.home-hero__inner {
-  position: relative;
-  z-index: 1;
-  width: 100%;
-  max-width: var(--home-max);
-  margin: 0 auto;
-}
-
-.home-hero__kicker {
-  margin: 0 0 0.75rem;
-  font-size: 0.8125rem;
-  font-weight: 500;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--home-muted);
-}
-
-.home-hero__title {
-  margin: 0;
-  max-width: 16ch;
-  font-size: clamp(2.5rem, 8vw, 4.25rem);
-  font-weight: 500;
-  line-height: 1.05;
-  letter-spacing: -0.02em;
-}
-
-.home-hero__slogan {
-  margin: 0.85rem 0 0;
-  max-width: 28rem;
-  font-size: clamp(1.125rem, 2.5vw, 1.375rem);
-  font-weight: 500;
-  line-height: 1.4;
-  color: color-mix(in srgb, var(--home-fg) 92%, transparent);
-}
-
-.home-hero__lead {
-  margin: 1.35rem 0 0;
-  max-width: 40rem;
-  font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
-  line-height: 1.65;
-  color: var(--home-muted);
-}
-
-@media (min-width: 56rem) {
-  .home-hero__inner {
-    max-width: 54rem;
-  }
-
-  .home-hero__lead {
-    max-width: 36rem;
-  }
-}
-
 /* —— Featured events (editorial split) —— */
 
 .home-featured {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   width: 100%;
-  background: var(--home-surface);
+  background: #000;
 }
 
 .home-featured__inner {
+  position: relative;
+  z-index: 2;
   box-sizing: border-box;
   width: 100%;
   max-width: var(--home-content-max);
@@ -347,57 +296,71 @@ body:has(.home-page .home-hero__carousel)::before {
   padding: 0 var(--home-gutter);
 }
 
+.home-featured__scrim {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, #000 55%, transparent) 0%,
+    color-mix(in srgb, #000 72%, transparent) 40%,
+    color-mix(in srgb, #000 88%, transparent) 100%
+  );
+}
+
 .home-featured__heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.5rem 0.65rem;
   margin: 0;
-  padding: 3.25rem 0 2rem;
+  padding: 3.25rem 0 4rem;
+  text-align: center;
+}
+
+.home-featured__heading-line {
+  margin: 0;
   font-size: clamp(1.75rem, 4vw, 2.5rem);
-  font-weight: 500;
+  font-weight: 400;
   line-height: 1.15;
   letter-spacing: -0.02em;
-  text-align: center;
   color: var(--home-fg);
+}
+
+@media (max-width: 55.999rem) {
+  .home-featured__list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+@media (min-width: 56rem) {
+  /* One row (wrapping): each column is a full event — image, text, button */
+  .home-featured__list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(1.5rem, 3vw, 2.5rem);
+    align-items: stretch;
+    width: 100%;
+  }
 }
 
 .home-feature {
   display: flex;
   flex-direction: column;
-  background: var(--home-surface);
-}
-
-@media (max-width: 55.999rem) {
-  .home-feature {
-    align-items: center;
-  }
-
-  .home-feature__media {
-    order: 1;
-    justify-content: center;
-    width: 100%;
-    padding-left: 0;
-    padding-right: 0;
-  }
-
-  .home-feature__content {
-    order: 2;
-  }
+  align-items: stretch;
+  box-sizing: border-box;
+  width: min(17.5rem, 78vw);
+  max-width: 100%;
+  padding: 2rem;
+  background: rgb(0 0 0 / 0.8);
 }
 
 @media (min-width: 56rem) {
   .home-feature {
-    flex-direction: row;
-    align-items: center;
-    gap: 0;
-  }
-
-  .home-feature__media {
-    /* 20rem poster + horizontal padding (up to 4rem + 1.5rem) */
-    flex: 0 0 min(25.5rem, 44%);
-    max-width: 25.5rem;
-  }
-
-  .home-feature__content {
-    flex: 1 1 auto;
-    min-width: 0;
+    width: calc(20rem + 4rem);
+    max-width: 100%;
+    justify-self: center;
+    min-height: 100%;
   }
 }
 
@@ -405,29 +368,14 @@ body:has(.home-page .home-hero__carousel)::before {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2.5rem var(--home-gutter);
+  padding: 0 0 1.25rem;
   text-decoration: none;
-  background: var(--home-surface);
+  background: transparent;
 }
 
 @media (min-width: 56rem) {
   .home-feature__media {
-    justify-content: flex-start;
-    padding: 3.5rem 1.5rem 3.5rem clamp(2rem, 5vw, 4rem);
-  }
-
-  .home-feature--reversed .home-feature__media {
-    justify-content: flex-end;
-    padding: 3.5rem clamp(2rem, 5vw, 4rem) 3.5rem 1.5rem;
-  }
-
-  .home-feature:not(.home-feature--reversed) .home-feature__content {
-    align-items: flex-end;
-    text-align: right;
-  }
-
-  .home-feature:not(.home-feature--reversed) .home-feature__content .home-btn {
-    align-self: flex-end;
+    width: 100%;
   }
 }
 
@@ -446,15 +394,15 @@ body:has(.home-page .home-hero__carousel)::before {
 
 @media (min-width: 56rem) {
   .home-feature__image {
-    width: auto;
-    max-width: min(20rem, 100%);
-    flex-shrink: 1;
-    aspect-ratio: auto;
-    object-fit: contain;
+    width: min(20rem, 100%);
+    max-width: 20rem;
+    margin-inline: auto;
+    aspect-ratio: 1;
+    object-fit: cover;
   }
 }
 
-.home-feature:hover .home-feature__image {
+.home-feature__media:hover .home-feature__image {
   transform: scale(1.02);
 }
 
@@ -467,7 +415,9 @@ body:has(.home-page .home-hero__carousel)::before {
 
 @media (min-width: 56rem) {
   .home-feature__placeholder {
-    width: 20rem;
+    width: min(20rem, 100%);
+    max-width: 20rem;
+    margin-inline: auto;
   }
 }
 
@@ -476,37 +426,55 @@ body:has(.home-page .home-hero__carousel)::before {
   flex-direction: column;
   justify-content: center;
   gap: 0.65rem;
-  padding: 2.5rem var(--home-gutter);
-  background: var(--home-surface);
+  box-sizing: border-box;
+  width: min(17.5rem, 78vw);
+  max-width: 100%;
+  padding: 0;
+  background: transparent;
+  text-align: left;
+  align-items: flex-start;
 }
 
 @media (min-width: 56rem) {
   .home-feature__content {
-    padding: 3.5rem clamp(2rem, 5vw, 4rem);
+    flex: 1 1 auto;
+    width: 100%;
+    padding: 0 0 1.25rem;
   }
 }
 
-@media (max-width: 55.999rem) {
-  .home-feature__content {
+.home-feature__actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: min(17.5rem, 78vw);
+  max-width: 100%;
+  padding: 1.25rem 0 0;
+  background: transparent;
+}
+
+@media (min-width: 56rem) {
+  .home-feature__actions {
     box-sizing: border-box;
-    width: min(17.5rem, 78vw);
-    max-width: 100%;
-    align-self: center;
-    align-items: flex-start;
-    text-align: left;
-    padding: 1.5rem 0 2.5rem;
+    justify-content: flex-start;
+    width: 100%;
+    padding: 0 0 2rem;
+    margin-top: auto;
   }
 
-  .home-feature__content .home-btn {
-    align-self: flex-start;
+  .home-feature__actions .home-btn {
+    margin-top: 0;
+    width: 100%;
+    white-space: normal;
+    text-align: center;
   }
 }
 
 .home-feature__title {
   margin: 0;
-  font-size: clamp(1.75rem, 4vw, 2.65rem);
+  font-size: clamp(1.375rem, 3.5vw, 1.75rem);
   font-weight: 500;
-  line-height: 1.12;
+  line-height: 1.15;
   letter-spacing: -0.02em;
 }
 
@@ -518,6 +486,13 @@ body:has(.home-page .home-hero__carousel)::before {
 .home-feature__title a:hover {
   text-decoration: underline;
   text-underline-offset: 4px;
+}
+
+@media (min-width: 56rem) {
+  .home-feature__title {
+    font-size: 1.25rem;
+    line-height: 1.2;
+  }
 }
 
 .home-feature__date,
@@ -543,6 +518,7 @@ body:has(.home-page .home-hero__carousel)::before {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 0.5rem;
   align-self: flex-start;
   margin-top: 1.25rem;
   min-height: 3rem;
@@ -584,6 +560,17 @@ body:has(.home-page .home-hero__carousel)::before {
 .home-btn:focus-visible {
   outline: 2px solid var(--home-fg);
   outline-offset: 3px;
+}
+
+.home-btn__icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  line-height: 0;
+}
+
+.home-btn__ticket-icon {
+  width: 1.125rem;
+  height: 1.125rem;
 }
 
 /* —— Bands & rules —— */
@@ -744,12 +731,29 @@ body:has(.home-page .home-hero__carousel)::before {
   color: var(--home-muted);
 }
 
+.home-venue__slogan {
+  margin: 0 0 1rem;
+  max-width: 28rem;
+  font-size: clamp(1.125rem, 2.5vw, 1.375rem);
+  font-weight: 500;
+  line-height: 1.4;
+  color: color-mix(in srgb, var(--home-fg) 92%, transparent);
+}
+
+.home-venue__kicker {
+  margin-top: 1.75rem;
+}
+
 .home-venue__copy-inner .home-band__kicker {
   margin-bottom: 0.5rem;
 }
 
 .home-venue__copy-inner .home-band__title {
   margin-bottom: 1rem;
+}
+
+.home-venue__copy-inner h3.home-band__title {
+  font-size: clamp(1.5rem, 3.5vw, 2rem);
 }
 
 /* —— Offerings grid (Marquee “Available now” tiles) —— */

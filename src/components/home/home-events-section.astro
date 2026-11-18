@@ -2,16 +2,19 @@
 import HomeEventFeature, {
   type HomeEventFeatureData,
 } from "@/components/home/home-event-feature.astro"
+import HomeMarketingSlideshow from "@/components/home/home-marketing-slideshow.astro"
 import { Separator } from "@/components/ui/separator"
 import type { HomeContent } from "@/lib/home-content-schema"
 
 interface Props {
   events: HomeEventFeatureData[]
   home: HomeContent
+  venueName: string
   instagramUrl?: string
+  slideBackgrounds: string[]
 }
 
-const { events, home, instagramUrl } = Astro.props
+const { events, home, venueName, instagramUrl, slideBackgrounds } = Astro.props
 ---
 
 {
@@ -21,18 +24,26 @@ const { events, home, instagramUrl } = Astro.props
       class="home-featured"
       aria-labelledby="home-featured-title"
     >
+      <HomeMarketingSlideshow slideBackgrounds={slideBackgrounds} />
       <div class="home-featured__inner">
-        <h2 id="home-featured-title" class="home-featured__heading">
-          {home.cartelera.heading}
-        </h2>
-        {events.map((event, index) => (
-          <>
-            <HomeEventFeature event={{ ...event, reversed: index % 2 === 1 }} />
-            {index < events.length - 1 ? (
-              <Separator className="home-featured__event-separator" />
-            ) : null}
-          </>
-        ))}
+        <div class="home-featured__heading">
+          <h2 id="home-featured-title" class="home-featured__heading-line">
+            {home.cartelera.heading}
+          </h2>
+          <h1 class="home-featured__heading-line">{venueName}</h1>
+        </div>
+        <div class="home-featured__list">
+          {
+            events.map((event, index) => (
+              <>
+                <HomeEventFeature event={event} />
+                {index < events.length - 1 ? (
+                  <Separator className="home-featured__event-separator" />
+                ) : null}
+              </>
+            ))
+          }
+        </div>
       </div>
     </section>
   ) : (
@@ -62,6 +73,25 @@ const { events, home, instagramUrl } = Astro.props
   )
 }
 
+<script>
+  import { trackUmamiCarteleraTicketClick } from "@/lib/track-umami-cartelera-ticket"
+
+  const list = document.querySelector(".home-featured__list")
+  list?.addEventListener("click", (event) => {
+    const target = (event.target as Element).closest<HTMLAnchorElement>(
+      "[data-cartelera-ticket-cta]",
+    )
+    if (!target) {
+      return
+    }
+    trackUmamiCarteleraTicketClick({
+      event_title: target.dataset.eventTitle ?? "",
+      event_campaign: target.dataset.eventCampaign ?? "",
+      ticket_url: target.href,
+    })
+  })
+</script>
+
 <style>
   .home-featured__inner :global(.home-featured__event-separator) {
     display: block;
@@ -80,4 +110,5 @@ const { events, home, instagramUrl } = Astro.props
       display: none;
     }
   }
+
 </style>

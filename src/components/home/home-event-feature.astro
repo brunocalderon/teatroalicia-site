@@ -8,9 +8,10 @@ export type HomeEventFeatureData = {
   ctaLabel: string
   dateLine: string
   timeLine: string
+  /** `utm_campaign` slug for analytics. */
+  eventCampaign?: string
   imageAlt?: string
   image?: HomeEventFeatureImage
-  reversed?: boolean
 }
 
 interface Props {
@@ -23,38 +24,32 @@ const ctaLinkAttrs = event.ctaExternal
   : {}
 ---
 
-<article
-  class:list={["home-feature", event.reversed && "home-feature--reversed"]}
->
-  {
-    !event.reversed ? (
-      <a
-        class="home-feature__media"
-        href={event.ctaHref}
-        {...ctaLinkAttrs}
-        tabindex="-1"
-        aria-hidden="true"
-      >
-        {
-          event.image ? (
-            <img
-              class="home-feature__image"
-              src={event.image.src}
-              srcset={event.image.srcSet}
-              sizes={event.image.sizes}
-              width={event.image.width}
-              height={event.image.height}
-              alt=""
-              loading="lazy"
-              decoding="async"
-            />
-          ) : (
-            <div class="home-feature__placeholder" />
-          )
-        }
-      </a>
-    ) : null
-  }
+<article class="home-feature">
+  <a
+    class="home-feature__media"
+    href={event.ctaHref}
+    {...ctaLinkAttrs}
+    tabindex="-1"
+    aria-hidden="true"
+  >
+    {
+      event.image ? (
+        <img
+          class="home-feature__image"
+          src={event.image.src}
+          srcset={event.image.srcSet}
+          sizes={event.image.sizes}
+          width={event.image.width}
+          height={event.image.height}
+          alt=""
+          loading="lazy"
+          decoding="async"
+        />
+      ) : (
+        <div class="home-feature__placeholder" />
+      )
+    }
+  </a>
   <div class="home-feature__content">
     <h2 class="home-feature__title">
       <a href={event.ctaHref} {...ctaLinkAttrs}>
@@ -63,37 +58,44 @@ const ctaLinkAttrs = event.ctaExternal
     </h2>
     {event.dateLine ? <p class="home-feature__date">{event.dateLine}</p> : null}
     {event.timeLine ? <p class="home-feature__time">{event.timeLine}</p> : null}
-    <a class="home-btn home-btn--primary" href={event.ctaHref} {...ctaLinkAttrs}>
-      {event.ctaLabel}
+  </div>
+  <div class="home-feature__actions">
+    <a
+      class="home-btn home-btn--primary"
+      href={event.ctaHref}
+      {...ctaLinkAttrs}
+      {...(event.ctaExternal
+        ? {
+            "data-cartelera-ticket-cta": true,
+            "data-event-title": event.title,
+            "data-event-campaign": event.eventCampaign ?? "",
+          }
+        : {})}
+    >
+      <span class="home-btn__label">{event.ctaLabel}</span>
+      {
+        event.ctaExternal ? (
+          <span class="home-btn__icon" aria-hidden="true">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="home-btn__ticket-icon"
+            >
+              <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" />
+              <path d="M13 5v2" />
+              <path d="M13 17v2" />
+              <path d="M13 11v2" />
+            </svg>
+          </span>
+        ) : null
+      }
     </a>
   </div>
-  {
-    event.reversed ? (
-      <a
-        class="home-feature__media"
-        href={event.ctaHref}
-        {...ctaLinkAttrs}
-        tabindex="-1"
-        aria-hidden="true"
-      >
-        {
-          event.image ? (
-            <img
-              class="home-feature__image"
-              src={event.image.src}
-              srcset={event.image.srcSet}
-              sizes={event.image.sizes}
-              width={event.image.width}
-              height={event.image.height}
-              alt=""
-              loading="lazy"
-              decoding="async"
-            />
-          ) : (
-            <div class="home-feature__placeholder" />
-          )
-        }
-      </a>
-    ) : null
-  }
 </article>

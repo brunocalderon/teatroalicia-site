@@ -16,6 +16,10 @@ const fallbackVenueImage = venue.imagePath?.trim() ?? "/background.jpg"
 const photoAlt = formatHomeContentTemplate(home.venueSection.photoAlt, {
   name: venue.name,
 })
+const slogan = home.hero.slogan?.trim()
+const lead = home.hero.lead.trim()
+const venueBody = home.venueSection.body.trim()
+const showVenueBody = venueBody !== lead
 ---
 
 <section class="home-band home-band--venue" aria-labelledby="home-venue-title">
@@ -50,14 +54,20 @@ const photoAlt = formatHomeContentTemplate(home.venueSection.photoAlt, {
     </div>
     <div class="home-venue__copy">
       <div class="home-venue__copy-inner">
-        <p class="home-band__kicker">{home.venueSection.kicker}</p>
+        <p class="home-band__kicker">{home.hero.kicker}</p>
         <h2
           id="home-venue-title"
           class="home-band__title home-band__title--display"
         >
-          {home.venueSection.title}
+          {venue.name}
         </h2>
-        <p class="home-venue__text">{home.venueSection.body}</p>
+        {slogan ? <p class="home-venue__slogan">{slogan}</p> : null}
+        <p class="home-venue__text">{lead}</p>
+        <p class="home-band__kicker home-venue__kicker">{home.venueSection.kicker}</p>
+        <h3 class="home-band__title">{home.venueSection.title}</h3>
+        {showVenueBody ? (
+          <p class="home-venue__text">{home.venueSection.body}</p>
+        ) : null}
         {
           capacity ? (
             <p class="home-venue__text home-venue__text--muted">

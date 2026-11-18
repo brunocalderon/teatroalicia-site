@@ -5,7 +5,6 @@ import HomeContactFooter from "@/components/home/home-contact-footer.astro"
 import type { HomeEventFeatureData } from "@/components/home/home-event-feature.astro"
 import HomeEventsSection from "@/components/home/home-events-section.astro"
 import HomeHeader from "@/components/home/home-header.astro"
-import HomeHero from "@/components/home/home-hero.astro"
 import HomeOfferingsGrid from "@/components/home/home-offerings-grid.astro"
 import HomeVenueSection from "@/components/home/home-venue-section.astro"
 import Layout from "@/layouts/Layout.astro"
@@ -96,6 +95,7 @@ for (const entry of upcomingEntries) {
     title: data.title,
     ctaHref,
     ctaExternal: Boolean(ticketUrl),
+    eventCampaign: homeCarteleraEventSlug(data),
     ctaLabel,
     dateLine: schedule.dateLine,
     timeLine: schedule.timeLine,
@@ -126,15 +126,12 @@ const instagramUrl = instagramUrlFromVenue(venueConfig)
 >
   <HomeHeader />
   <main class="home-page">
-    <HomeHero
-      venue={venueConfig}
-      home={homeContent}
-      slideBackgrounds={heroSlideBackgrounds}
-    />
     <HomeEventsSection
       events={eventFeatures}
       home={homeContent}
+      venueName={venueConfig.name}
       instagramUrl={instagramUrl}
+      slideBackgrounds={heroSlideBackgrounds}
     />
     <HomeVenueSection
       venue={venueConfig}

@@ -1,0 +1,20 @@
+---
+interface Props {
+  /** CSS `background-image` values (optimized WebP) per carousel slide. */
+  slideBackgrounds: string[]
+}
+
+const { slideBackgrounds } = Astro.props
+---
+
+<div class="home-hero__carousel" aria-hidden="true">
+  {
+    slideBackgrounds.map((backgroundImage) => (
+      <div
+        class="home-hero__slide"
+        style={`--home-hero-image: ${backgroundImage}`}
+      />
+    ))
+  }
+</div>
+<div class="home-hero__scrim home-featured__scrim" aria-hidden="true"></div>
