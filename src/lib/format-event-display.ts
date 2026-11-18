@@ -1,6 +1,17 @@
 const SANTIAGO_TZ = "America/Santiago"
 const DISPLAY_LOCALE = "es-CL"
 
+function capitalizeFirst(value: string): string {
+  if (!value) {
+    return value
+  }
+  return value.charAt(0).toUpperCase() + value.slice(1)
+}
+
+function stripTrailingDot(value: string): string {
+  return value.replace(/\.\s*$/u, "")
+}
+
 /** Long date for event cards (e.g. "jueves, 20 de noviembre de 2026"). */
 export function formatEventDateLong(iso: string): string {
   const date = new Date(iso)
@@ -14,6 +25,37 @@ export function formatEventDateLong(iso: string): string {
     month: "long",
     year: "numeric",
   }).format(date)
+}
+
+/** Home cartelera date (e.g. "Vie, 20 de Nov de 2026"). */
+export function formatEventDateHome(iso: string): string {
+  const date = new Date(iso)
+  if (Number.isNaN(date.getTime())) {
+    return ""
+  }
+
+  const formatter = new Intl.DateTimeFormat(DISPLAY_LOCALE, {
+    timeZone: SANTIAGO_TZ,
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  })
+  const parts = formatter.formatToParts(date)
+  const part = (type: Intl.DateTimeFormatPartTypes) =>
+    parts.find((entry) => entry.type === type)?.value ?? ""
+
+  const weekday = capitalizeFirst(stripTrailingDot(part("weekday")))
+  const day = part("day")
+  const month = capitalizeFirst(stripTrailingDot(part("month")))
+  const year = part("year")
+
+  if (!day || !month || !year) {
+    return ""
+  }
+
+  const weekdayPrefix = weekday ? `${weekday}, ` : ""
+  return `${weekdayPrefix}${day} de ${month} de ${year}`
 }
 
 /** Time range in Santiago (e.g. "21:00 – 02:00" when end is provided). */
@@ -55,9 +97,14 @@ export function formatEventTimeRange(
 export function formatEventSchedule(
   startIso: string,
   endIso?: string,
+  options?: { date?: "long" | "home" },
 ): { dateLine: string; timeLine: string } {
+  const dateStyle = options?.date ?? "long"
   return {
-    dateLine: formatEventDateLong(startIso),
+    dateLine:
+      dateStyle === "home"
+        ? formatEventDateHome(startIso)
+        : formatEventDateLong(startIso),
     timeLine: formatEventTimeRange(startIso, endIso),
   }
 }

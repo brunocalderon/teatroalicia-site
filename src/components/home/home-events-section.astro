@@ -3,7 +3,6 @@ import HomeEventFeature, {
   type HomeEventFeatureData,
 } from "@/components/home/home-event-feature.astro"
 import HomeMarketingSlideshow from "@/components/home/home-marketing-slideshow.astro"
-import { Separator } from "@/components/ui/separator"
 import type { HomeContent } from "@/lib/home-content-schema"
 
 interface Props {
@@ -33,16 +32,47 @@ const { events, home, venueName, instagramUrl, slideBackgrounds } = Astro.props
           <h1 class="home-featured__heading-line">{venueName}</h1>
         </div>
         <div class="home-featured__list">
-          {
-            events.map((event, index) => (
-              <>
-                <HomeEventFeature event={event} />
-                {index < events.length - 1 ? (
-                  <Separator className="home-featured__event-separator" />
-                ) : null}
-              </>
-            ))
-          }
+          {events.map((event) => (
+            <HomeEventFeature event={event} />
+          ))}
+        </div>
+      </div>
+      <div
+        class="home-poster-lightbox"
+        data-cartelera-poster-lightbox
+        hidden
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="home-cartelera-poster-lightbox-label"
+      >
+        <p id="home-cartelera-poster-lightbox-label" class="sr-only">
+          Afiche del evento
+        </p>
+        <p
+          class="sr-only"
+          data-cartelera-poster-lightbox-title
+        />
+        <button
+          type="button"
+          class="home-poster-lightbox__backdrop"
+          data-cartelera-poster-lightbox-close
+          aria-label="Cerrar afiche ampliado"
+        />
+        <div class="home-poster-lightbox__panel">
+          <button
+            type="button"
+            class="home-poster-lightbox__close"
+            data-cartelera-poster-lightbox-close
+            aria-label="Cerrar"
+          >
+            Cerrar
+          </button>
+          <img
+            class="home-poster-lightbox__image"
+            data-cartelera-poster-lightbox-image
+            alt=""
+            decoding="async"
+          />
         </div>
       </div>
     </section>
@@ -74,7 +104,11 @@ const { events, home, venueName, instagramUrl, slideBackgrounds } = Astro.props
 }
 
 <script>
+  import { initCarteleraPosterLightbox } from "@/lib/cartelera-poster-lightbox"
   import { trackUmamiCarteleraTicketClick } from "@/lib/track-umami-cartelera-ticket"
+
+  const cartelera = document.getElementById("cartelera")
+  initCarteleraPosterLightbox(cartelera ?? document)
 
   const list = document.querySelector(".home-featured__list")
   list?.addEventListener("click", (event) => {
@@ -91,24 +125,3 @@ const { events, home, venueName, instagramUrl, slideBackgrounds } = Astro.props
     })
   })
 </script>
-
-<style>
-  .home-featured__inner :global(.home-featured__event-separator) {
-    display: block;
-    flex-shrink: 0;
-    width: min(17.5rem, 78vw);
-    max-width: calc(100% - 2 * var(--home-gutter));
-    height: 1px;
-    margin: 0.25rem auto;
-    border: 0;
-    background: var(--home-line);
-    opacity: 1;
-  }
-
-  @media (min-width: 56rem) {
-    .home-featured__inner :global(.home-featured__event-separator) {
-      display: none;
-    }
-  }
-
-</style>

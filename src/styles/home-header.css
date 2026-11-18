@@ -3,7 +3,7 @@
 .home-header {
   --home-nav-max: 80rem; /* 1280px */
   --home-nav-gutter: clamp(1.25rem, 4vw, 2.5rem);
-  --home-nav-fg: #f7f7f7;
+  --home-nav-fg: #f2f0ef;
   position: fixed;
   inset: 0 0 auto;
   z-index: 20;

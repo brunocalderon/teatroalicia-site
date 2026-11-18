@@ -25,15 +25,16 @@ const ctaLinkAttrs = event.ctaExternal
 ---
 
 <article class="home-feature">
-  <a
-    class="home-feature__media"
-    href={event.ctaHref}
-    {...ctaLinkAttrs}
-    tabindex="-1"
-    aria-hidden="true"
-  >
-    {
-      event.image ? (
+  {
+    event.image ? (
+      <button
+        type="button"
+        class="home-feature__media"
+        data-cartelera-poster-zoom
+        data-zoom-src={event.image.src}
+        data-event-title={event.title}
+        aria-label={`Ampliar afiche de ${event.title}`}
+      >
         <img
           class="home-feature__image"
           src={event.image.src}
@@ -45,11 +46,13 @@ const ctaLinkAttrs = event.ctaExternal
           loading="lazy"
           decoding="async"
         />
-      ) : (
+      </button>
+    ) : (
+      <div class="home-feature__media" aria-hidden="true">
         <div class="home-feature__placeholder" />
-      )
-    }
-  </a>
+      </div>
+    )
+  }
   <div class="home-feature__content">
     <h2 class="home-feature__title">
       <a href={event.ctaHref} {...ctaLinkAttrs}>
@@ -72,7 +75,6 @@ const ctaLinkAttrs = event.ctaExternal
           }
         : {})}
     >
-      <span class="home-btn__label">{event.ctaLabel}</span>
       {
         event.ctaExternal ? (
           <span class="home-btn__icon" aria-hidden="true">
@@ -96,6 +98,7 @@ const ctaLinkAttrs = event.ctaExternal
           </span>
         ) : null
       }
+      <span class="home-btn__label">{event.ctaLabel}</span>
     </a>
   </div>
 </article>

@@ -2,7 +2,7 @@ import { getImage } from "astro:assets"
 import type { ImageMetadata } from "astro"
 
 export const HOME_EVENT_FEATURE_SIZES =
-  "(max-width: 56rem) 78vw, 20rem"
+  "(max-width: 56rem) 7.5rem, 20rem"
 
 const CANDIDATE_WIDTHS = [640, 840, 1120, 1440] as const
 const WEBP_QUALITY = 78

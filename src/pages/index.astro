@@ -66,7 +66,7 @@ const eventFeatures: HomeEventFeatureData[] = []
 for (const entry of upcomingEntries) {
   const { data } = entry
   const schedule = data.eventStart
-    ? formatEventSchedule(data.eventStart, data.eventEnd)
+    ? formatEventSchedule(data.eventStart, data.eventEnd, { date: "home" })
     : { dateLine: "", timeLine: "" }
 
   let image: Awaited<ReturnType<typeof buildHomeEventFeatureImage>> | undefined
