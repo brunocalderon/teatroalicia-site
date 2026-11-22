@@ -13,7 +13,6 @@ export type AirtableCarteleraRow = {
   imageFilename?: string
   imageAlt?: string
   eventKind?: string
-  language?: string
   airtableRecordId: string
   createdTime?: string
 }

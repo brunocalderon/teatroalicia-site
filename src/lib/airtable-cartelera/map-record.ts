@@ -123,7 +123,6 @@ export function mapAirtableCarteleraRecord(
     (imageField !== undefined ? resolveAirtableImageUrl(imageField) : undefined)
   const imageFilename = attachment?.filename
   const eventKind = readAirtableField(fields, ["Event Kind", "eventKind"])
-  const language = readAirtableField(fields, ["Language", "language"])
 
   return {
     ok: true,
@@ -139,7 +138,6 @@ export function mapAirtableCarteleraRecord(
       imageFilename,
       imageAlt,
       eventKind,
-      language,
       airtableRecordId,
       createdTime,
     },

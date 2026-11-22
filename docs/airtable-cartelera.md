@@ -38,8 +38,9 @@ Each `records[]` entry:
 | `Purchase Link` | No | Ticket CTA URL |
 | `Image` | No | Poster (`filename (https://…)` → mirrored locally at build) |
 | `Event Kind` | No | Schema.org event type |
-| `Language` | No | e.g. `es` |
 | `Publish` | No | When `false`, row is hidden |
+
+Cartelera events are always Spanish (`lang: es`); there is no `Language` column in Airtable.
 
 Legacy column names (`eventStart`, `ticketLink`, `Event ID`, etc.) are still accepted.
 

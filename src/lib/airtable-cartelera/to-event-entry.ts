@@ -9,7 +9,7 @@ export function airtableRowToEventEntryData(
     slug: row.slug,
     title: row.title,
     description: row.title,
-    lang: row.language?.trim() || "es",
+    lang: "es",
     eventId: row.eventId,
     eventStart: row.eventStart,
     eventEnd: row.eventEnd,

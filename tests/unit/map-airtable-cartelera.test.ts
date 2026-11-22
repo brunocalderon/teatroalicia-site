@@ -89,7 +89,6 @@ describe("map-airtable-cartelera", () => {
 
     expect(rows).toHaveLength(2)
     expect(rows[0]?.eventKind).toBe("social-music")
-    expect(rows[0]?.language).toBe("es")
     expect(rows[0]?.airtableRecordId).toBe("recZTR2et7aeEZfXu")
     expect(rows[0]?.imageAlt).toBe("Murano: One More Night")
     expect(rows[0]?.imageUrl).toMatch(/^https:\/\/v5\.airtableusercontent\.com\//)
@@ -105,6 +104,7 @@ describe("map-airtable-cartelera", () => {
     const ecdlv = rows.find((row) => row.slug === "ecdlv")
     expect(ecdlv).toBeDefined()
     const eventData = airtableRowToEventEntryData(ecdlv!)
+    expect(eventData.lang).toBe("es")
     expect(eventData.eventKind).toBe("social-music")
     const built = buildEventFromForm({
       data: eventToSchemaFormData(eventData),

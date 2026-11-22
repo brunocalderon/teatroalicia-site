@@ -18,7 +18,6 @@ export const airtableCarteleraFieldsSchema = z
     Start: z.string().min(1).optional(),
     "Event Kind": z.string().min(1).optional(),
     End: z.string().min(1).optional(),
-    Language: z.string().min(1).optional(),
     Title: z.string().min(1).optional(),
     // Optional publish gate (checkbox or string)
     Publish: z.union([z.boolean(), z.string()]).optional(),
