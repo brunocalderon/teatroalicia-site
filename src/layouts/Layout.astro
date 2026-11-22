@@ -25,6 +25,12 @@ interface Props {
 		srcSet: string;
 		sizes: string;
 	};
+	/** Cartelera hero carousel: preload first slide WebP (not event poster LCP). */
+	heroBackgroundPreload?: {
+		src: string;
+		srcSet?: string;
+		sizes?: string;
+	};
 	/**
 	 * Meta/Umami: ms after `load` to engage (0 = first user interaction).
 	 * When omitted and `tracking` is set, uses `MARKETING_ENGAGE_MS`.
@@ -42,6 +48,7 @@ const {
 	formThirdPartyHints = false,
 	deferredSiteBackdrop = false,
 	lcpImage,
+	heroBackgroundPreload,
 	marketingEngageAfterLoadMs: marketingEngageAfterLoadMsProp,
 	jsonLd,
 } = Astro.props;
@@ -90,6 +97,19 @@ const loadHdBackdropAfterPageLoad =
 					href={lcpImage.src}
 					imagesrcset={lcpImage.srcSet}
 					imagesizes={lcpImage.sizes}
+					fetchpriority="high"
+				/>
+			) : null
+		}
+		{
+			heroBackgroundPreload ? (
+				<link
+					rel="preload"
+					as="image"
+					type="image/webp"
+					href={heroBackgroundPreload.src}
+					imagesrcset={heroBackgroundPreload.srcSet}
+					imagesizes={heroBackgroundPreload.sizes}
 					fetchpriority="high"
 				/>
 			) : null

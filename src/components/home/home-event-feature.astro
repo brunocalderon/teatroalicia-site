@@ -16,9 +16,11 @@ export type HomeEventFeatureData = {
 
 interface Props {
   event: HomeEventFeatureData
+  /** Stagger index for cartelera card entrance (0-based). */
+  enterIndex?: number
 }
 
-const { event } = Astro.props
+const { event, enterIndex = 0 } = Astro.props
 const posterAlt = event.imageAlt?.trim() || ""
 const posterImage = event.image
 const posterZoomSrc =
@@ -31,7 +33,10 @@ const ctaLinkAttrs = event.ctaExternal
   : {}
 ---
 
-<article class="home-feature">
+<article
+  class="home-feature"
+  style={`--home-feature-enter-index: ${enterIndex}`}
+>
   {
     event.image ? (
       <button
@@ -42,17 +47,35 @@ const ctaLinkAttrs = event.ctaExternal
         data-event-title={event.title}
         aria-label={`Ampliar afiche de ${event.title}`}
       >
-        {posterUsesPicture && posterImage ? (
-          <picture>
-            <source
-              type="image/webp"
-              srcset={posterImage.srcSet}
-              sizes={posterImage.sizes}
-            />
+        <div class="home-feature__poster-frame">
+          <span
+            class="home-feature__poster-skeleton"
+            aria-hidden="true"
+          />
+          {posterUsesPicture && posterImage ? (
+            <picture>
+              <source
+                type="image/webp"
+                srcset={posterImage.srcSet}
+                sizes={posterImage.sizes}
+              />
+              <img
+                class="home-feature__image"
+                src={posterImage.fallbackSrc}
+                srcset={posterImage.fallbackSrcSet}
+                sizes={posterImage.sizes}
+                width={posterImage.width}
+                height={posterImage.height}
+                alt={posterAlt}
+                loading="lazy"
+                decoding="async"
+              />
+            </picture>
+          ) : posterImage ? (
             <img
               class="home-feature__image"
-              src={posterImage.fallbackSrc}
-              srcset={posterImage.fallbackSrcSet}
+              src={posterImage.src}
+              srcset={posterImage.srcSet}
               sizes={posterImage.sizes}
               width={posterImage.width}
               height={posterImage.height}
@@ -60,20 +83,8 @@ const ctaLinkAttrs = event.ctaExternal
               loading="lazy"
               decoding="async"
             />
-          </picture>
-        ) : posterImage ? (
-          <img
-            class="home-feature__image"
-            src={posterImage.src}
-            srcset={posterImage.srcSet}
-            sizes={posterImage.sizes}
-            width={posterImage.width}
-            height={posterImage.height}
-            alt={posterAlt}
-            loading="lazy"
-            decoding="async"
-          />
-        ) : null}
+          ) : null}
+        </div>
       </button>
     ) : (
       <div class="home-feature__media" aria-hidden="true">

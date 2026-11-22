@@ -16,6 +16,18 @@ const VENUE_CANDIDATE_WIDTHS = [640, 960, 1200, 1440, 1920] as const
 const JSON_LD_VENUE_WIDTH = 1920
 
 const WEBP_QUALITY = 80
+const HERO_LQIP_WIDTH = 48
+
+export type HomeHeroSlideBackground = {
+  /** Full-bleed HD layer (`image-set` or single WebP `url()`). */
+  hdBackground: string
+  /** Tiny WebP for instant blur-up under the HD layer. */
+  lqipBackground: string
+  /** Primary WebP URL for `<link rel="preload">` (first slide). */
+  preloadSrc: string
+  preloadSrcSet?: string
+  preloadSizes: string
+}
 
 export type HomeVenuePhotoImage = {
   src: string
@@ -40,16 +52,28 @@ function widthsForSource(
   return [...widths].sort((a, b) => a - b)
 }
 
-/**
- * CSS `background-image` value for one hero carousel slide (WebP, up to 4K).
- */
+const quoteCssUrl = (src: string) => `url("${src}")`
+
+function buildHeroHdBackground(
+  standardSrc: string,
+  largeSrc: string | undefined,
+): string {
+  if (!largeSrc || largeSrc === standardSrc) {
+    return quoteCssUrl(standardSrc)
+  }
+
+  return `image-set(${quoteCssUrl(standardSrc)} type("image/webp") 1x, ${quoteCssUrl(largeSrc)} type("image/webp") 2x)`
+}
+
+/** Hero carousel slide backgrounds (HD + LQIP + preload hints). */
 export async function buildHomeHeroSlideBackground(
   source: ImageMetadata,
-): Promise<string> {
+): Promise<HomeHeroSlideBackground> {
   const standardWidth = Math.min(HERO_RETINA_WIDTH, source.width, MAX_MARKETING_WIDTH)
   const largeWidth = Math.min(HERO_MAX_WIDTH, source.width, MAX_MARKETING_WIDTH)
+  const lqipWidth = Math.min(HERO_LQIP_WIDTH, source.width)
 
-  const [standard, large] = await Promise.all([
+  const [standard, large, lqip] = await Promise.all([
     getImage({
       src: source,
       width: standardWidth,
@@ -63,15 +87,27 @@ export async function buildHomeHeroSlideBackground(
           format: "webp",
           quality: WEBP_QUALITY,
         })
-      : undefined,
+      : Promise.resolve(undefined),
+    getImage({
+      src: source,
+      width: lqipWidth,
+      format: "webp",
+      quality: 52,
+    }),
   ])
 
-  const quote = (src: string) => `url("${src}")`
-  if (!large) {
-    return quote(standard.src)
-  }
+  const preloadSrcSet =
+    large && largeWidth > standardWidth
+      ? `${standard.src} ${standardWidth}w, ${large.src} ${largeWidth}w`
+      : `${standard.src} ${standardWidth}w`
 
-  return `image-set(${quote(standard.src)} type("image/webp") 1x, ${quote(large.src)} type("image/webp") 2x)`
+  return {
+    hdBackground: buildHeroHdBackground(standard.src, large?.src),
+    lqipBackground: quoteCssUrl(lqip.src),
+    preloadSrc: standard.src,
+    preloadSrcSet,
+    preloadSizes: "100vw",
+  }
 }
 
 export async function buildHomeVenuePhotoImage(

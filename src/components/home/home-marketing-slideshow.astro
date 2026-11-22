@@ -1,20 +1,41 @@
 ---
+import type { HomeHeroSlideBackground } from "@/lib/home-marketing-image"
+
 interface Props {
-  /** CSS `background-image` values (optimized WebP) per carousel slide. */
-  slideBackgrounds: string[]
+  slideBackgrounds: HomeHeroSlideBackground[]
 }
 
 const { slideBackgrounds } = Astro.props
+const deferredHdLayers = slideBackgrounds.slice(1).map((slide) => slide.hdBackground)
+const deferredHdLayersJson = JSON.stringify(deferredHdLayers)
 ---
 
 <div class="home-hero__carousel" aria-hidden="true">
   {
-    slideBackgrounds.map((backgroundImage) => (
+    slideBackgrounds.map((slide, index) => (
       <div
         class="home-hero__slide"
-        style={`--home-hero-image: ${backgroundImage}`}
+        style={`--home-hero-image-lqip: ${slide.lqipBackground};${
+          index === 0 ? `--home-hero-image-hd: ${slide.hdBackground};` : ""
+        }`}
+        {...(index > 0 ? { "data-home-hero-slide-deferred": "" } : {})}
       />
     ))
   }
 </div>
 <div class="home-hero__scrim home-featured__scrim" aria-hidden="true"></div>
+
+<script
+  id="home-hero-deferred-hd"
+  type="application/json"
+  set:html={deferredHdLayersJson}
+/>
+<script>
+  import { initDeferredHomeHeroSlides } from "@/lib/deferred-home-hero-slides"
+
+  const payload = document.getElementById("home-hero-deferred-hd")
+  if (payload) {
+    const deferredHdLayers = JSON.parse(payload.textContent ?? "[]") as string[]
+    initDeferredHomeHeroSlides(deferredHdLayers)
+  }
+</script>

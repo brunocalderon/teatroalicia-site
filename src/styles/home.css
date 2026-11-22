@@ -1,10 +1,6 @@
 @import "@fontsource-variable/geist";
 @import "./home-header.css";
 
-body:has(.home-page #cartelera .home-hero__carousel)::before {
-  opacity: 0;
-}
-
 .home-page {
   --home-max: 75rem;
   --home-content-max: 80rem; /* 1280px — aligns with nav */
@@ -55,7 +51,8 @@ body:has(.home-page #cartelera .home-hero__carousel)::before {
 .home-hero__slide {
   position: absolute;
   inset: 0;
-  background-image: var(--home-hero-image);
+  background-color: #000;
+  background-image: var(--home-hero-image-hd, none), var(--home-hero-image-lqip);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -260,6 +257,12 @@ body:has(.home-page #cartelera .home-hero__carousel)::before {
     opacity: 1;
     transform: none;
   }
+
+  .home-featured__list > .home-feature {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .home-hero__scrim {
@@ -383,6 +386,52 @@ html.home-poster-lightbox-open {
   }
 }
 
+/**
+ * Cartelera cards: staggered rise + fade.
+ * 3 cards @ index 0–2 → starts 0.2s, 0.4s, 0.6s; fade ends ~1.25s / move ~1.4s on last card.
+ * Fade runs slightly longer than rise so opacity eases in without a hard snap at the end.
+ */
+.home-featured__list {
+  --home-feature-enter-lead: 0.2s;
+  --home-feature-enter-stagger: 0.2s;
+  --home-feature-enter-fade-duration: 1.05s;
+  --home-feature-enter-move-duration: 0.8s;
+  --home-feature-enter-fade-ease: cubic-bezier(0.33, 0, 0.1, 1);
+  --home-feature-enter-move-ease: cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+@keyframes home-feature-enter-fade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes home-feature-enter-move {
+  from {
+    transform: translate3d(0, 1.25rem, 0);
+  }
+
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.home-featured__list > .home-feature {
+  --home-feature-enter-delay: calc(
+    var(--home-feature-enter-lead) + var(--home-feature-enter-index, 0) *
+      var(--home-feature-enter-stagger)
+  );
+  animation:
+    home-feature-enter-fade var(--home-feature-enter-fade-duration)
+      var(--home-feature-enter-fade-ease) var(--home-feature-enter-delay) both,
+    home-feature-enter-move var(--home-feature-enter-move-duration)
+      var(--home-feature-enter-move-ease) var(--home-feature-enter-delay) both;
+}
+
 .home-feature {
   display: flex;
   flex-direction: column;
@@ -422,14 +471,17 @@ html.home-poster-lightbox-open {
     padding: 0;
   }
 
+  .home-feature__poster-frame,
   .home-feature__media picture,
   .home-feature__image,
-  .home-feature__placeholder {
+  .home-feature__placeholder,
+  .home-feature__poster-skeleton {
     width: 100%;
     max-width: 7.5rem;
     margin-inline: 0;
     box-shadow: 0 0.5rem 1.25rem rgba(0, 0, 0, 0.45);
   }
+
 
   .home-feature__content {
     grid-column: 2;
@@ -531,6 +583,39 @@ html.home-poster-lightbox-open {
   background: transparent;
 }
 
+.home-feature__poster-frame {
+  position: relative;
+  z-index: 1;
+  display: block;
+  flex-shrink: 0;
+  width: 100%;
+  aspect-ratio: 1;
+}
+
+.home-feature__poster-skeleton {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
+  animation: home-feature-poster-skeleton-pulse 1.35s ease-in-out infinite;
+}
+
+.home-feature__poster-frame:has(.home-feature__image[complete])
+  .home-feature__poster-skeleton {
+  visibility: hidden;
+}
+
+@keyframes home-feature-poster-skeleton-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.55;
+  }
+}
+
 button.home-feature__media {
   width: 100%;
   border: 0;
@@ -544,14 +629,22 @@ button.home-feature__media {
   .home-feature__media {
     width: 100%;
   }
+
+  .home-feature__poster-frame {
+    width: min(20rem, 100%);
+    max-width: 20rem;
+    margin-inline: auto;
+  }
 }
 
 .home-feature__image {
+  position: relative;
+  z-index: 1;
   display: block;
   flex-shrink: 0;
   box-sizing: border-box;
   width: 100%;
-  height: auto;
+  height: 100%;
   aspect-ratio: 1;
   object-fit: cover;
   object-position: center;
@@ -559,11 +652,17 @@ button.home-feature__media {
   transition: transform 0.45s ease;
 }
 
+.home-feature__poster-frame picture {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
 @media (min-width: 56rem) {
   .home-feature__image {
-    width: min(20rem, 100%);
-    max-width: 20rem;
-    margin-inline: auto;
+    width: 100%;
+    max-width: none;
+    margin-inline: 0;
     aspect-ratio: 1;
     object-fit: cover;
   }

@@ -49,7 +49,6 @@ import { venueConfig } from "../../content/venue"
 
 import "@/styles/home.css"
 
-const homePageBackdropCss = sitePageBackdropCss("home-page")
 const pageTitle = homeContent.meta.title
 const pageDescription = homeContent.meta.description
 
@@ -162,6 +161,20 @@ const homeJsonLd = buildHomePageJsonLd({
 })
 
 const instagramUrl = instagramUrlFromVenue(venueConfig)
+
+const showCarteleraHero = eventFeatures.length > 0
+const homePageBackdropCss = sitePageBackdropCss("home-page", {
+  primaryHeroBackground: showCarteleraHero,
+})
+const firstHeroSlide = heroSlideBackgrounds[0]
+const heroBackgroundPreload =
+  showCarteleraHero && firstHeroSlide
+    ? {
+        src: firstHeroSlide.preloadSrc,
+        srcSet: firstHeroSlide.preloadSrcSet,
+        sizes: firstHeroSlide.preloadSizes,
+      }
+    : undefined
 ---
 
 <Layout
@@ -169,7 +182,8 @@ const instagramUrl = instagramUrlFromVenue(venueConfig)
   description={pageDescription}
   lang="es"
   tracking={marketingPageTracking.home}
-  deferredSiteBackdrop
+  deferredSiteBackdrop={!showCarteleraHero}
+  heroBackgroundPreload={heroBackgroundPreload}
   jsonLd={homeJsonLd}
 >
   <HomeHeader />

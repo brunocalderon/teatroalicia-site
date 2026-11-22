@@ -4,13 +4,14 @@ import HomeEventFeature, {
 } from "@/components/home/home-event-feature.astro"
 import HomeMarketingSlideshow from "@/components/home/home-marketing-slideshow.astro"
 import type { HomeContent } from "@/lib/home-content-schema"
+import type { HomeHeroSlideBackground } from "@/lib/home-marketing-image"
 
 interface Props {
   events: HomeEventFeatureData[]
   home: HomeContent
   venueName: string
   instagramUrl?: string
-  slideBackgrounds: string[]
+  slideBackgrounds: HomeHeroSlideBackground[]
 }
 
 const { events, home, venueName, instagramUrl, slideBackgrounds } = Astro.props
@@ -34,8 +35,8 @@ const showCartelera = events.length > 0
           <h1 class="home-featured__heading-line">{venueName}</h1>
         </div>
         <div class="home-featured__list">
-          {events.map((event) => (
-            <HomeEventFeature event={event} />
+          {events.map((event, index) => (
+            <HomeEventFeature event={event} enterIndex={index} />
           ))}
         </div>
       </div>
