@@ -1,33 +1,72 @@
+import { readdir } from "node:fs/promises"
+import path from "node:path"
 import type { ImageMetadata } from "astro"
 
-const carteleraPosterModules = import.meta.glob<ImageMetadata>(
+import { CARTELERA_POSTER_CACHE_DIR } from "@/lib/airtable-cartelera/cartelera-poster-cache-path"
+
+/**
+ * Importers for files that existed when Vite first scanned the cache directory.
+ * Posters mirrored later (dev / first build) are loaded via dynamic import below.
+ */
+const cachedPosterImporters = import.meta.glob<ImageMetadata>(
   "../../.cache/cartelera-posters/*.{apng,avif,gif,jpg,jpeg,png,webp}",
-  { eager: true, import: "default" },
+  { import: "default" },
 )
 
-function slugFromModulePath(modulePath: string): string | undefined {
-  const fileName = modulePath.split("/").pop()
+const globKeyForFile = (fileName: string) =>
+  `../../.cache/cartelera-posters/${fileName}`
+
+let posterFileNameBySlug: Map<string, string> | undefined
+
+export function resetCarteleraPosterFileIndex(): void {
+  posterFileNameBySlug = undefined
+}
+
+async function listPosterFileNamesBySlug(): Promise<Map<string, string>> {
+  if (posterFileNameBySlug) {
+    return posterFileNameBySlug
+  }
+
+  posterFileNameBySlug = new Map()
+  let entries: string[]
+  try {
+    entries = await readdir(CARTELERA_POSTER_CACHE_DIR)
+  } catch {
+    return posterFileNameBySlug
+  }
+
+  for (const entry of entries) {
+    const slug = path.basename(entry, path.extname(entry))
+    if (slug) {
+      posterFileNameBySlug.set(slug, entry)
+    }
+  }
+
+  return posterFileNameBySlug
+}
+
+export async function carteleraPosterImageBySlug(
+  slug: string,
+): Promise<ImageMetadata | undefined> {
+  const fileIndex = await listPosterFileNamesBySlug()
+  const fileName = fileIndex.get(slug)
   if (!fileName) {
     return undefined
   }
-  const dot = fileName.lastIndexOf(".")
-  if (dot <= 0) {
+
+  const globKey = globKeyForFile(fileName)
+  const fromGlob = cachedPosterImporters[globKey]
+  if (fromGlob) {
+    return fromGlob()
+  }
+
+  try {
+    const mod = await import(
+      /* @vite-ignore */
+      `../../.cache/cartelera-posters/${fileName}`
+    )
+    return mod.default as ImageMetadata
+  } catch {
     return undefined
   }
-  return fileName.slice(0, dot)
-}
-
-const carteleraPosterBySlug = new Map<string, ImageMetadata>()
-
-for (const [modulePath, image] of Object.entries(carteleraPosterModules)) {
-  const slug = slugFromModulePath(modulePath)
-  if (slug) {
-    carteleraPosterBySlug.set(slug, image)
-  }
-}
-
-export function carteleraPosterImageBySlug(
-  slug: string,
-): ImageMetadata | undefined {
-  return carteleraPosterBySlug.get(slug)
 }

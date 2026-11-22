@@ -9,6 +9,8 @@ export type SitePageBackdropOptions = {
    * in inline CSS so deferred page CSS cannot flash the form background first.
    */
   primaryHeroBackground?: boolean
+  /** Split layout provides its own imagery (e.g. /contacto venue band). */
+  omitFixedBackdrop?: boolean
 }
 
 /** LQIP backdrop on `::before`, HD `image-set` after `body.form-page-bg-hd`. */
@@ -21,6 +23,10 @@ export function sitePageBackdropCss(
 
   if (options?.primaryHeroBackground) {
     css += `body:has(${sel} #cartelera .home-hero__carousel)::before{opacity:0!important;visibility:hidden;pointer-events:none}`
+  }
+
+  if (options?.omitFixedBackdrop) {
+    css += `body:has(${sel}){background-color:#0a0a0a}body:has(${sel})::before{display:none!important}`
   }
 
   return css

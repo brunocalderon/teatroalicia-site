@@ -8,11 +8,21 @@ const MAX_MARKETING_WIDTH = 2560
 const HERO_MAX_WIDTH = MAX_MARKETING_WIDTH
 const HERO_RETINA_WIDTH = 1920
 
-/** Venue band photo: full width mobile, half grid on desktop. */
+/** Venue band photo: full width mobile, half of the viewport on desktop. */
 export const HOME_VENUE_PHOTO_SIZES =
-  "(max-width: 56rem) 100vw, min(50vw, 36rem)"
+  "(max-width: 56rem) 100vw, 50vw"
 
-const VENUE_CANDIDATE_WIDTHS = [640, 960, 1200, 1440, 1920] as const
+const VENUE_CANDIDATE_WIDTHS = [
+  640, 960, 1200, 1440, 1920, 2560,
+] as const
+
+/** Full-height contact split: sharper WebP + up to ~4K for retina half-viewport. */
+const CONTACT_BAND_MAX_WIDTH = 3840
+const CONTACT_BAND_CANDIDATE_WIDTHS = [
+  1200, 1920, 2560, 3200, 3840,
+] as const
+const CONTACT_BAND_WEBP_QUALITY = 100
+
 const JSON_LD_VENUE_WIDTH = 1920
 
 const WEBP_QUALITY = 80
@@ -40,8 +50,9 @@ export type HomeVenuePhotoImage = {
 function widthsForSource(
   naturalWidth: number,
   candidates: readonly number[],
+  maxOutputWidth = MAX_MARKETING_WIDTH,
 ): number[] {
-  const capped = Math.min(naturalWidth, MAX_MARKETING_WIDTH)
+  const capped = Math.min(naturalWidth, maxOutputWidth)
   const widths = candidates.filter((w) => w <= capped)
   if (widths.length === 0) {
     return [capped]
@@ -50,6 +61,51 @@ function widthsForSource(
     widths.push(capped)
   }
   return [...widths].sort((a, b) => a - b)
+}
+
+type VenuePhotoBuildOptions = {
+  candidateWidths: readonly number[]
+  maxOutputWidth: number
+  quality: number
+  sizes: string
+}
+
+async function buildVenuePhotoImageFromSource(
+  source: ImageMetadata,
+  options: VenuePhotoBuildOptions,
+): Promise<HomeVenuePhotoImage> {
+  const widths = widthsForSource(
+    source.width,
+    options.candidateWidths,
+    options.maxOutputWidth,
+  )
+  const variants = await Promise.all(
+    widths.map(async (width) => {
+      const optimized = await getImage({
+        src: source,
+        width,
+        format: "webp",
+        quality: options.quality,
+      })
+      return { width, src: optimized.src }
+    }),
+  )
+
+  const largest = variants.at(-1)
+  if (!largest) {
+    throw new Error("No image variants generated for venue photo")
+  }
+
+  const aspect = source.height / source.width
+  const height = Math.round(largest.width * aspect)
+
+  return {
+    src: largest.src,
+    srcSet: variants.map((v) => `${v.src} ${v.width}w`).join(", "),
+    sizes: options.sizes,
+    width: largest.width,
+    height,
+  }
 }
 
 const quoteCssUrl = (src: string) => `url("${src}")`
@@ -113,34 +169,23 @@ export async function buildHomeHeroSlideBackground(
 export async function buildHomeVenuePhotoImage(
   source: ImageMetadata,
 ): Promise<HomeVenuePhotoImage> {
-  const widths = widthsForSource(source.width, VENUE_CANDIDATE_WIDTHS)
-  const variants = await Promise.all(
-    widths.map(async (width) => {
-      const optimized = await getImage({
-        src: source,
-        width,
-        format: "webp",
-        quality: WEBP_QUALITY,
-      })
-      return { width, src: optimized.src }
-    }),
-  )
-
-  const largest = variants.at(-1)
-  if (!largest) {
-    throw new Error("No image variants generated for home venue photo")
-  }
-
-  const aspect = source.height / source.width
-  const height = Math.round(largest.width * aspect)
-
-  return {
-    src: largest.src,
-    srcSet: variants.map((v) => `${v.src} ${v.width}w`).join(", "),
+  return buildVenuePhotoImageFromSource(source, {
+    candidateWidths: VENUE_CANDIDATE_WIDTHS,
+    maxOutputWidth: MAX_MARKETING_WIDTH,
+    quality: WEBP_QUALITY,
     sizes: HOME_VENUE_PHOTO_SIZES,
-    width: largest.width,
-    height,
-  }
+  })
+}
+
+export async function buildContactBandPhotoImage(
+  source: ImageMetadata,
+): Promise<HomeVenuePhotoImage> {
+  return buildVenuePhotoImageFromSource(source, {
+    candidateWidths: CONTACT_BAND_CANDIDATE_WIDTHS,
+    maxOutputWidth: CONTACT_BAND_MAX_WIDTH,
+    quality: CONTACT_BAND_WEBP_QUALITY,
+    sizes: HOME_VENUE_PHOTO_SIZES,
+  })
 }
 
 /** Representative venue image for Schema.org `image` (absolute URL built by caller). */

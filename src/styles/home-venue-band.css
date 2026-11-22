@@ -1,0 +1,128 @@
+/* Venue band — shared home “Teatro Alicia” split and /contacto form layout */
+
+.home-band--venue {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.home-venue {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+  width: 100%;
+  margin: 0;
+}
+
+@media (min-width: 56rem) {
+  .home-venue {
+    grid-template-columns: 1fr 1fr;
+    min-height: min(50vh, 36rem);
+  }
+}
+
+.home-venue__media {
+  order: 2;
+  position: relative;
+  min-height: 18rem;
+  overflow: hidden;
+  background: #111;
+}
+
+@media (min-width: 56rem) {
+  .home-venue__media {
+    order: unset;
+    min-height: min(50vh, 36rem);
+  }
+}
+
+.home-venue__photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 18rem;
+  object-fit: cover;
+  object-position: center;
+}
+
+@media (min-width: 56rem) {
+  .home-venue__photo {
+    min-height: min(50vh, 36rem);
+  }
+}
+
+.home-venue__copy {
+  order: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 2.5rem var(--home-gutter);
+  background: color-mix(in srgb, var(--home-surface) 92%, #141414);
+}
+
+@media (min-width: 56rem) {
+  .home-venue__copy {
+    order: unset;
+    min-height: min(50vh, 36rem);
+    padding: 0;
+  }
+}
+
+.home-venue__copy-inner {
+  width: 100%;
+}
+
+@media (min-width: 56rem) {
+  .home-venue__copy-inner {
+    box-sizing: border-box;
+    width: min(
+      calc((var(--home-content-max) - 2 * var(--home-gutter)) / 2),
+      100% - 2 * var(--home-gutter)
+    );
+    padding: 3rem 0;
+    margin-left: var(--home-gutter);
+    margin-right: auto;
+  }
+}
+
+.home-venue__text {
+  margin: 0 0 1rem;
+  max-width: none;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: color-mix(in srgb, var(--home-fg) 88%, transparent);
+}
+
+.home-venue__text--muted {
+  font-size: 0.9375rem;
+  color: var(--home-muted);
+}
+
+.home-venue__slogan {
+  margin: 0 0 1rem;
+  max-width: 28rem;
+  font-size: clamp(1.125rem, 2.5vw, 1.375rem);
+  font-weight: 500;
+  line-height: 1.4;
+  color: color-mix(in srgb, var(--home-fg) 92%, transparent);
+}
+
+.home-venue__copy-inner .home-band__kicker {
+  margin-bottom: 0.5rem;
+}
+
+.home-venue__copy-inner .home-band__title {
+  margin-bottom: 1rem;
+}
+
+.home-band__title {
+  margin: 0 0 1.25rem;
+  font-size: clamp(1.5rem, 3.5vw, 2rem);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.home-band__title--display {
+  font-size: clamp(2rem, 5vw, 3rem);
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}

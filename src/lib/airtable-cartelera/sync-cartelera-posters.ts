@@ -2,6 +2,7 @@ import { readdir, rm } from "node:fs/promises"
 import path from "node:path"
 
 import { CARTELERA_POSTER_CACHE_DIR } from "@/lib/airtable-cartelera/cartelera-poster-cache-path"
+import { resetCarteleraPosterFileIndex } from "@/lib/airtable-cartelera/cartelera-poster-image-modules"
 import { fetchAirtableCarteleraRows } from "@/lib/airtable-cartelera/fetch-events"
 import { mirrorAirtableCarteleraPoster } from "@/lib/airtable-cartelera/mirror-cartelera-poster"
 import { filterUpcomingAirtableCarteleraRows } from "@/lib/airtable-cartelera/to-api-events"
@@ -32,6 +33,7 @@ export async function syncCarteleraPostersFromAirtable(
   )
 
   await pruneStaleCarteleraPosterCache(activeSlugs)
+  resetCarteleraPosterFileIndex()
   return activeSlugs.size
 }
 

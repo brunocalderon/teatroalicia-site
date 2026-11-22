@@ -8,6 +8,7 @@ import LivestackBrand from "@/components/livestack-brand.astro"
 import FormPageSkeleton from "@/components/forms/form-page-skeleton.astro"
 import SiteBrand from "@/components/site-brand.astro"
 import FormPageIntro from "@/components/forms/form-page-intro.astro"
+import HomeContactFooter from "@/components/home/home-contact-footer.astro"
 import HomeHeader from "@/components/home/home-header.astro"
 import Layout from "@/layouts/Layout.astro"
 import { resolveFormEventImageSource } from "@/lib/form-event-image"
@@ -30,8 +31,13 @@ import { resolveVenuePrimaryImageAbsoluteUrl } from "@/lib/venue-primary-image"
 import { venueConfig } from "../../content/venue"
 import { sitePageBackdropCss } from "@/lib/site-page-backdrop-css"
 import { MARKETING_ENGAGE_MS } from "astro:env/client"
+import { buildContactBandPhotoImage } from "@/lib/home-marketing-image"
+import "@/styles/home-footer.css"
+import "@/styles/home-venue-band.css"
 
 import { invitationFormTracking } from "@/lib/marketing-page-tracking"
+
+const CONTACT_PAGE_BAND_IMAGE = "/images/alicia-home-4.jpg"
 
 export async function getStaticPaths() {
   const forms = await getCollection("forms")
@@ -111,8 +117,33 @@ const formJsonLd = buildInvitationPageJsonLd({
   venueImageUrl,
 })
 
-const formPageBackdropCss = sitePageBackdropCss("form-page")
 const showHomeNav = data.path === "/contacto"
+const formPageBackdropCss = sitePageBackdropCss("form-page", {
+  omitFixedBackdrop: showHomeNav,
+})
+
+let contactBandPhoto: Awaited<
+  ReturnType<typeof buildContactBandPhotoImage>
+> | undefined
+if (showHomeNav) {
+  contactBandPhoto = await buildContactBandPhotoImage(
+    resolveFormEventImageSource(CONTACT_PAGE_BAND_IMAGE),
+  )
+}
+
+const pageLcpImage = formLcpImage
+  ? {
+      src: formLcpImage.src,
+      srcSet: formLcpImage.srcSet,
+      sizes: formLcpImage.sizes,
+    }
+  : contactBandPhoto
+    ? {
+        src: contactBandPhoto.src,
+        srcSet: contactBandPhoto.srcSet,
+        sizes: contactBandPhoto.sizes,
+      }
+    : undefined
 ---
 
 <Layout
@@ -121,7 +152,7 @@ const showHomeNav = data.path === "/contacto"
   lang={data.lang}
   tracking={tracking}
   formThirdPartyHints
-  lcpImage={formLcpImage}
+  lcpImage={pageLcpImage}
   marketingEngageAfterLoadMs={MARKETING_ENGAGE_MS}
   jsonLd={formJsonLd}
 >
@@ -149,8 +180,80 @@ const showHomeNav = data.path === "/contacto"
         "form-page",
         data.image && "form-page--split",
         showHomeNav && "form-page--with-home-nav",
+        showHomeNav && "form-page--venue-band",
+        showHomeNav && "home-page",
       ]}
     >
+      {
+        showHomeNav && contactBandPhoto ? (
+          <section
+            class="home-band home-band--venue form-page__venue-band"
+            aria-labelledby="contact-form-title"
+          >
+            <div class="home-venue">
+              <div class="home-venue__media">
+                <img
+                  class="home-venue__photo"
+                  src={contactBandPhoto.src}
+                  srcset={contactBandPhoto.srcSet}
+                  sizes={contactBandPhoto.sizes}
+                  alt="Interior de Teatro Alicia"
+                  width={contactBandPhoto.width}
+                  height={contactBandPhoto.height}
+                  loading="eager"
+                  fetchpriority="high"
+                  decoding="sync"
+                />
+              </div>
+              <div class="home-venue__copy">
+                <div class="home-venue__copy-inner">
+                  <header class="form-page__header">
+                    <h1
+                      id="contact-form-title"
+                      class="home-band__title home-band__title--display"
+                    >
+                      {data.title}
+                    </h1>
+                  </header>
+                  {
+                    showFormIntro ? (
+                      <div class="form-page__venue-intro">
+                        <FormPageIntro
+                          formBodyHtml={formBodyHtml}
+                          renderedBody={renderedBody?.Content ?? null}
+                        />
+                      </div>
+                    ) : null
+                  }
+                  <div class="form-page__form">
+                    <ConfigurableForm
+                      client:visible={{ rootMargin: "200px" }}
+                      token={data.token}
+                      fields={data.fields}
+                      lang={data.lang}
+                      submitLabel={data.submitLabel}
+                      thankYouPath={data.thankYouPath}
+                      eventId={data.eventId}
+                      nameFields={nameFields}
+                      messages={data.messages}
+                      marketingTracking={tracking}
+                    >
+                      <FormPageSkeleton
+                        slot="fallback"
+                        fields={data.fields}
+                        lang={data.lang}
+                      />
+                    </ConfigurableForm>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        ) : null
+      }
+      {showHomeNav ? <HomeContactFooter venue={venueConfig} /> : null}
+      {
+        showHomeNav ? null : (
       <div class:list={[data.image ? "form-page__split" : "form-page__stack"]}>
         {data.image ? (
           <>
@@ -235,6 +338,8 @@ const showHomeNav = data.path === "/contacto"
           </div>
         </div>
       </div>
+        )
+      }
       {data.livestackFooter ? <LivestackBrand /> : null}
     </main>
     <script
@@ -431,14 +536,85 @@ const showHomeNav = data.path === "/contacto"
     max-width: 52rem;
   }
 
-  .form-page--with-home-nav {
+  .form-page--with-home-nav:not(.form-page--venue-band) {
     margin-top: calc(2rem + 4.25rem);
   }
 
   @media (min-width: 56rem) {
-    .form-page--with-home-nav {
+    .form-page--with-home-nav:not(.form-page--venue-band) {
       margin-top: calc(2rem + 4.75rem);
     }
+  }
+
+  .form-page.form-page--venue-band.home-page {
+    --home-max: 75rem;
+    --home-content-max: 80rem;
+    --home-gutter: clamp(1.25rem, 4vw, 2.5rem);
+    --home-fg: #f2f0ef;
+    --home-muted: color-mix(in srgb, var(--home-fg) 72%, transparent);
+    --home-line: color-mix(in srgb, var(--home-fg) 18%, transparent);
+    --home-surface: #0a0a0a;
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 4.25rem 0 0;
+    min-height: 0;
+    background: var(--home-surface);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: 0;
+    border-radius: 0;
+    color: var(--home-fg);
+    font-family: "Geist Variable", system-ui, -apple-system, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  @media (min-width: 56rem) {
+    .form-page.form-page--venue-band.home-page {
+      padding-top: 4.75rem;
+    }
+  }
+
+  .form-page--venue-band .form-page__venue-band {
+    flex: 1 1 auto;
+    width: 100%;
+    min-height: calc(100dvh - 4.25rem);
+  }
+
+  @media (min-width: 56rem) {
+    .form-page--venue-band .form-page__venue-band {
+      min-height: calc(100dvh - 4.75rem);
+    }
+
+    .form-page--venue-band .home-venue {
+      min-height: calc(100dvh - 4.75rem);
+    }
+
+    .form-page--venue-band .home-venue__media,
+    .form-page--venue-band .home-venue__copy,
+    .form-page--venue-band .home-venue__photo {
+      min-height: calc(100dvh - 4.75rem);
+    }
+  }
+
+  .form-page--venue-band .form-page__header h1 {
+    margin: 0;
+  }
+
+  .form-page--venue-band .form-page__venue-intro :global(.form-page__intro) {
+    margin-bottom: 1.25rem;
+    color: color-mix(in srgb, var(--home-fg) 88%, transparent);
+  }
+
+  .form-page--venue-band
+    .form-page__venue-intro
+    :global(.form-page__intro-separator) {
+    display: none;
+  }
+
+  .form-page--venue-band .home-venue__photo {
+    object-position: right center;
   }
 
   .form-page__header h1 {

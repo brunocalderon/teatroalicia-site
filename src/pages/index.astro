@@ -88,7 +88,7 @@ if (useAirtableCartelera && airtableCarteleraConfig) {
   const upcomingRows = filterUpcomingAirtableCarteleraRows(airtableRows)
   const imagesBySlug = new Map<string, HomeEventFeatureImage>()
   for (const row of airtableRows) {
-    const source = carteleraPosterImageBySlug(row.slug)
+    const source = await carteleraPosterImageBySlug(row.slug)
     if (!source) {
       continue
     }
