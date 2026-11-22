@@ -1,6 +1,7 @@
 /* Venue band — shared home “Teatro Alicia” split and /contacto form layout */
 
-.home-band--venue {
+/* Higher specificity than `.home-band` in home.css (import order). */
+.home-band.home-band--venue {
   padding-top: 0;
   padding-bottom: 0;
 }
