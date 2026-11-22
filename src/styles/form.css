@@ -55,6 +55,14 @@
 
 .form-field-error {
   margin: 0;
+  line-height: 1.5;
+}
+
+/** One line — avoids layout shift when blur/submit errors toggle. */
+.form-field-error-slot {
+  display: flex;
+  align-items: flex-start;
+  min-height: calc(0.875rem * 1.5);
 }
 
 .form-input[aria-invalid="true"] {

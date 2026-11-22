@@ -21,6 +21,35 @@ function formFieldClassName(type: FormFieldType): string {
   return type === "referral" ? `${base} form-field--referral` : base
 }
 
+function fieldErrorElementId(name: string): string {
+  return `field-${name}-error`
+}
+
+function FormFieldErrorSlot({
+  fieldName,
+  error,
+  reserveSpace,
+}: {
+  fieldName: string
+  error?: string
+  reserveSpace: boolean
+}) {
+  if (!reserveSpace && !error) {
+    return null
+  }
+
+  const errorElementId = fieldErrorElementId(fieldName)
+  return (
+    <div className="form-field-error-slot">
+      {error ? (
+        <p id={errorElementId} className="form-field-error" role="alert">
+          {error}
+        </p>
+      ) : null}
+    </div>
+  )
+}
+
 type ComposableFormFieldProps = {
   field: FormField
   lang: string
@@ -44,7 +73,8 @@ export function ComposableFormField({
 }: ComposableFormFieldProps) {
   const def = getFieldDefinition(field.type)
   const Control = def.Control
-  const errorId = error ? `field-${field.name}-error` : undefined
+  const errorId = error ? fieldErrorElementId(field.name) : undefined
+  const reservesErrorSpace = Boolean(def.validate)
   const onValueChange = () => {
     if (error) {
       onClearError(field.name)
@@ -57,6 +87,12 @@ export function ComposableFormField({
 
   const onBlurValidate = def.validate
     ? (value: string) => {
+        if (!value.trim()) {
+          if (error) {
+            onClearError(field.name)
+          }
+          return
+        }
         const message = validateFieldValue(field, lang, value)
         if (message) {
           onSetFieldError(field.name, message)
@@ -78,11 +114,11 @@ export function ComposableFormField({
           onValueChange={onValueChange}
           onBlurValidate={onBlurValidate}
         />
-        {error ? (
-          <p id={errorId} className="form-field-error" role="alert">
-            {error}
-          </p>
-        ) : null}
+        <FormFieldErrorSlot
+          fieldName={field.name}
+          error={error}
+          reserveSpace={reservesErrorSpace}
+        />
       </div>
     )
   }
@@ -109,11 +145,11 @@ export function ComposableFormField({
         onValueChange={onValueChange}
         onBlurValidate={onBlurValidate}
       />
-      {error ? (
-        <p id={errorId} className="form-field-error" role="alert">
-          {error}
-        </p>
-      ) : null}
+      <FormFieldErrorSlot
+        fieldName={field.name}
+        error={error}
+        reserveSpace={reservesErrorSpace}
+      />
     </div>
   )
 }
