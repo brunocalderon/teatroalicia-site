@@ -1,8 +1,8 @@
 # build output
 dist/
 
-# Airtable cartelera posters (mirrored at build into public/)
-public/cartelera-posters/
+# Airtable cartelera posters (mirrored at build; optimized to dist/_astro/)
+src/.cache/cartelera-posters/
 
 # lighthouse vitest reports
 tests/lighthouse/reports/

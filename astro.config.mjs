@@ -7,6 +7,7 @@ import { defineConfig, envField } from "astro/config"
 
 import tailwindcss from "@tailwindcss/vite";
 
+import { carteleraPostersIntegration } from "./src/integrations/cartelera-posters.ts"
 import { contentSecurityPolicyIntegration } from "./src/integrations/content-security-policy.ts"
 import { cspDevServerPlugin } from "./src/integrations/csp-dev-server.ts"
 import { deferCssIntegration } from "./src/integrations/defer-css.ts"
@@ -18,7 +19,12 @@ export default defineConfig({
   /** Lossless HTML minification on `astro build` (JS/CSS via Vite below). */
   compressHTML: true,
 
-  integrations: [react(), deferCssIntegration(), contentSecurityPolicyIntegration()],
+  integrations: [
+    carteleraPostersIntegration(),
+    react(),
+    deferCssIntegration(),
+    contentSecurityPolicyIntegration(),
+  ],
 
   devToolbar: {
     enabled: false,

@@ -4,9 +4,14 @@ import { fileURLToPath } from "node:url"
 
 import type { AstroIntegration } from "astro"
 
-import { CONTENT_SECURITY_POLICY } from "@/lib/content-security-policy"
+import {
+  CLOUDFLARE_PAGES_MAX_HEADER_LINE_LENGTH,
+  CONTENT_SECURITY_POLICY,
+  CSP_HEADERS_LINE_PREFIX,
+  contentSecurityPolicyHeaderLineLength,
+} from "@/lib/content-security-policy"
 
-const CSP_HEADER_LINE = `  Content-Security-Policy: ${CONTENT_SECURITY_POLICY}`
+const CSP_HEADER_LINE = `${CSP_HEADERS_LINE_PREFIX}${CONTENT_SECURITY_POLICY}`
 
 function stripExistingSiteWideCsp(headers: string): string {
   return headers.replace(
@@ -35,6 +40,15 @@ export function contentSecurityPolicyIntegration(): AstroIntegration {
         const block = withoutCsp
           ? `${withoutCsp}\n\n/*\n${CSP_HEADER_LINE}\n`
           : `/*\n${CSP_HEADER_LINE}\n`
+
+        const cspLineLength = contentSecurityPolicyHeaderLineLength()
+        if (cspLineLength > CLOUDFLARE_PAGES_MAX_HEADER_LINE_LENGTH) {
+          throw new Error(
+            `Content-Security-Policy _headers line is ${cspLineLength} chars; ` +
+              `Cloudflare Pages max is ${CLOUDFLARE_PAGES_MAX_HEADER_LINE_LENGTH}. ` +
+              "Trim src/lib/content-security-policy.ts connect-src allowlists.",
+          )
+        }
 
         await writeFile(headersPath, block, "utf8")
         logger.info("Wrote Content-Security-Policy to dist/_headers.")

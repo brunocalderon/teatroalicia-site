@@ -10,7 +10,8 @@ import HomeVenueSection from "@/components/home/home-venue-section.astro"
 import Layout from "@/layouts/Layout.astro"
 import { resolveEventInvitationPath } from "@/lib/event-schema"
 import { formatEventSchedule } from "@/lib/format-event-display"
-import { buildMirroredCarteleraPosterFeatureImage } from "@/lib/airtable-cartelera/build-mirrored-cartelera-poster-image"
+import { buildCarteleraPosterFeatureImage } from "@/lib/airtable-cartelera/build-cartelera-poster-feature-image"
+import { carteleraPosterImageBySlug } from "@/lib/airtable-cartelera/cartelera-poster-image-modules"
 import {
   buildHomeEventFeatureImage,
   type HomeEventFeatureImage,
@@ -21,7 +22,6 @@ import {
   HOME_HERO_SLIDE_PATHS,
 } from "@/lib/home-marketing-image"
 import { fetchAirtableCarteleraRows } from "@/lib/airtable-cartelera/fetch-events"
-import { mirrorAirtableCarteleraPosters } from "@/lib/airtable-cartelera/mirror-cartelera-poster"
 import {
   airtableCarteleraRowsToApiEvents,
   filterUpcomingAirtableCarteleraRows,
@@ -87,19 +87,15 @@ let upcomingEventsForSchema = events.map((entry) => ({
 if (useAirtableCartelera && airtableCarteleraConfig) {
   const airtableRows = await fetchAirtableCarteleraRows(airtableCarteleraConfig)
   const upcomingRows = filterUpcomingAirtableCarteleraRows(airtableRows)
-  const mirroredPostersBySlug =
-    await mirrorAirtableCarteleraPosters(upcomingRows)
-
   const imagesBySlug = new Map<string, HomeEventFeatureImage>()
-  for (const [slug, poster] of mirroredPostersBySlug) {
-    const image = await buildMirroredCarteleraPosterFeatureImage(
-      slug,
-      poster.absolutePath,
-      poster.width,
-      poster.height,
-    )
-    imagesBySlug.set(slug, image)
-    eventImageUrlBySlug[slug] = new URL(
+  for (const row of airtableRows) {
+    const source = carteleraPosterImageBySlug(row.slug)
+    if (!source) {
+      continue
+    }
+    const image = await buildCarteleraPosterFeatureImage(source)
+    imagesBySlug.set(row.slug, image)
+    eventImageUrlBySlug[row.slug] = new URL(
       image.src,
       CANONICAL_SITE_ORIGIN,
     ).href

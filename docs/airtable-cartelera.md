@@ -4,7 +4,7 @@ When `AIRTABLE_TOKEN`, `AIRTABLE_BASE_ID`, and `AIRTABLE_TABLE_ID` (or optional 
 
 ## Build-time fetch
 
-During `astro build` (and `astro dev` when you load `/`), `src/pages/index.astro` calls `fetchAirtableCarteleraRows`, maps upcoming events, mirrors poster attachments into `public/cartelera-posters/` (gitignored, emitted in `dist/`), builds responsive WebP and JPEG variants with Sharp (`<picture>` WebP + JPEG fallback), and renders `HomeEventFeature` in the page. Production HTML never loads `airtableusercontent.com` images. Rebuild to refresh cartelera after Airtable changes.
+The `carteleraPostersIntegration` hook mirrors upcoming poster attachments into `src/.cache/cartelera-posters/` (gitignored) at `astro:build:start` and `astro:server:start` when Airtable env is set. `index.astro` loads those modules via `import.meta.glob`, and `buildCarteleraPosterFeatureImage` uses `getImage` so responsive WebP/JPEG variants land in `dist/_astro/` (`<picture>` WebP + JPEG fallback). The home page still calls `fetchAirtableCarteleraRows` for list/JSON-LD data. Production HTML never loads `airtableusercontent.com` images. Rebuild to refresh cartelera after Airtable changes.
 
 ## API request (build only)
 

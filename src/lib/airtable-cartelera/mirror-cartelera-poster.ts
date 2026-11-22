@@ -2,9 +2,8 @@ import { imageMetadata as readImageMetadata } from "astro/assets/utils"
 import { mkdir, writeFile } from "node:fs/promises"
 import path from "node:path"
 
+import { CARTELERA_POSTER_CACHE_DIR } from "@/lib/airtable-cartelera/cartelera-poster-cache-path"
 import type { AirtableCarteleraRow } from "@/lib/airtable-cartelera/types"
-
-export const CARTELERA_POSTER_PUBLIC_SEGMENT = "cartelera-posters"
 
 const ALLOWED_IMAGE_EXTENSIONS = new Set([
   "jpg",
@@ -22,7 +21,7 @@ export type MirroredCarteleraPoster = {
 }
 
 function carteleraPosterRoot(): string {
-  return path.join(process.cwd(), "public", CARTELERA_POSTER_PUBLIC_SEGMENT)
+  return CARTELERA_POSTER_CACHE_DIR
 }
 
 function isAllowedAirtableImageUrl(url: string): boolean {

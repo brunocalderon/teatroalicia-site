@@ -22,7 +22,7 @@ export type HomeEventFeatureImage = {
   zoomSrc?: string
 }
 
-function widthsForSource(naturalWidth: number): number[] {
+export function widthsForHomeEventFeature(naturalWidth: number): number[] {
   const widths = CANDIDATE_WIDTHS.filter((w) => w <= naturalWidth)
   if (widths.length === 0) {
     return [naturalWidth]
@@ -36,7 +36,7 @@ function widthsForSource(naturalWidth: number): number[] {
 export async function buildHomeEventFeatureImage(
   source: ImageMetadata,
 ): Promise<HomeEventFeatureImage> {
-  const widths = widthsForSource(source.width)
+  const widths = widthsForHomeEventFeature(source.width)
   const variants = await Promise.all(
     widths.map(async (width) => {
       const optimized = await getImage({
