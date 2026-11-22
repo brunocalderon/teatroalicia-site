@@ -172,7 +172,10 @@ const carteleraHasCarousel = events.length > 3
 <script>
   import { initCarteleraPosterLightbox } from "@/lib/cartelera-poster-lightbox"
   import { initHomeFeaturedCarousel } from "@/lib/home-featured-carousel"
-  import { trackMetaCarteleraTicketViewContent } from "@/lib/marketing-page-tracking"
+  import {
+    resolveTicketPlatformDestination,
+    trackMetaTicketCheckoutClick,
+  } from "@/lib/meta-ticket-checkout"
   import { trackUmamiCarteleraTicketClick } from "@/lib/track-umami-cartelera-ticket"
 
   const cartelera = document.getElementById("cartelera")
@@ -181,7 +184,12 @@ const carteleraHasCarousel = events.length > 3
   initHomeFeaturedCarousel(carteleraRoot)
 
   const list = document.querySelector(".home-featured__list")
+  type CarteleraTicketClickEvent = Event & {
+    __metaTicketCheckoutTracked?: boolean
+  }
+
   list?.addEventListener("click", (event) => {
+    const clickEvent = event as CarteleraTicketClickEvent
     const target = (event.target as Element).closest<HTMLAnchorElement>(
       "[data-cartelera-ticket-cta]",
     )
@@ -190,13 +198,24 @@ const carteleraHasCarousel = events.length > 3
     }
     const eventTitle = target.dataset.eventTitle ?? ""
     const eventId = target.dataset.eventCampaign ?? ""
-    trackMetaCarteleraTicketViewContent({
-      event_title: eventTitle,
-      event_id: eventId,
-    })
     trackUmamiCarteleraTicketClick({
       event_title: eventTitle,
       event_id: eventId,
+    })
+
+    if (clickEvent.__metaTicketCheckoutTracked) {
+      return
+    }
+    clickEvent.__metaTicketCheckoutTracked = true
+
+    const contentId =
+      target.dataset.ticketContentId?.trim() ||
+      eventId ||
+      "event"
+    trackMetaTicketCheckoutClick({
+      content_name: eventTitle,
+      content_ids: [contentId],
+      destination: resolveTicketPlatformDestination(target.href),
     })
   })
 </script>

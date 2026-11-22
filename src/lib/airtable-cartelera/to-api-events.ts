@@ -7,6 +7,7 @@ import type { AirtableCarteleraRow } from "@/lib/airtable-cartelera/types"
 import type { CarteleraApiEvent } from "@/lib/airtable-cartelera/types"
 import { formatEventSchedule } from "@/lib/format-event-display"
 import type { HomeEventFeatureImage } from "@/lib/home-event-feature-image"
+import { metaTicketCheckoutContentId } from "@/lib/meta-ticket-checkout"
 import { isCarteleraEventVisible } from "@/lib/schema-org/event-datetime"
 
 export function airtableRowToHomeEventFeature(
@@ -33,6 +34,10 @@ export function airtableRowToHomeEventFeature(
     ctaHref,
     ctaExternal: Boolean(ticketUrl),
     eventCampaign: campaign,
+    ticketContentId: metaTicketCheckoutContentId({
+      eventId: row.eventId,
+      slug: row.slug,
+    }),
     ctaLabel,
     dateLine: schedule.dateLine,
     timeLine: schedule.timeLine,

@@ -38,6 +38,7 @@ import {
   appendHomeCarteleraUtm,
   homeCarteleraEventSlug,
 } from "@/lib/home-cartelera-utm"
+import { metaTicketCheckoutContentId } from "@/lib/meta-ticket-checkout"
 import { resolvePublicTicketUrl } from "@/lib/form-schema"
 import { marketingPageTracking } from "@/lib/marketing-page-tracking"
 import { CANONICAL_SITE_ORIGIN } from "@/lib/schema-org/canonical-origin"
@@ -142,6 +143,10 @@ if (useAirtableCartelera && airtableCarteleraConfig) {
       ctaHref,
       ctaExternal: Boolean(ticketUrl),
       eventCampaign: homeCarteleraEventSlug(data),
+      ticketContentId: metaTicketCheckoutContentId({
+        eventId: data.eventId,
+        slug: data.slug,
+      }),
       ctaLabel,
       dateLine: schedule.dateLine,
       timeLine: schedule.timeLine,

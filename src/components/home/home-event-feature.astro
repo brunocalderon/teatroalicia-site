@@ -10,6 +10,8 @@ export type HomeEventFeatureData = {
   timeLine: string
   /** `utm_campaign` slug for analytics. */
   eventCampaign?: string
+  /** Meta `content_ids` for ticket checkout (slug + event date). */
+  ticketContentId?: string
   imageAlt?: string
   image?: HomeEventFeatureImage
 }
@@ -111,6 +113,7 @@ const ctaLinkAttrs = event.ctaExternal
             "data-cartelera-ticket-cta": true,
             "data-event-title": event.title,
             "data-event-campaign": event.eventCampaign ?? "",
+            "data-ticket-content-id": event.ticketContentId ?? "",
           }
         : {})}
     >
