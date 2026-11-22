@@ -17,6 +17,7 @@ interface Props {
 const { events, home, venueName, instagramUrl, slideBackgrounds } = Astro.props
 
 const showCartelera = events.length > 0
+const carteleraHasCarousel = events.length > 3
 ---
 
 {
@@ -34,11 +35,73 @@ const showCartelera = events.length > 0
           </h2>
           <h1 class="home-featured__heading-line">{venueName}</h1>
         </div>
-        <div class="home-featured__list">
-          {events.map((event, index) => (
-            <HomeEventFeature event={event} enterIndex={index} />
-          ))}
-        </div>
+        {
+          carteleraHasCarousel ? (
+            <div class="home-featured__carousel" data-home-featured-carousel>
+              <button
+                type="button"
+                class="home-featured__nav home-featured__nav--prev"
+                data-home-featured-carousel-prev
+                aria-label="Eventos anteriores"
+                disabled
+              >
+                <span class="home-featured__nav-icon" aria-hidden="true">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="m15 18-6-6 6-6" />
+                  </svg>
+                </span>
+              </button>
+              <div class="home-featured__viewport">
+                <div
+                  class="home-featured__list home-featured__list--carousel"
+                  data-home-featured-carousel-track
+                >
+                  {events.map((event, index) => (
+                    <HomeEventFeature event={event} enterIndex={index} />
+                  ))}
+                </div>
+              </div>
+              <button
+                type="button"
+                class="home-featured__nav home-featured__nav--next"
+                data-home-featured-carousel-next
+                aria-label="Siguientes eventos"
+              >
+                <span class="home-featured__nav-icon" aria-hidden="true">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="m9 18 6-6-6-6" />
+                  </svg>
+                </span>
+              </button>
+            </div>
+          ) : (
+            <div class="home-featured__list">
+              {events.map((event, index) => (
+                <HomeEventFeature event={event} enterIndex={index} />
+              ))}
+            </div>
+          )
+        }
       </div>
       <div
         class="home-poster-lightbox"
@@ -108,11 +171,14 @@ const showCartelera = events.length > 0
 
 <script>
   import { initCarteleraPosterLightbox } from "@/lib/cartelera-poster-lightbox"
+  import { initHomeFeaturedCarousel } from "@/lib/home-featured-carousel"
   import { trackMetaCarteleraTicketViewContent } from "@/lib/marketing-page-tracking"
   import { trackUmamiCarteleraTicketClick } from "@/lib/track-umami-cartelera-ticket"
 
   const cartelera = document.getElementById("cartelera")
-  initCarteleraPosterLightbox(cartelera ?? document)
+  const carteleraRoot = cartelera ?? document
+  initCarteleraPosterLightbox(carteleraRoot)
+  initHomeFeaturedCarousel(carteleraRoot)
 
   const list = document.querySelector(".home-featured__list")
   list?.addEventListener("click", (event) => {

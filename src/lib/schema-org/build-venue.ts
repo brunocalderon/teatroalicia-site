@@ -35,6 +35,13 @@ function amenityFeatures(config: VenueConfig): JsonLdObject[] {
         : {}),
     })
   }
+  if (amenities.smokingTerrace) {
+    features.push({
+      "@type": "LocationFeatureSpecification",
+      name: "Terraza Fumadores",
+      value: true,
+    })
+  }
   return features
 }
 

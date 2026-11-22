@@ -42,6 +42,7 @@ const amenitySchema = z.object({
   cloakroom: z.boolean(),
   parking: z.boolean(),
   parkingDescription: z.string().optional(),
+  smokingTerrace: z.boolean(),
 })
 
 export const venueConfigSchema = z.object({

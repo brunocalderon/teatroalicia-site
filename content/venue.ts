@@ -62,6 +62,7 @@ export const venueConfig: VenueConfig = venueConfigSchema.parse({
     cloakroom: true,
     parking: true,
     parkingDescription: "Estacionamiento cercano.",
+    smokingTerrace: true,
   },
   sameAs: [
     "https://www.instagram.com/teatroalicia.scl/",
