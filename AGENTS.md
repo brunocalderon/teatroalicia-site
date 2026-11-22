@@ -39,7 +39,7 @@ After changes that affect performance, accessibility, SEO, or third-party script
 
 - Prefer new public forms as markdown under `content/forms/` rather than bespoke React form components unless custom UI logic is required.
 - Public-facing routes (invitation forms, thank-you, error pages such as 404) use neutral Spanish (`lang: es`; tú, not voseo) for copy, field labels, and messages. Livestack footer uses English “Powered by Livestack” (visible label and `aria-label`).
-- Extend existing Formgong field UX and marketing pixel patterns in this repo rather than inventing new flows; on blur, do not validate empty fields (submit still enforces required), and reserve a one-line error slot on validated fields so messages do not shift layout (`FormFieldErrorSlot`, `form.css`).
+- Extend existing Formgong field UX and marketing pixel patterns in this repo rather than inventing new flows; on blur, do not validate empty fields (submit still enforces required), and reserve a one-line error slot on validated fields so messages do not shift layout on desktop (`FormFieldErrorSlot`, `form.css`); on mobile (`max-width: 55.99rem`) collapse empty error slots (no reserved line).
 - Invitation thank-you pages use Spanish cortesía copy and the form/event title as the heading (not generic English); keep masthead-to-body spacing aligned with split invitation forms (`form-page__split` rhythm).
 - Keep form input and placeholder typography at **16px** base on mobile and desktop (`src/styles/form.css`).
 - Keep agent and Formgong documentation scoped to this repo; do not reference external template repositories in `AGENTS.md` or `docs/`. Keep `/llms.txt` limited to public site routes (no GitHub repo, no invitation or thank-you form URLs).

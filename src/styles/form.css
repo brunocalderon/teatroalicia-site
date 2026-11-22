@@ -58,11 +58,21 @@
   line-height: 1.5;
 }
 
-/** One line — avoids layout shift when blur/submit errors toggle. */
+/** One line on desktop — avoids layout shift when blur/submit errors toggle. */
 .form-field-error-slot {
   display: flex;
   align-items: flex-start;
   min-height: calc(0.875rem * 1.5);
+}
+
+@media (max-width: 55.99rem) {
+  .form-field-error-slot {
+    min-height: 0;
+  }
+
+  .form-field-error-slot:empty {
+    display: none;
+  }
 }
 
 .form-input[aria-invalid="true"] {
