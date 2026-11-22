@@ -1,8 +1,8 @@
 # build output
 dist/
 
-# Airtable browse images (fetched at build / content sync)
-public/airtable-assets/
+# Airtable cartelera posters (mirrored at build into public/)
+public/cartelera-posters/
 
 # lighthouse vitest reports
 tests/lighthouse/reports/

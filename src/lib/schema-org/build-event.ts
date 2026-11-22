@@ -56,7 +56,7 @@ export function buildEventFromForm(
   const performerNodes = buildPerformerNodes(data.performer, entityId)
 
   const event: JsonLdObject = {
-    "@type": resolveEventSchemaTypes(data.eventKind),
+    "@type": resolveEventSchemaTypes(data.eventKind ?? "general"),
     "@id": entityId,
     name: data.title,
     description: data.description ?? data.title,

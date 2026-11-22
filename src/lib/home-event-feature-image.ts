@@ -1,18 +1,25 @@
 import { getImage } from "astro:assets"
 import type { ImageMetadata } from "astro"
 
-export const HOME_EVENT_FEATURE_SIZES =
-  "(max-width: 56rem) 7.5rem, 20rem"
+import { HOME_EVENT_FEATURE_SIZES } from "@/lib/home-event-feature-sizes"
+
+export { HOME_EVENT_FEATURE_SIZES }
 
 const CANDIDATE_WIDTHS = [640, 840, 1120, 1440] as const
 const WEBP_QUALITY = 78
 
 export type HomeEventFeatureImage = {
+  /** Primary WebP `src` (also used when no JPEG fallback). */
   src: string
   srcSet: string
   sizes: string
   width: number
   height: number
+  /** JPEG fallback for `<picture>` (mirrored Airtable posters). */
+  fallbackSrc?: string
+  fallbackSrcSet?: string
+  /** Full-resolution mirror for poster lightbox (when distinct from card `src`). */
+  zoomSrc?: string
 }
 
 function widthsForSource(naturalWidth: number): number[] {

@@ -1,6 +1,6 @@
 import type { CollectionEntry } from "astro:content"
 
-import { isUpcomingEventStart } from "@/lib/schema-org/event-datetime"
+import { isCarteleraEventVisible } from "@/lib/schema-org/event-datetime"
 
 export type EventEntry = CollectionEntry<"events">
 
@@ -11,7 +11,13 @@ export function getUpcomingEventEntries(
 ): EventEntry[] {
   return events
     .filter((entry) => entry.data.eventStart?.trim() && entry.data.eventId?.trim())
-    .filter((entry) => isUpcomingEventStart(entry.data.eventStart!, now))
+    .filter((entry) =>
+      isCarteleraEventVisible(
+        entry.data.eventStart!,
+        entry.data.eventEnd,
+        now,
+      ),
+    )
     .sort((a, b) => {
       const aTime = new Date(a.data.eventStart!).getTime()
       const bTime = new Date(b.data.eventStart!).getTime()
@@ -31,7 +37,13 @@ export function getUpcomingEventEntriesForSchema(
 ): EventEntryForListing[] {
   return events
     .filter((entry) => entry.data.eventStart?.trim() && entry.data.eventId?.trim())
-    .filter((entry) => isUpcomingEventStart(entry.data.eventStart!, now))
+    .filter((entry) =>
+      isCarteleraEventVisible(
+        entry.data.eventStart!,
+        entry.data.eventEnd,
+        now,
+      ),
+    )
     .sort((a, b) => {
       const aTime = new Date(a.data.eventStart!).getTime()
       const bTime = new Date(b.data.eventStart!).getTime()

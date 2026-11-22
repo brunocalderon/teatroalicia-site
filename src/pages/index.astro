@@ -10,12 +10,24 @@ import HomeVenueSection from "@/components/home/home-venue-section.astro"
 import Layout from "@/layouts/Layout.astro"
 import { resolveEventInvitationPath } from "@/lib/event-schema"
 import { formatEventSchedule } from "@/lib/format-event-display"
-import { buildHomeEventFeatureImage } from "@/lib/home-event-feature-image"
+import { buildMirroredCarteleraPosterFeatureImage } from "@/lib/airtable-cartelera/build-mirrored-cartelera-poster-image"
+import {
+  buildHomeEventFeatureImage,
+  type HomeEventFeatureImage,
+} from "@/lib/home-event-feature-image"
 import {
   buildHomeHeroSlideBackground,
   buildHomeVenuePhotoImage,
   HOME_HERO_SLIDE_PATHS,
 } from "@/lib/home-marketing-image"
+import { fetchAirtableCarteleraRows } from "@/lib/airtable-cartelera/fetch-events"
+import { mirrorAirtableCarteleraPosters } from "@/lib/airtable-cartelera/mirror-cartelera-poster"
+import {
+  airtableCarteleraRowsToApiEvents,
+  filterUpcomingAirtableCarteleraRows,
+} from "@/lib/airtable-cartelera/to-api-events"
+import { airtableRowToEventEntryData } from "@/lib/airtable-cartelera/to-event-entry"
+import { resolveAirtableCarteleraConfig } from "@/lib/airtable-env"
 import { getUpcomingEventEntries } from "@/lib/home-upcoming-events"
 import {
   hasBundledFormEventImage,
@@ -41,8 +53,13 @@ const homePageBackdropCss = sitePageBackdropCss("home-page")
 const pageTitle = homeContent.meta.title
 const pageDescription = homeContent.meta.description
 
+const airtableCarteleraConfig = resolveAirtableCarteleraConfig()
+const useAirtableCartelera = Boolean(airtableCarteleraConfig)
+
 const events = await getCollection("events")
-const upcomingEntries = getUpcomingEventEntries(events)
+const upcomingEntries = useAirtableCartelera
+  ? []
+  : getUpcomingEventEntries(events)
 
 const heroSlideBackgrounds = await Promise.all(
   HOME_HERO_SLIDE_PATHS.map((path) =>
@@ -61,54 +78,89 @@ if (venueImagePath && hasBundledFormEventImage(venueImagePath)) {
 const venueImageUrl = await resolveVenuePrimaryImageAbsoluteUrl()
 
 const eventImageUrlBySlug: Record<string, string | undefined> = {}
-const eventFeatures: HomeEventFeatureData[] = []
+let eventFeatures: HomeEventFeatureData[] = []
+let upcomingEventsForSchema = events.map((entry) => ({
+  id: entry.id,
+  data: entry.data,
+}))
 
-for (const entry of upcomingEntries) {
-  const { data } = entry
-  const schedule = data.eventStart
-    ? formatEventSchedule(data.eventStart, data.eventEnd, { date: "home" })
-    : { dateLine: "", timeLine: "" }
+if (useAirtableCartelera && airtableCarteleraConfig) {
+  const airtableRows = await fetchAirtableCarteleraRows(airtableCarteleraConfig)
+  const upcomingRows = filterUpcomingAirtableCarteleraRows(airtableRows)
+  const mirroredPostersBySlug =
+    await mirrorAirtableCarteleraPosters(upcomingRows)
 
-  let image: Awaited<ReturnType<typeof buildHomeEventFeatureImage>> | undefined
-  if (data.image && hasBundledFormEventImage(data.image)) {
-    const source = resolveFormEventImageSource(data.image)
-    image = await buildHomeEventFeatureImage(source)
-    eventImageUrlBySlug[data.slug] = new URL(
+  const imagesBySlug = new Map<string, HomeEventFeatureImage>()
+  for (const [slug, poster] of mirroredPostersBySlug) {
+    const image = await buildMirroredCarteleraPosterFeatureImage(
+      slug,
+      poster.absolutePath,
+      poster.width,
+      poster.height,
+    )
+    imagesBySlug.set(slug, image)
+    eventImageUrlBySlug[slug] = new URL(
       image.src,
       CANONICAL_SITE_ORIGIN,
     ).href
   }
 
-  const ticketUrl = resolvePublicTicketUrl(data)
-  const invitationPath = data.invitation
-    ? resolveEventInvitationPath(data)
-    : undefined
-  const baseCtaHref = ticketUrl ?? invitationPath ?? "#"
-  const ctaHref = appendHomeCarteleraUtm(
-    baseCtaHref,
-    homeCarteleraEventSlug(data),
-  )
-  const ctaLabel = ticketUrl
-    ? "Comprar tickets"
-    : data.invitation?.submitLabel?.trim() || "Solicitar acceso"
-  eventFeatures.push({
-    title: data.title,
-    ctaHref,
-    ctaExternal: Boolean(ticketUrl),
-    eventCampaign: homeCarteleraEventSlug(data),
-    ctaLabel,
-    dateLine: schedule.dateLine,
-    timeLine: schedule.timeLine,
-    imageAlt: data.imageAlt,
-    image,
+  eventFeatures = await airtableCarteleraRowsToApiEvents(airtableRows, {
+    imagesBySlug,
   })
+
+  upcomingEventsForSchema = upcomingRows.map((row) => ({
+    id: row.slug,
+    data: airtableRowToEventEntryData(row),
+  }))
+} else {
+  for (const entry of upcomingEntries) {
+    const { data } = entry
+    const schedule = data.eventStart
+      ? formatEventSchedule(data.eventStart, data.eventEnd, { date: "home" })
+      : { dateLine: "", timeLine: "" }
+
+    let image: Awaited<ReturnType<typeof buildHomeEventFeatureImage>> | undefined
+    if (data.image && hasBundledFormEventImage(data.image)) {
+      const source = resolveFormEventImageSource(data.image)
+      image = await buildHomeEventFeatureImage(source)
+      eventImageUrlBySlug[data.slug] = new URL(
+        image.src,
+        CANONICAL_SITE_ORIGIN,
+      ).href
+    }
+
+    const ticketUrl = resolvePublicTicketUrl(data)
+    const invitationPath = data.invitation
+      ? resolveEventInvitationPath(data)
+      : undefined
+    const baseCtaHref = ticketUrl ?? invitationPath ?? "#"
+    const ctaHref = appendHomeCarteleraUtm(
+      baseCtaHref,
+      homeCarteleraEventSlug(data),
+    )
+    const ctaLabel = ticketUrl
+      ? "Comprar tickets"
+      : data.invitation?.submitLabel?.trim() || "Solicitar acceso"
+    eventFeatures.push({
+      title: data.title,
+      ctaHref,
+      ctaExternal: Boolean(ticketUrl),
+      eventCampaign: homeCarteleraEventSlug(data),
+      ctaLabel,
+      dateLine: schedule.dateLine,
+      timeLine: schedule.timeLine,
+      imageAlt: data.imageAlt,
+      image,
+    })
+  }
 }
 
 const homeJsonLd = buildHomePageJsonLd({
   venue: venueConfig,
   pageTitle: venueConfig.name,
   pageDescription: venueConfig.description,
-  upcomingEvents: events.map((entry) => ({ id: entry.id, data: entry.data })),
+  upcomingEvents: upcomingEventsForSchema,
   eventImageUrlBySlug,
   venueImageUrl,
 })

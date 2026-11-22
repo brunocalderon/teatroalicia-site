@@ -12,13 +12,6 @@ describe("buildLlmsTxt", () => {
     expect(body).not.toContain("github.com")
     expect(body).not.toContain("/i/murano")
     expect(body).not.toContain("/gracias")
-  })
-
-  it("includes CMS pages when provided", () => {
-    const body = buildLlmsTxt("https://teatroalicia.cl", [
-      { path: "/info/nosotros", title: "Nosotros" },
-    ])
-    expect(body).toContain("https://teatroalicia.cl/info/nosotros")
-    expect(body).toContain("[Nosotros]")
+    expect(body).not.toContain("/info/")
   })
 })

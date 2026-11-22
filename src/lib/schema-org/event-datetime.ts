@@ -44,3 +44,22 @@ export function isUpcomingEventStart(iso: string, now: Date): boolean {
   }
   return start.getTime() >= now.getTime()
 }
+
+/**
+ * Home cartelera: keep events until `eventEnd` (nightlife runs past start time).
+ * Without an end, falls back to `isUpcomingEventStart`.
+ */
+export function isCarteleraEventVisible(
+  eventStart: string,
+  eventEnd: string | undefined,
+  now: Date,
+): boolean {
+  const endIso = eventEnd?.trim()
+  if (endIso) {
+    const end = new Date(endIso)
+    if (!Number.isNaN(end.getTime())) {
+      return end.getTime() >= now.getTime()
+    }
+  }
+  return isUpcomingEventStart(eventStart, now)
+}

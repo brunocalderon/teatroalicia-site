@@ -1,0 +1,34 @@
+{
+  "records": [
+    {
+      "id": "recZTR2et7aeEZfXu",
+      "createdTime": "2026-11-17T03:16:43.000Z",
+      "fields": {
+        "Image": "murano.jpg (https://v5.airtableusercontent.com/v3/example/murano.jpg)",
+        "Purchase Link": "https://www.passline.com/eventos/murano-one-more-night",
+        "Slug": "murano",
+        "Event Name": "Murano: One More Night",
+        "Start": "20 de noviembre de 2026 8:30pm",
+        "Event Kind": "social-music",
+        "End": "21 de noviembre de 2026 4:30am",
+        "Language": "es",
+        "Title": "murano-one-more-night-2026-11-20"
+      }
+    },
+    {
+      "id": "reca8xBjoBBsQ3Prq",
+      "createdTime": "2026-11-22T01:13:06.000Z",
+      "fields": {
+        "Image": "elclubdelosviernes.jpg (https://v5.airtableusercontent.com/v3/example/elclubdelosviernes.jpg)",
+        "Purchase Link": "https://www.passline.com/eventos/el-club-de-los-viernes",
+        "Slug": "ecdlv",
+        "Event Name": "El Club de Los Viernes",
+        "Start": "27 de noviembre de 2026 8:30pm",
+        "Event Kind": "social-music",
+        "End": "28 de noviembre de 2026 4:30am",
+        "Language": "es",
+        "Title": "el-club-de-los-viernes-2026-11-27"
+      }
+    }
+  ]
+}

@@ -16,6 +16,8 @@ export type FetchAirtableRecordsOptions = {
   cellFormat?: "string" | "json"
   timeZone?: string
   userLocale?: string
+  /** Airtable view id (`viw…`); omitted when unset. */
+  view?: string
 }
 
 /** List all records (paginated), matching the public REST list-records API. */
@@ -33,6 +35,10 @@ export async function fetchAirtableRecords(
   }
   if (options.userLocale) {
     search.set("userLocale", options.userLocale)
+  }
+  const view = options.view?.trim()
+  if (view) {
+    search.set("view", view)
   }
 
   let offset: string | undefined

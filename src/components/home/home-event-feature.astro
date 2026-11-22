@@ -19,6 +19,13 @@ interface Props {
 }
 
 const { event } = Astro.props
+const posterAlt = event.imageAlt?.trim() || ""
+const posterImage = event.image
+const posterZoomSrc =
+  posterImage?.zoomSrc ?? posterImage?.fallbackSrc ?? posterImage?.src
+const posterUsesPicture = Boolean(
+  posterImage?.fallbackSrc && posterImage.fallbackSrcSet,
+)
 const ctaLinkAttrs = event.ctaExternal
   ? { target: "_blank", rel: "noopener noreferrer" as const }
   : {}
@@ -31,21 +38,42 @@ const ctaLinkAttrs = event.ctaExternal
         type="button"
         class="home-feature__media"
         data-cartelera-poster-zoom
-        data-zoom-src={event.image.src}
+        data-zoom-src={posterZoomSrc}
         data-event-title={event.title}
         aria-label={`Ampliar afiche de ${event.title}`}
       >
-        <img
-          class="home-feature__image"
-          src={event.image.src}
-          srcset={event.image.srcSet}
-          sizes={event.image.sizes}
-          width={event.image.width}
-          height={event.image.height}
-          alt=""
-          loading="lazy"
-          decoding="async"
-        />
+        {posterUsesPicture && posterImage ? (
+          <picture>
+            <source
+              type="image/webp"
+              srcset={posterImage.srcSet}
+              sizes={posterImage.sizes}
+            />
+            <img
+              class="home-feature__image"
+              src={posterImage.fallbackSrc}
+              srcset={posterImage.fallbackSrcSet}
+              sizes={posterImage.sizes}
+              width={posterImage.width}
+              height={posterImage.height}
+              alt={posterAlt}
+              loading="lazy"
+              decoding="async"
+            />
+          </picture>
+        ) : posterImage ? (
+          <img
+            class="home-feature__image"
+            src={posterImage.src}
+            srcset={posterImage.srcSet}
+            sizes={posterImage.sizes}
+            width={posterImage.width}
+            height={posterImage.height}
+            alt={posterAlt}
+            loading="lazy"
+            decoding="async"
+          />
+        ) : null}
       </button>
     ) : (
       <div class="home-feature__media" aria-hidden="true">

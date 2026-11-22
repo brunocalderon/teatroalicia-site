@@ -84,29 +84,36 @@ export default defineConfig({
         optional: true,
         default: "",
       }),
-      /** Personal access token with data.records:read for the CMS pages base. */
+      /** Personal access token with data.records:read (home cartelera at build). */
       AIRTABLE_TOKEN: envField.string({
         context: "server",
         access: "secret",
         optional: true,
         default: "",
       }),
-      /** Airtable base ID for `cmsPages`. */
+      /** Airtable base ID. */
       AIRTABLE_BASE_ID: envField.string({
         context: "server",
         access: "public",
         optional: true,
         default: "",
       }),
-      /** Airtable table for `/airtable` (table ID or name). */
+      /** Home cartelera table (defaults via `AIRTABLE_CARTELERA_TABLE_ID`). */
       AIRTABLE_TABLE_ID: envField.string({
         context: "server",
         access: "public",
         optional: true,
         default: "",
       }),
-      /** Airtable table for `cmsPages` under `/info/…` (omit to disable). */
-      AIRTABLE_CMS_TABLE_ID: envField.string({
+      /** Home cartelera table (defaults to `AIRTABLE_TABLE_ID` when unset). */
+      AIRTABLE_CARTELERA_TABLE_ID: envField.string({
+        context: "server",
+        access: "public",
+        optional: true,
+        default: "",
+      }),
+      /** Optional Airtable view (`viw…`) for home cartelera list requests. */
+      AIRTABLE_CARTELERA_VIEW_ID: envField.string({
         context: "server",
         access: "public",
         optional: true,

@@ -14,10 +14,12 @@ interface Props {
 }
 
 const { events, home, venueName, instagramUrl, slideBackgrounds } = Astro.props
+
+const showCartelera = events.length > 0
 ---
 
 {
-  events.length > 0 ? (
+  showCartelera ? (
     <section
       id="cartelera"
       class="home-featured"

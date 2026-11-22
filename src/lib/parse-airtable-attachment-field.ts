@@ -52,12 +52,26 @@ export function parseAirtableAttachmentField(
   value: unknown,
 ): AirtableAttachmentRef[] {
   if (typeof value === "string") {
-    return parseAirtableStringAttachments(value)
+    const fromCell = parseAirtableStringAttachments(value)
+    if (fromCell.length > 0) {
+      return fromCell
+    }
+    const trimmed = value.trim()
+    if (/^https?:\/\//i.test(trimmed)) {
+      return [{ filename: "image", url: trimmed }]
+    }
+    return []
   }
   if (Array.isArray(value)) {
     return parseAirtableJsonAttachments(value)
   }
   return []
+}
+
+/** Poster URL from an `Image` cell (`filename.jpg (https://…)` or plain URL). */
+export function resolveAirtableImageUrl(value: unknown): string | undefined {
+  const attachment = parseAirtableAttachmentField(value)[0]
+  return attachment?.url
 }
 
 export function resolveAirtableBrowseImage(
@@ -70,6 +84,5 @@ export function resolveAirtableBrowseImage(
     return undefined
   }
 
-  const attachments = parseAirtableAttachmentField(entry[1])
-  return attachments[0]
+  return parseAirtableAttachmentField(entry[1])[0]
 }

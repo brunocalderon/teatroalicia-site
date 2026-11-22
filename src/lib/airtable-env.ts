@@ -1,6 +1,7 @@
 import {
   AIRTABLE_BASE_ID,
-  AIRTABLE_CMS_TABLE_ID,
+  AIRTABLE_CARTELERA_TABLE_ID,
+  AIRTABLE_CARTELERA_VIEW_ID,
   AIRTABLE_TABLE_ID,
   AIRTABLE_TOKEN,
 } from "astro:env/server"
@@ -21,12 +22,13 @@ function resolveAirtableConnection():
   return { token, baseId }
 }
 
-/** Credentials for `cmsPages` (optional CMS table). */
-export function resolveAirtableCmsConfig():
+/** Credentials for home cartelera (falls back to `AIRTABLE_TABLE_ID`). */
+export function resolveAirtableCarteleraConfig():
   | {
       token: string
       baseId: string
       tableId: string
+      viewId?: string
     }
   | undefined {
   const connection = resolveAirtableConnection()
@@ -34,31 +36,18 @@ export function resolveAirtableCmsConfig():
     return undefined
   }
 
-  const tableId = AIRTABLE_CMS_TABLE_ID.trim()
+  const tableId =
+    (AIRTABLE_CARTELERA_TABLE_ID ?? "").trim() ||
+    (AIRTABLE_TABLE_ID ?? "").trim()
   if (!tableId) {
     return undefined
   }
 
-  return { ...connection, tableId }
-}
+  const viewId = (AIRTABLE_CARTELERA_VIEW_ID ?? "").trim()
 
-/** Credentials for `airtableRecords` (`/airtable` routes). */
-export function resolveAirtableBrowseConfig():
-  | {
-      token: string
-      baseId: string
-      tableId: string
-    }
-  | undefined {
-  const connection = resolveAirtableConnection()
-  if (!connection) {
-    return undefined
+  return {
+    ...connection,
+    tableId,
+    ...(viewId ? { viewId } : {}),
   }
-
-  const tableId = AIRTABLE_TABLE_ID.trim()
-  if (!tableId) {
-    return undefined
-  }
-
-  return { ...connection, tableId }
 }
