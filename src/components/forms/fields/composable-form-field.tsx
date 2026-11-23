@@ -28,24 +28,20 @@ function fieldErrorElementId(name: string): string {
 function FormFieldErrorSlot({
   fieldName,
   error,
-  reserveSpace,
 }: {
   fieldName: string
   error?: string
-  reserveSpace: boolean
 }) {
-  if (!reserveSpace && !error) {
+  if (!error) {
     return null
   }
 
   const errorElementId = fieldErrorElementId(fieldName)
   return (
     <div className="form-field-error-slot">
-      {error ? (
-        <p id={errorElementId} className="form-field-error" role="alert">
-          {error}
-        </p>
-      ) : null}
+      <p id={errorElementId} className="form-field-error" role="alert">
+        {error}
+      </p>
     </div>
   )
 }
@@ -74,7 +70,6 @@ export function ComposableFormField({
   const def = getFieldDefinition(field.type)
   const Control = def.Control
   const errorId = error ? fieldErrorElementId(field.name) : undefined
-  const reservesErrorSpace = Boolean(def.validate)
   const onValueChange = () => {
     if (error) {
       onClearError(field.name)
@@ -114,11 +109,7 @@ export function ComposableFormField({
           onValueChange={onValueChange}
           onBlurValidate={onBlurValidate}
         />
-        <FormFieldErrorSlot
-          fieldName={field.name}
-          error={error}
-          reserveSpace={reservesErrorSpace}
-        />
+        <FormFieldErrorSlot fieldName={field.name} error={error} />
       </div>
     )
   }
@@ -145,11 +136,7 @@ export function ComposableFormField({
         onValueChange={onValueChange}
         onBlurValidate={onBlurValidate}
       />
-      <FormFieldErrorSlot
-        fieldName={field.name}
-        error={error}
-        reserveSpace={reservesErrorSpace}
-      />
+      <FormFieldErrorSlot fieldName={field.name} error={error} />
     </div>
   )
 }

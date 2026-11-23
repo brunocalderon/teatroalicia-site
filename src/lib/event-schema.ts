@@ -36,7 +36,7 @@ export const eventInvitationSchema = z
     messages: formMessagesSchema,
     invitationOnly: z.boolean().optional(),
     livestackFooter: z.boolean().optional().default(true),
-    fields: z.array(formFieldSchema).min(1),
+    fields: z.array(formFieldSchema),
   })
   .superRefine((invitation, ctx) => {
     const names = new Set<string>()

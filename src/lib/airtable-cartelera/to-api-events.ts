@@ -7,6 +7,7 @@ import type { AirtableCarteleraRow } from "@/lib/airtable-cartelera/types"
 import type { CarteleraApiEvent } from "@/lib/airtable-cartelera/types"
 import { formatEventSchedule } from "@/lib/format-event-display"
 import type { HomeEventFeatureImage } from "@/lib/home-event-feature-image"
+import { defaultAirtableInvitationPath } from "@/lib/airtable-cartelera/to-invitation-form"
 import { metaTicketCheckoutContentId } from "@/lib/meta-ticket-checkout"
 import { isCarteleraEventVisible } from "@/lib/schema-org/event-datetime"
 
@@ -22,7 +23,9 @@ export function airtableRowToHomeEventFeature(
     slug: row.slug,
   })
   const ticketUrl = row.ticketUrl?.trim()
-  const invitationPath = row.invitationPath?.trim()
+  const invitationPath = row.guestListEnabled
+    ? row.invitationPath?.trim() ?? defaultAirtableInvitationPath(row.slug)
+    : undefined
   const baseCtaHref = ticketUrl ?? invitationPath ?? "#"
   const ctaHref = appendHomeCarteleraUtm(baseCtaHref, campaign)
   const ctaLabel = ticketUrl

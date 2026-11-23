@@ -19,7 +19,7 @@ function normalizeOrigin(raw: string): string | undefined {
 }
 
 /**
- * Canonical absolute site origin for build-time artifacts (referral CSV links).
+ * Canonical absolute site origin for build-time artifacts (`llms.txt`, `ard.json`).
  *
  * Prefer `SITE_URL` (your public custom domain in Cloudflare Pages).
  * Falls back to `CF_PAGES_URL` (Pages deployment URL, often `*.pages.dev`).

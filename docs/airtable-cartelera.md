@@ -37,6 +37,9 @@ Each `records[]` entry:
 | `End` | No | `eventEnd` |
 | `Purchase Link` | No | Ticket CTA URL |
 | `Ticket Supplier` | No | Meta `TicketingOutboundClick` `destination` (falls back to ticket URL host when empty) |
+| `Guest List` | No | When on, build emits `/i/{Slug}` and cartelera may CTA to the guest-list form |
+| `Guest List Fields` | No | JSON array of form field definitions (see `form-schema` / murano invitation) |
+| (env) | — | All guest-list forms use `AIRTABLE_INVITATION_FORM_TOKEN`; intro/thank-you markdown in `content/i18n/guest-list-form-*.es.md` via `guest-list-form.es.ts` |
 | `Image` | No | Poster (`filename (https://…)` → mirrored locally at build) |
 | `Event Kind` | No | Schema.org event type |
 | `Publish` | No | When `false`, row is hidden |
@@ -49,4 +52,4 @@ Fixture: `tests/fixtures/airtable-cartelera-list-response.json`.
 
 ## Related
 
-- Markdown fallback when env is unset: `content/events/`
+- Guest-list forms: `docs/astro-form-request-forms.md`, `content/i18n/guest-list-form.es.ts`

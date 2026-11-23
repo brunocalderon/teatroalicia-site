@@ -13,6 +13,7 @@
     "extract:json-ld": "node scripts/extract-json-ld.mjs",
     "build:json-ld": "npm run build && npm run extract:json-ld",
     "generate:promoters": "node --experimental-strip-types scripts/generate-promoters-public.mjs",
+    "generate:promoters-csv": "node --experimental-strip-types scripts/generate-promoters-roster-csv.mjs",
     "preview": "astro preview",
     "test:unit": "vitest run --config vitest.config.ts",
     "test:lighthouse": "npm run build && vitest run --config vitest.lighthouse.config.ts",

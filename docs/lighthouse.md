@@ -22,7 +22,7 @@ npm run test:lighthouse
 Paths come from [`src/lib/lighthouse-targets.ts`](../src/lib/lighthouse-targets.ts):
 
 - `/` (home)
-- Each form `path` and thank-you route from `content/forms/*.md` (`thankYouPath`, default `{path}/gracias`)
+- Each built guest-list form at `/i/{slug}` (scanned from `dist/i/` after build; thank-you and other nested routes are excluded)
 
 ## Thresholds and settings
 

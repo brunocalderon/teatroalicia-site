@@ -26,21 +26,15 @@ Shared helpers in this repo:
 | Default UI copy | `src/lib/form-copy.ts` |
 | Turnstile widget | `src/components/forms/turnstile-field.tsx` |
 | Hidden `access_key` / honeypot | `src/components/forms/form-hidden-fields.tsx` |
-| Markdown form configs + schema | `content/forms/*.md`, `content/events/*.md` (optional `invitation`), `src/lib/form-schema.ts`, `src/lib/event-schema.ts` |
+| Markdown form configs + schema | `content/forms/*.md`, `src/lib/form-schema.ts`; guest-list events from Airtable (see `docs/airtable-cartelera.md`) |
 | Generic form renderer | `src/components/forms/configurable-form.tsx` |
 | Composable field types | `src/components/forms/fields/` (`registry.tsx`, per-type components) |
 | Generated form routes | `src/pages/[...formPath].astro` |
 | Generated thank-you routes | `src/pages/[...formBasePath]/[thankYouSlug].astro` (`form-thank-you-page.astro`) |
-| Referral promoter CSV | `src/pages/[...formBasePath]/referrals/csv.ts` |
 
-## Events vs invitation forms
+## Cartelera and guest-list (Airtable)
 
-| Content | Collection | Routes |
-| --- | --- | --- |
-| Cartelera + schema (`slug`, `eventId`, `eventStart`, optional `ticketLink`, `image`, …) | `events` | Home cartelera, homepage JSON-LD |
-| Guest-pass Formgong UI | nested `invitation` on an event **or** standalone `content/forms/*.md` | `/i/{slug}` (default when `invitation.path` omitted) and `{path}/gracias` |
-
-Ticket-only events omit `invitation`; they still appear on `/` when `eventStart` is upcoming. See [`content/events/murano/murano.md`](../content/events/murano/murano.md) for event + invitation.
+Home cartelera and `/i/{slug}` guest-list forms are built from the Airtable **Events** table when `AIRTABLE_TOKEN`, `AIRTABLE_BASE_ID`, and cartelera table env are set. See `docs/airtable-cartelera.md` (`Guest List`, `Guest List Fields`, posters mirrored to `src/.cache/cartelera-posters/`). Shared guest-list copy: `content/i18n/guest-list-form-*.es.md`.
 
 ## Adding a form (default path)
 
@@ -50,13 +44,9 @@ Ticket-only events omit `invitation`; they still appear on `/` when `eventStart`
 2. Optional: `lang`, `submitLabel`, `thankYouPath` (defaults to `{path}/gracias`), `nameFields`, `messages` (`formBody` / `thankYouBody` in frontmatter, or a legacy markdown body below the closing `---`), `image` + `imageAlt`, `livestackFooter`.
 3. Build or run dev — Astro generates the form page at `path` and the thank-you page at `thankYouPath`.
 
-**Event guest-pass:**
+**Event guest-pass (Airtable):** enable **Guest List**, set **Guest List Fields** (JSON array), and ensure `AIRTABLE_INVITATION_FORM_TOKEN` is set. Build emits `/i/{slug}` and `/i/{slug}/gracias`.
 
-1. Create `content/events/{slug}/{slug}.md` with required event fields (`slug`, `title`, `eventId`, `eventStart`, …) and a nested `invitation:` block (`token`, `fields`, optional `path`, `messages`, …). The folder name must match `slug`. Default invitation URL is `/i/{slug}`.
-2. Optional poster: `content/events/{slug}/{slug}.jpg` with `image: /events/{slug}/{slug}.jpg` (applies to invitation split layout and home cartelera).
-3. Build generates `/i/...` and thank-you from `invitation.thankYouPath` (default `{invitation.path}/gracias`).
-
-Example:
+Example standalone form:
 
 ```md
 ---
@@ -85,9 +75,7 @@ Optional intro above the form.
 
 Field `type` values: `text`, `email`, `tel`, `url`, `number`, `date`, `textarea`, `select`, `radio`, `checkbox`, `file`, `instagram`, `referral`. Use `options` on `select` / `radio`. Use `accept` on `file` (Formgong attachments + Turnstile secret in dashboard).
 
-Promoters and referral links: maintain the full roster in `content/promoters.roster.ts` (`id`, `name`, and capability flags). `npm run build` runs `scripts/generate-promoters-public.mjs`, which writes `src/generated/promoters.public.json` with only `id` and `name` for promoters where `active` and `guest_pass_enabled` are true; the production client bundle uses that file only. Invitation forms use `type: referral`. When the URL includes `?e=<promoter-id>`, the form always posts that value in `referral_id` (canonical `id` when it matches an eligible promoter, otherwise the raw `e` string). A hidden `referral_enabled` field is sent as `true` or `false`. The visible “Invitado por” row is reserved whenever `e` is non-empty; if `e` is not an eligible promoter, the row shows **Teatro Alicia** as the display name. Regenerate the public file after roster edits with `npm run generate:promoters`.
-
-For each form that includes a `referral` field, the build also emits a static CSV at `{form path}/referrals/csv` (e.g. `/i/murano/referrals/csv`) with every roster column plus a `form_link` (`?e=<promoter id>`). Set `SITE_URL` in Cloudflare Pages to your public custom domain so links use the live hostname; `CF_PAGES_URL` is only a fallback and usually points at `*.pages.dev`.
+Promoters and referral links: maintain the roster in the Airtable **Promoters** table (`ID`, `Name`, checkbox capability columns — see `docs/airtable-promoters.md`). `npm run build` runs `npm run generate:promoters`, which snapshots `src/generated/promoters.roster.json` and writes `src/generated/promoters.public.json` with only `id` and `name` for promoters where `active` and `guest_pass_enabled` are true; the production client bundle uses that file only. Invitation forms use `type: referral`. When the URL includes `?e=<promoter-id>`, the form always posts that value in `referral_id` (canonical `id` when it matches an eligible promoter, otherwise the raw `e` string). A hidden `referral_enabled` field is sent as `true` or `false`. The visible “Invitado por” row is reserved whenever `e` is non-empty; if `e` is not an eligible promoter, the row shows **Teatro Alicia** as the display name. Refresh the roster after Airtable edits with `npm run generate:promoters` (requires `AIRTABLE_PROMOTERS_TABLE_ID` or a committed `promoters.roster.json`).
 
 Each `type` maps to a composable field in `src/components/forms/fields/registry.tsx` (control UI, optional `validate` on submit, optional `normalize` before POST). To add a specialized field: create a component, register it, and add the type to `formFieldTypeSchema` in `src/lib/form-schema.ts`. The `instagram` type strips `@` / profile URLs, validates username rules, and posts the normalized handle. The `date` type uses three numeric inputs (DD, MM, YYYY) in the UI and normalizes to `YYYY-MM-DD` before POST. The `tel` type uses a country-code dropdown (`libphonenumber-js`) and posts digits in E.164 form without the leading `+`.
 
@@ -179,4 +167,4 @@ Walk through sections 1–6 in this doc, then verify:
 - `npm run build` succeeds (`npx astro sync` after schema or new field types).
 - Dev/prod preview: Turnstile renders on form routes; submit posts to Formgong and redirects to `thankYouPath` with `?name=` when configured.
 - Thank-you copy and event title render correctly (`ThankYouBody` reads the name from the query string).
-- If the form has `type: referral`, test `?e=` attribution and `{path}/referrals/csv` after build with `SITE_URL` set.
+- If the form has `type: referral`, test `?e=` attribution on the live form URL.

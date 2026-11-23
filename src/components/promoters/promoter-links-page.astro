@@ -1,0 +1,89 @@
+---
+/** Internal promoter URL list — no Formgong, Turnstile, or form marketing. */
+
+import { PromoterGuestPassLinks } from "@/components/promoters/promoter-guest-pass-links"
+import Layout from "@/layouts/Layout.astro"
+import type { GuestPassPromoterLinkRow } from "@/lib/guest-pass-promoter-link"
+import { sitePageBackdropCss } from "@/lib/site-page-backdrop-css"
+import "@/styles/global.css"
+
+export interface Props {
+  pageTitle: string
+  pageDescription: string
+  lang: string
+  eventTitle: string
+  heading: string
+  promoters: GuestPassPromoterLinkRow[]
+}
+
+const {
+  pageTitle,
+  pageDescription,
+  lang,
+  eventTitle,
+  heading,
+  promoters,
+} = Astro.props
+
+const backdropCss = sitePageBackdropCss("promoter-links-page")
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  lang={lang}
+  deferredSiteBackdrop
+>
+  <main class="promoter-links-page">
+    <div class="promoter-links-page__shell">
+      <div class="promoter-links-page__body">
+        <PromoterGuestPassLinks
+          client:load
+          lang={lang}
+          eventTitle={eventTitle}
+          heading={heading}
+          promoters={promoters}
+        />
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<style is:global set:html={backdropCss}></style>
+
+<style>
+  .promoter-links-page {
+    width: min(75rem, calc(100% - 4rem));
+    max-width: min(100%, 56rem);
+    margin-block: 2rem;
+    margin-inline: auto;
+    min-height: 0;
+    padding: 2rem 1.5rem 3rem;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    overflow-x: clip;
+    color: var(--foreground);
+  }
+
+  .promoter-links-page__shell {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .promoter-links-page__body {
+    width: 100%;
+    min-width: 0;
+  }
+
+  @media (max-width: 55.99rem) {
+    .promoter-links-page {
+      width: calc(100% - 1.5rem);
+      margin-block: 0.75rem;
+      padding: 1rem 1rem 2rem;
+    }
+
+  }
+</style>

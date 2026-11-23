@@ -1,6 +1,7 @@
-import { readdir } from "node:fs/promises"
+import { readFile, readdir } from "node:fs/promises"
 import path from "node:path"
 import type { ImageMetadata } from "astro"
+import { imageMetadata as readImageMetadata } from "astro/assets/utils"
 
 import { CARTELERA_POSTER_CACHE_DIR } from "@/lib/airtable-cartelera/cartelera-poster-cache-path"
 
@@ -45,6 +46,18 @@ async function listPosterFileNamesBySlug(): Promise<Map<string, string>> {
   return posterFileNameBySlug
 }
 
+async function loadCarteleraPosterMetadataFromDisk(
+  fileName: string,
+): Promise<ImageMetadata | undefined> {
+  const absolutePath = path.join(CARTELERA_POSTER_CACHE_DIR, fileName)
+  try {
+    const buffer = await readFile(absolutePath)
+    return await readImageMetadata(buffer, absolutePath)
+  } catch {
+    return undefined
+  }
+}
+
 export async function carteleraPosterImageBySlug(
   slug: string,
 ): Promise<ImageMetadata | undefined> {
@@ -65,8 +78,17 @@ export async function carteleraPosterImageBySlug(
       /* @vite-ignore */
       `../../.cache/cartelera-posters/${fileName}`
     )
-    return mod.default as ImageMetadata
+    const loaded = mod.default as ImageMetadata
+    if (
+      loaded &&
+      typeof loaded.width === "number" &&
+      typeof loaded.height === "number"
+    ) {
+      return loaded
+    }
   } catch {
-    return undefined
+    // Mirrored after Vite scanned `import.meta.glob` — read bytes from disk.
   }
+
+  return loadCarteleraPosterMetadataFromDisk(fileName)
 }

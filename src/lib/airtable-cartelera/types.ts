@@ -9,6 +9,10 @@ export type AirtableCarteleraRow = {
   ticketUrl?: string
   /** Airtable `Ticket Supplier` — Meta TicketingOutboundClick `destination`. */
   ticketSupplier?: string
+  /** Airtable `Guest List` — exposes `/i/{slug}` when true. */
+  guestListEnabled: boolean
+  /** Raw `Guest List Fields` JSON from Airtable. */
+  guestListFieldsRaw?: string
   invitationPath?: string
   imageUrl?: string
   /** Original attachment filename from Airtable `Image` (for mirroring). */

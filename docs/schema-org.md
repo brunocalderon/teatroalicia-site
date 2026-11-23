@@ -10,11 +10,11 @@ Persistent venue `@id`: `https://teatroalicia.com/#teatro-alicia`
 
 Do not add self-serving `aggregateRating`, generic ticket `makesOffer`, or fixed `openingHoursSpecification` when hours are event-driven. Use `openingHoursNote` + `additionalProperty` instead.
 
-## Event data (`content/events/`)
+## Event data (Airtable → build snapshot)
 
-Required for cartelera and homepage `ItemList` / `Event` nodes. Invitation JSON-LD on `/i/...` uses the same event fields plus nested `invitation` when present. Standalone [`content/forms/`](../content/forms/) pages skip event graphs unless they define `eventStart` / `eventId`.
+Cartelera and homepage `ItemList` / `Event` nodes use **Events** rows mapped via `airtableRowToEventEntryData`. Invitation JSON-LD on `/i/...` uses the same fields from guest-list forms. Standalone [`content/forms/`](../content/forms/) pages skip event graphs unless they define `eventStart` / `eventId`.
 
-Frontmatter on event markdown:
+Shape (`EventEntryData` in `src/lib/event-schema.ts`; sourced from Airtable at build):
 
 | Field | Description |
 |-------|-------------|

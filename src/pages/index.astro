@@ -1,6 +1,4 @@
 ---
-import { getCollection } from "astro:content"
-
 import HomeContactFooter from "@/components/home/home-contact-footer.astro"
 import type { HomeEventFeatureData } from "@/components/home/home-event-feature.astro"
 import HomeEventsSection from "@/components/home/home-events-section.astro"
@@ -8,14 +6,9 @@ import HomeHeader from "@/components/home/home-header.astro"
 import HomeOfferingsGrid from "@/components/home/home-offerings-grid.astro"
 import HomeVenueSection from "@/components/home/home-venue-section.astro"
 import Layout from "@/layouts/Layout.astro"
-import { resolveEventInvitationPath } from "@/lib/event-schema"
-import { formatEventSchedule } from "@/lib/format-event-display"
 import { buildCarteleraPosterFeatureImage } from "@/lib/airtable-cartelera/build-cartelera-poster-feature-image"
 import { carteleraPosterImageBySlug } from "@/lib/airtable-cartelera/cartelera-poster-image-modules"
-import {
-  buildHomeEventFeatureImage,
-  type HomeEventFeatureImage,
-} from "@/lib/home-event-feature-image"
+import type { HomeEventFeatureImage } from "@/lib/home-event-feature-image"
 import {
   buildHomeHeroSlideBackground,
   buildHomeVenuePhotoImage,
@@ -28,18 +21,11 @@ import {
 } from "@/lib/airtable-cartelera/to-api-events"
 import { airtableRowToEventEntryData } from "@/lib/airtable-cartelera/to-event-entry"
 import { resolveAirtableCarteleraConfig } from "@/lib/airtable-env"
-import { getUpcomingEventEntries } from "@/lib/home-upcoming-events"
 import {
   hasBundledFormEventImage,
   resolveFormEventImageSource,
 } from "@/lib/form-event-image"
 import { resolveVenuePrimaryImageAbsoluteUrl } from "@/lib/venue-primary-image"
-import {
-  appendHomeCarteleraUtm,
-  homeCarteleraEventSlug,
-} from "@/lib/home-cartelera-utm"
-import { metaTicketCheckoutContentId } from "@/lib/meta-ticket-checkout"
-import { resolvePublicTicketUrl } from "@/lib/form-schema"
 import { marketingPageTracking } from "@/lib/marketing-page-tracking"
 import { CANONICAL_SITE_ORIGIN } from "@/lib/schema-org/canonical-origin"
 import { buildHomePageJsonLd } from "@/lib/schema-org/build-home-json-ld"
@@ -54,12 +40,6 @@ const pageTitle = homeContent.meta.title
 const pageDescription = homeContent.meta.description
 
 const airtableCarteleraConfig = resolveAirtableCarteleraConfig()
-const useAirtableCartelera = Boolean(airtableCarteleraConfig)
-
-const events = await getCollection("events")
-const upcomingEntries = useAirtableCartelera
-  ? []
-  : getUpcomingEventEntries(events)
 
 const heroSlideBackgrounds = await Promise.all(
   HOME_HERO_SLIDE_PATHS.map((path) =>
@@ -79,12 +59,12 @@ const venueImageUrl = await resolveVenuePrimaryImageAbsoluteUrl()
 
 const eventImageUrlBySlug: Record<string, string | undefined> = {}
 let eventFeatures: HomeEventFeatureData[] = []
-let upcomingEventsForSchema = events.map((entry) => ({
-  id: entry.id,
-  data: entry.data,
-}))
+let upcomingEventsForSchema: Array<{
+  id: string
+  data: ReturnType<typeof airtableRowToEventEntryData>
+}> = []
 
-if (useAirtableCartelera && airtableCarteleraConfig) {
+if (airtableCarteleraConfig) {
   const airtableRows = await fetchAirtableCarteleraRows(airtableCarteleraConfig)
   const upcomingRows = filterUpcomingAirtableCarteleraRows(airtableRows)
   const imagesBySlug = new Map<string, HomeEventFeatureImage>()
@@ -109,51 +89,6 @@ if (useAirtableCartelera && airtableCarteleraConfig) {
     id: row.slug,
     data: airtableRowToEventEntryData(row),
   }))
-} else {
-  for (const entry of upcomingEntries) {
-    const { data } = entry
-    const schedule = data.eventStart
-      ? formatEventSchedule(data.eventStart, data.eventEnd, { date: "home" })
-      : { dateLine: "", timeLine: "" }
-
-    let image: Awaited<ReturnType<typeof buildHomeEventFeatureImage>> | undefined
-    if (data.image && hasBundledFormEventImage(data.image)) {
-      const source = resolveFormEventImageSource(data.image)
-      image = await buildHomeEventFeatureImage(source)
-      eventImageUrlBySlug[data.slug] = new URL(
-        image.src,
-        CANONICAL_SITE_ORIGIN,
-      ).href
-    }
-
-    const ticketUrl = resolvePublicTicketUrl(data)
-    const invitationPath = data.invitation
-      ? resolveEventInvitationPath(data)
-      : undefined
-    const baseCtaHref = ticketUrl ?? invitationPath ?? "#"
-    const ctaHref = appendHomeCarteleraUtm(
-      baseCtaHref,
-      homeCarteleraEventSlug(data),
-    )
-    const ctaLabel = ticketUrl
-      ? "Comprar tickets"
-      : data.invitation?.submitLabel?.trim() || "Solicitar acceso"
-    eventFeatures.push({
-      title: data.title,
-      ctaHref,
-      ctaExternal: Boolean(ticketUrl),
-      eventCampaign: homeCarteleraEventSlug(data),
-      ticketContentId: metaTicketCheckoutContentId({
-        eventId: data.eventId,
-        slug: data.slug,
-      }),
-      ctaLabel,
-      dateLine: schedule.dateLine,
-      timeLine: schedule.timeLine,
-      imageAlt: data.imageAlt,
-      image,
-    })
-  }
 }
 
 const homeJsonLd = buildHomePageJsonLd({

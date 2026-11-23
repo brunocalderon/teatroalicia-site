@@ -48,6 +48,23 @@ describe("map-airtable-cartelera", () => {
     expect(event?.image).toBeUndefined()
   })
 
+  it("maps Guest List and Guest List Fields", () => {
+    const mapped = mapAirtableCarteleraRecord("recGuest", {
+      Slug: "murano",
+      "Event Name": "Murano",
+      Title: "murano-2026-11-20",
+      Start: "2026-11-20T21:00:00-03:00",
+      "Guest List": "checked",
+      "Guest List Fields": '[{"name":"email","label":"Email","type":"email","required":true}]',
+    })
+    expect(mapped.ok).toBe(true)
+    if (!mapped.ok) {
+      throw new Error("expected ok")
+    }
+    expect(mapped.data.guestListEnabled).toBe(true)
+    expect(mapped.data.guestListFieldsRaw).toContain("email")
+  })
+
   it("maps production cartelera table fields (es_CL string dates)", async () => {
     const fields = {
       Slug: "ecdlv",
@@ -109,6 +126,7 @@ describe("map-airtable-cartelera", () => {
     expect(rows[0]?.imageUrl).toMatch(/^https:\/\/v5\.airtableusercontent\.com\//)
     expect(rows[0]?.imageUrl).not.toMatch(/\.jpg\s+\(/)
     expect(rows[0]?.ticketSupplier).toBe("passline")
+    expect(rows[0]?.guestListEnabled).toBe(false)
 
     const apiEvents = await airtableCarteleraRowsToApiEvents(rows, {
       now: new Date("2026-11-21T12:00:00-03:00"),

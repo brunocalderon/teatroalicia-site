@@ -1,0 +1,226 @@
+[
+  {
+    "id": "alejandra-rojas",
+    "name": "Alejandra Rojas",
+    "active": true,
+    "ticket_sale_enabled": true,
+    "guest_pass_enabled": true
+  },
+  {
+    "id": "belen-echevarria",
+    "name": "Belen echevarria",
+    "active": true,
+    "ticket_sale_enabled": true,
+    "guest_pass_enabled": true
+  },
+  {
+    "id": "checho-apes",
+    "name": "Checho Apes",
+    "active": true,
+    "ticket_sale_enabled": true,
+    "guest_pass_enabled": true
+  },
+  {
+    "id": "christian-leal",
+    "name": "Christian Leal",
+    "active": true,
+    "ticket_sale_enabled": true,
+    "guest_pass_enabled": true
+  },
+  {
+    "id": "constanza-barros",
+    "name": "Constanza Barros",
+    "active": true,
+    "ticket_sale_enabled": true,
+    "guest_pass_enabled": true
+  },
+  {
+    "id": "debora-jaches",
+    "name": "Débora Jaches",
+    "active": true,
+    "ticket_sale_enabled": true,
+    "guest_pass_enabled": true
+  },
+  {
+    "id": "eduardo-caco-moreno",
+    "name": "Eduardo Caco Moreno",
+    "active": true,
+    "ticket_sale_enabled": true,
+    "guest_pass_enabled": true
+  },
+  {
+    "id": "embajadores-teatro-alicia",
+    "name": "Embajadores Teatro Alicia",
+    "active": true,
+    "ticket_sale_enabled": true,
+    "guest_pass_enabled": true
+  },
+  {
+    "id": "emilia-castillo",
+    "name": "Emilia Castillo",
+    "active": true,
+    "ticket_sale_enabled": true,
+    "guest_pass_enabled": true
+  },
+  {
+    "id": "fernando-borquez",
+    "name": "Fernando Borquez",
+    "active": true,
+    "ticket_sale_enabled": true,
+    "guest_pass_enabled": true
+  },
+  {
+    "id": "fernando-cabezon-covarrubias",
+    "name": "Fernando Cabezón Covarrubias",
+    "active": true,
+    "ticket_sale_enabled": true,
+    "guest_pass_enabled": true
+  },
+  {
+    "id": "gonzalo-barros",
+    "name": "Gonzalo Barros",
+    "active": true,
+    "ticket_sale_enabled": true,
+    "guest_pass_enabled": true
+  },
+  {
+    "id": "ismael-retro",
+    "name": "Ismael Retro",
+    "active": true,
+    "ticket_sale_enabled": true,
+    "guest_pass_enabled": true
+  },
+  {
+    "id": "jaime-barrios",
+    "name": "Jaime Barrios",
+    "active": true,
+    "ticket_sale_enabled": true,
+    "guest_pass_enabled": true
+  },
+  {
+    "id": "leyla-ananias",
+    "name": "Leyla Ananías",
+    "active": true,
+    "ticket_sale_enabled": true,
+    "guest_pass_enabled": true
+  },
+  {
+    "id": "loreto-borquez",
+    "name": "Loreto Borquez",
+    "active": true,
+    "ticket_sale_enabled": true,
+    "guest_pass_enabled": true
+  },
+  {
+    "id": "lupe-fernandez",
+    "name": "Lupe Fernández",
+    "active": true,
+    "ticket_sale_enabled": true,
+    "guest_pass_enabled": true
+  },
+  {
+    "id": "marcela-diaz-lizama",
+    "name": "Marcela Diaz Lizama",
+    "active": true,
+    "ticket_sale_enabled": true,
+    "guest_pass_enabled": true
+  },
+  {
+    "id": "miguel-ananias",
+    "name": "Miguel Ananias",
+    "active": true,
+    "ticket_sale_enabled": true,
+    "guest_pass_enabled": true
+  },
+  {
+    "id": "pachi-perez",
+    "name": "Pachi Perez",
+    "active": true,
+    "ticket_sale_enabled": true,
+    "guest_pass_enabled": true
+  },
+  {
+    "id": "paola-aranda",
+    "name": "Paola Aranda",
+    "active": true,
+    "ticket_sale_enabled": true,
+    "guest_pass_enabled": true
+  },
+  {
+    "id": "pato-hado",
+    "name": "Pato Hado",
+    "active": true,
+    "ticket_sale_enabled": true,
+    "guest_pass_enabled": true
+  },
+  {
+    "id": "patyfinger",
+    "name": "Paty Finger",
+    "active": true,
+    "ticket_sale_enabled": true,
+    "guest_pass_enabled": true
+  },
+  {
+    "id": "pauli-filler",
+    "name": "Pauli Filler",
+    "active": true,
+    "ticket_sale_enabled": true,
+    "guest_pass_enabled": true
+  },
+  {
+    "id": "rodrigo-pichi-quintana",
+    "name": "Rodrigo Pichi Quintana",
+    "active": true,
+    "ticket_sale_enabled": true,
+    "guest_pass_enabled": true
+  },
+  {
+    "id": "rodrigo-tapia",
+    "name": "Rodrigo Tapia",
+    "active": true,
+    "ticket_sale_enabled": true,
+    "guest_pass_enabled": true
+  },
+  {
+    "id": "rose-marie-ferger",
+    "name": "Rose Marie Ferger",
+    "active": true,
+    "ticket_sale_enabled": true,
+    "guest_pass_enabled": true
+  },
+  {
+    "id": "sergio-arriagada",
+    "name": "Sergio Arriagada",
+    "active": true,
+    "ticket_sale_enabled": true,
+    "guest_pass_enabled": true
+  },
+  {
+    "id": "soffi-luz",
+    "name": "Soffi Luz",
+    "active": true,
+    "ticket_sale_enabled": true,
+    "guest_pass_enabled": true
+  },
+  {
+    "id": "trini-alvarado",
+    "name": "Trini Alvarado",
+    "active": true,
+    "ticket_sale_enabled": true,
+    "guest_pass_enabled": true
+  },
+  {
+    "id": "vale-maraboli",
+    "name": "Vale Maraboli",
+    "active": true,
+    "ticket_sale_enabled": true,
+    "guest_pass_enabled": true
+  },
+  {
+    "id": "vitita-perez",
+    "name": "Vitita Pérez",
+    "active": true,
+    "ticket_sale_enabled": true,
+    "guest_pass_enabled": true
+  }
+]

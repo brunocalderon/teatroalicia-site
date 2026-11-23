@@ -1,10 +1,16 @@
 import type { CollectionEntry } from "astro:content"
 
-import { eventToFormEntryData } from "@/lib/event-to-form"
-import { eventHasInvitation } from "@/lib/event-schema"
+import { fetchAirtableCarteleraRows } from "@/lib/airtable-cartelera/fetch-events"
+import { airtableRowToInvitationFormData } from "@/lib/airtable-cartelera/to-invitation-form"
+import { resolveAirtableCarteleraConfig } from "@/lib/airtable-env"
+import { resolveAirtableInvitationFormToken } from "@/lib/airtable-invitation-env"
 import type { FormEntryData } from "@/lib/form-schema"
+import {
+  ensureGuestPassReferralField,
+  isGuestPassInvitationPath,
+} from "@/lib/guest-pass-referral-field"
 
-export type InvitationContentCollection = "forms" | "events"
+export type InvitationContentCollection = "forms" | "airtable"
 
 export type InvitationFormEntry = {
   id: string
@@ -13,34 +19,54 @@ export type InvitationFormEntry = {
 }
 
 type FormCollectionEntry = CollectionEntry<"forms">
-type EventCollectionEntry = CollectionEntry<"events">
 
-/** Formgong routes from `content/forms` and event files with `invitation`. */
-export function collectInvitationFormEntries(
+function withGuestPassReferralFields(data: FormEntryData): FormEntryData {
+  if (!isGuestPassInvitationPath(data.path)) {
+    return data
+  }
+  return {
+    ...data,
+    fields: ensureGuestPassReferralField(data.fields),
+  }
+}
+
+function invitationEntriesFromForms(
   forms: FormCollectionEntry[],
-  events: EventCollectionEntry[],
 ): InvitationFormEntry[] {
-  const fromForms: InvitationFormEntry[] = forms.map((entry) => ({
+  return forms.map((entry) => ({
     id: entry.id,
     collection: "forms",
-    data: entry.data,
+    data: withGuestPassReferralFields(entry.data),
   }))
+}
 
-  const fromEvents: InvitationFormEntry[] = []
-  for (const entry of events) {
-    if (!eventHasInvitation(entry.data)) {
-      continue
-    }
-    const data = eventToFormEntryData(entry.data)
-    if (!data) {
-      continue
-    }
-    fromEvents.push({
-      id: entry.id,
-      collection: "events",
-      data,
-    })
+async function invitationEntriesFromAirtable(): Promise<InvitationFormEntry[]> {
+  const carteleraConfig = resolveAirtableCarteleraConfig()
+  const formToken = resolveAirtableInvitationFormToken()
+  if (!carteleraConfig || !formToken) {
+    return []
   }
 
-  return [...fromForms, ...fromEvents]
+  const rows = await fetchAirtableCarteleraRows(carteleraConfig)
+  return rows
+    .filter((row) => row.guestListEnabled)
+    .map((row) => ({
+      id: row.slug,
+      collection: "airtable",
+      data: withGuestPassReferralFields(
+        airtableRowToInvitationFormData(row, { formToken }),
+      ),
+    }))
+}
+
+/** Formgong routes from `content/forms` and Airtable Events (guest list). */
+export async function loadInvitationFormEntries(
+  forms: FormCollectionEntry[],
+): Promise<InvitationFormEntry[]> {
+  const fromForms = invitationEntriesFromForms(forms)
+  const fromAirtable = resolveAirtableCarteleraConfig()
+    ? await invitationEntriesFromAirtable()
+    : []
+
+  return [...fromForms, ...fromAirtable]
 }

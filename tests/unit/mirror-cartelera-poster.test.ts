@@ -1,22 +1,33 @@
 import { readFileSync } from "node:fs"
-import { access, rm } from "node:fs/promises"
+import { access, mkdtemp, rm } from "node:fs/promises"
+import { tmpdir } from "node:os"
 import path from "node:path"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
-import { CARTELERA_POSTER_CACHE_DIR } from "@/lib/airtable-cartelera/cartelera-poster-cache-path"
+const mockCacheDir = vi.hoisted(() => ({ path: "" }))
+
+vi.mock("@/lib/airtable-cartelera/cartelera-poster-cache-path", () => ({
+  get CARTELERA_POSTER_CACHE_DIR() {
+    return mockCacheDir.path
+  },
+}))
+
 import { mirrorAirtableCarteleraPoster } from "@/lib/airtable-cartelera/mirror-cartelera-poster"
 
 const samplePoster = readFileSync(
-  new URL("../../content/events/murano/murano.jpg", import.meta.url),
+  new URL("../fixtures/cartelera-poster-sample.jpg", import.meta.url),
 )
 
 describe("mirror-cartelera-poster", () => {
   beforeEach(async () => {
-    await rm(CARTELERA_POSTER_CACHE_DIR, { recursive: true, force: true })
+    mockCacheDir.path = await mkdtemp(path.join(tmpdir(), "ta-cartelera-mirror-"))
   })
 
   afterEach(async () => {
-    await rm(CARTELERA_POSTER_CACHE_DIR, { recursive: true, force: true })
+    if (mockCacheDir.path) {
+      await rm(mockCacheDir.path, { recursive: true, force: true })
+      mockCacheDir.path = ""
+    }
     vi.unstubAllGlobals()
   })
 
@@ -42,7 +53,7 @@ describe("mirror-cartelera-poster", () => {
     )
 
     expect(fetchMock).toHaveBeenCalledOnce()
-    const mirroredPath = path.join(CARTELERA_POSTER_CACHE_DIR, "murano.jpg")
+    const mirroredPath = path.join(mockCacheDir.path, "murano.jpg")
     expect(metadata?.width).toBe(400)
     expect(metadata?.absolutePath).toBe(mirroredPath)
     await access(mirroredPath)

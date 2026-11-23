@@ -1,0 +1,24 @@
+{
+  "records": [
+    {
+      "id": "recTestGuestPass",
+      "createdTime": "2026-11-23T21:46:05.000Z",
+      "fields": {
+        "Name": "Trini Alvarado",
+        "ID": "trini-alvarado",
+        "Active": "checked",
+        "Ticket Sales Enabled": "checked",
+        "Guest Passes Enabled": "checked"
+      }
+    },
+    {
+      "id": "recTestInactive",
+      "createdTime": "2026-11-23T21:46:05.000Z",
+      "fields": {
+        "Name": "Marcela Abusleme",
+        "ID": "marcela-abusleme",
+        "Ticket Sales Enabled": "checked"
+      }
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+---
+import { getCollection } from "astro:content"
+
+import PromoterLinksPage from "@/components/promoters/promoter-links-page.astro"
+import { guestPassPromoterLinkRows } from "@/lib/guest-pass-promoter-link"
+import { assertFormsCollectionIntegrity } from "@/lib/form-schema"
+import { isGuestPassInvitationPath } from "@/lib/guest-pass-referral-field"
+import { invitationSlugFromPath } from "@/lib/invitation-bundled-poster"
+import { loadInvitationFormEntries } from "@/lib/invitation-form-entries"
+
+export async function getStaticPaths() {
+  const forms = await getCollection("forms")
+  const invitationEntries = await loadInvitationFormEntries(forms)
+  assertFormsCollectionIntegrity(
+    invitationEntries.map((entry) => ({ id: entry.id, data: entry.data })),
+  )
+
+  return invitationEntries
+    .filter((entry) => isGuestPassInvitationPath(entry.data.path))
+    .map((entry) => {
+      const slug = invitationSlugFromPath(entry.data.path)
+      if (!slug) {
+        throw new Error(
+          `Guest-pass path missing slug: ${entry.data.path} (${entry.id})`,
+        )
+      }
+      return {
+        params: { slug },
+        props: {
+          invitationPath: entry.data.path,
+          title: entry.data.title,
+          lang: entry.data.lang ?? "es",
+        },
+      }
+    })
+}
+
+type Props = {
+  invitationPath: string
+  title: string
+  lang: string
+}
+
+const { invitationPath, title, lang } = Astro.props as Props
+const pageTitle =
+  lang === "es" ? `Enlaces de promotores · ${title}` : `Promoter links · ${title}`
+const pageDescription =
+  lang === "es"
+    ? `Links para RRPPs · ${title}.`
+    : `Promoter links · ${title}.`
+const heading =
+  lang === "es" ? "Links para RRPPs" : "Promoter links"
+
+const promoters = guestPassPromoterLinkRows(invitationPath)
+---
+
+<PromoterLinksPage
+  pageTitle={pageTitle}
+  pageDescription={pageDescription}
+  lang={lang}
+  eventTitle={title}
+  heading={heading}
+  promoters={promoters}
+/>

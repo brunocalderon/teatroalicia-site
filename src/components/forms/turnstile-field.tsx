@@ -5,7 +5,7 @@ import { formCopy } from "@/lib/form-copy"
 
 import "@/styles/form.css"
 
-const turnstileSiteKey = CLOUDFLARE_TURNSTILE_SITE_KEY.trim()
+const turnstileSiteKey = (CLOUDFLARE_TURNSTILE_SITE_KEY ?? "").trim()
 
 /** Turnstile renders and is required when `CLOUDFLARE_TURNSTILE_SITE_KEY` is set (dummy keys work in dev). */
 export const TURNSTILE_ENABLED = turnstileSiteKey.length > 0

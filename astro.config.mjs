@@ -76,7 +76,7 @@ export default defineConfig({
         optional: true,
         default: "Santiago",
       }),
-      /** Public origin (e.g. https://teatroalicia.cl) for referral CSV links at build time. */
+      /** Public origin (e.g. https://teatroalicia.com) for build-time artifacts (`llms.txt`, `ard.json`). */
       SITE_URL: envField.string({
         context: "server",
         access: "public",
@@ -122,6 +122,27 @@ export default defineConfig({
       AIRTABLE_CARTELERA_VIEW_ID: envField.string({
         context: "server",
         access: "public",
+        optional: true,
+        default: "",
+      }),
+      /** Promoters table for guest-pass roster (build snapshot). */
+      AIRTABLE_PROMOTERS_TABLE_ID: envField.string({
+        context: "server",
+        access: "public",
+        optional: true,
+        default: "",
+      }),
+      /** Optional Airtable view for promoters list requests. */
+      AIRTABLE_PROMOTERS_VIEW_ID: envField.string({
+        context: "server",
+        access: "public",
+        optional: true,
+        default: "",
+      }),
+      /** Formgong access_key for all Airtable guest-list forms (`/i/:slug`). */
+      AIRTABLE_INVITATION_FORM_TOKEN: envField.string({
+        context: "server",
+        access: "secret",
         optional: true,
         default: "",
       }),

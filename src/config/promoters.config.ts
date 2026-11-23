@@ -1,7 +1,6 @@
 import publicPromoters from "@/generated/promoters.public.json"
-import promotersRoster, {
-  type PromoterRosterEntry,
-} from "../../content/promoters.roster"
+import promotersRoster from "@/generated/promoters.roster.json"
+import type { PromoterRosterEntry } from "@/lib/promoters-roster-types"
 
 /** Client-safe promoter record (production bundle). */
 export type Promoter = Pick<PromoterRosterEntry, "id" | "name">

@@ -2,7 +2,7 @@
 import { getCollection, getEntry } from "astro:content"
 
 import FormThankYouPage from "@/components/forms/form-thank-you-page.astro"
-import { collectInvitationFormEntries } from "@/lib/invitation-form-entries"
+import { loadInvitationFormEntries } from "@/lib/invitation-form-entries"
 import { resolveInvitationFormData } from "@/lib/resolve-invitation-form-entry"
 import {
   assertFormsCollectionIntegrity,
@@ -16,11 +16,18 @@ import {
 } from "@/lib/form-thank-you"
 import { marketingPageTracking } from "@/lib/marketing-page-tracking"
 import { renderFormBodyMarkdown } from "@/lib/render-form-body-markdown"
+import { isGuestPassPromoterLinksPath } from "@/lib/guest-pass-promoter-link"
+
+const thankYouFormBasePath = Astro.params.formBasePath ?? ""
+const thankYouSlugParam = Astro.params.thankYouSlug ?? ""
+const thankYouRequestPath = `/${thankYouFormBasePath}/${thankYouSlugParam}`
+if (isGuestPassPromoterLinksPath(thankYouRequestPath)) {
+  return Astro.rewrite(thankYouRequestPath)
+}
 
 export async function getStaticPaths() {
   const forms = await getCollection("forms")
-  const events = await getCollection("events")
-  const invitationEntries = collectInvitationFormEntries(forms, events)
+  const invitationEntries = await loadInvitationFormEntries(forms)
   assertFormsCollectionIntegrity(
     invitationEntries.map((entry) => ({ id: entry.id, data: entry.data })),
   )

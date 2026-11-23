@@ -224,14 +224,14 @@ export const formEntrySchema = z
     thankYouPath: sitePathSchema("thankYouPath").optional(),
     nameFields: z.array(z.string().min(1)).optional(),
     messages: formMessagesSchema,
-    /** Public path `/images/…` (src/assets/images) or `/events/{slug}/…` (poster beside event markdown). */
+    /** Public path `/images/…` (`src/assets/images`). Event posters use Airtable cache at build. */
     image: sitePathSchema("image").optional(),
     imageAlt: z.string().min(1).optional(),
     /** When false, omits the “powered by Livestack” footer on the form page. */
     livestackFooter: z.boolean().optional().default(true),
     /** When false, hides the Instagram follow link on the thank-you page. */
     thankYouInstagram: z.boolean().optional().default(true),
-    fields: z.array(formFieldSchema).min(1),
+    fields: z.array(formFieldSchema),
   })
   .transform((data) => ({
     ...data,
@@ -321,7 +321,7 @@ export function assertFormsCollectionIntegrity(entries: FormCollectionEntry[]): 
     const { image } = entry.data
     if (image && !hasBundledFormEventImage(image)) {
       throw new Error(
-        `Form image "${image}" in ${entry.id} has no matching bundled image (content/events or src/assets/images)`,
+        `Form image "${image}" in ${entry.id} has no matching bundled image in src/assets/images`,
       )
     }
   }

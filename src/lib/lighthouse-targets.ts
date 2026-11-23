@@ -2,55 +2,33 @@ import fs from "node:fs"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 
-import { readFormPathsFromMarkdown } from "@/lib/form-markdown-dirs"
-
 const moduleDir = path.dirname(fileURLToPath(import.meta.url))
 const distDir = path.resolve(moduleDir, "../../dist")
 
-function collectCmsPathsFromDist(
-  absoluteDir: string,
-  urlPrefix: string,
-): string[] {
-  if (!fs.existsSync(absoluteDir)) {
+/** Guest-list form pages only (`/i/{slug}`), not thank-you or other nested routes. */
+function collectBuiltInvitationFormPaths(): string[] {
+  const invitationDir = path.join(distDir, "i")
+  if (!fs.existsSync(invitationDir)) {
     return []
   }
 
   const paths: string[] = []
-  if (fs.existsSync(path.join(absoluteDir, "index.html"))) {
-    paths.push(urlPrefix)
-  }
-
-  for (const entry of fs.readdirSync(absoluteDir, { withFileTypes: true })) {
+  for (const entry of fs.readdirSync(invitationDir, { withFileTypes: true })) {
     if (!entry.isDirectory()) {
       continue
     }
-    paths.push(
-      ...collectCmsPathsFromDist(
-        path.join(absoluteDir, entry.name),
-        `${urlPrefix}/${entry.name}`,
-      ),
-    )
+    const indexHtml = path.join(invitationDir, entry.name, "index.html")
+    if (fs.existsSync(indexHtml)) {
+      paths.push(`/i/${entry.name}`)
+    }
   }
 
-  return paths
+  return paths.sort((a, b) => a.localeCompare(b))
 }
 
-function sampleBuiltCmsPath(): string | undefined {
-  const paths = [
-    ...new Set(collectCmsPathsFromDist(path.join(distDir, "info"), "/info")),
-  ].sort((a, b) => a.localeCompare(b))
-
-  return paths[0]
-}
-
-/** Paths to audit: home plus each form and thank-you route from form/event markdown. */
+/** Paths to audit: home (`/`) and built guest-list forms (`/i/{slug}`). */
 export function getLighthouseAuditPaths(): string[] {
-  const merged = ["/", ...readFormPathsFromMarkdown()]
-  const cmsSample = sampleBuiltCmsPath()
-  if (cmsSample) {
-    merged.push(cmsSample)
-  }
-  return [...new Set(merged)]
+  return ["/", ...collectBuiltInvitationFormPaths()]
 }
 
 export function resolveLighthouseBaseUrl(): string {

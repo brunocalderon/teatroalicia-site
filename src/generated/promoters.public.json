@@ -8,6 +8,10 @@
     "name": "Belen echevarria"
   },
   {
+    "id": "checho-apes",
+    "name": "Checho Apes"
+  },
+  {
     "id": "christian-leal",
     "name": "Christian Leal"
   },
@@ -44,8 +48,16 @@
     "name": "Gonzalo Barros"
   },
   {
+    "id": "ismael-retro",
+    "name": "Ismael Retro"
+  },
+  {
     "id": "jaime-barrios",
     "name": "Jaime Barrios"
+  },
+  {
+    "id": "leyla-ananias",
+    "name": "Leyla Ananías"
   },
   {
     "id": "loreto-borquez",
@@ -80,8 +92,8 @@
     "name": "Paty Finger"
   },
   {
-    "id": "pauli-filer",
-    "name": "Pauli Filer"
+    "id": "pauli-filler",
+    "name": "Pauli Filler"
   },
   {
     "id": "rodrigo-pichi-quintana",

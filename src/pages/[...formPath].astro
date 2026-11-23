@@ -14,9 +14,10 @@ import Layout from "@/layouts/Layout.astro"
 import { resolveFormEventImageSource } from "@/lib/form-event-image"
 import { buildFormSplitVisualImage } from "@/lib/form-split-visual-image"
 import {
-  collectInvitationFormEntries,
+  loadInvitationFormEntries,
   type InvitationContentCollection,
 } from "@/lib/invitation-form-entries"
+import { resolveInvitationFormLcpImage } from "@/lib/resolve-invitation-form-poster"
 import { resolveInvitationFormData } from "@/lib/resolve-invitation-form-entry"
 import {
   assertFormsCollectionIntegrity,
@@ -36,13 +37,19 @@ import "@/styles/home-footer.css"
 import "@/styles/home-venue-band.css"
 
 import { invitationFormTracking } from "@/lib/marketing-page-tracking"
+import { isGuestPassPromoterLinksPath } from "@/lib/guest-pass-promoter-link"
 
 const CONTACT_PAGE_BAND_IMAGE = "/images/alicia-home-4.jpg"
 
+const formPathParam = Astro.params.formPath ?? ""
+const requestedFormPath = `/${formPathParam}`
+if (isGuestPassPromoterLinksPath(requestedFormPath)) {
+  return Astro.rewrite(requestedFormPath)
+}
+
 export async function getStaticPaths() {
   const forms = await getCollection("forms")
-  const events = await getCollection("events")
-  const invitationEntries = collectInvitationFormEntries(forms, events)
+  const invitationEntries = await loadInvitationFormEntries(forms)
   assertFormsCollectionIntegrity(
     invitationEntries.map((entry) => ({ id: entry.id, data: entry.data })),
   )
@@ -67,9 +74,18 @@ type Props = {
   data: FormEntryData
 }
 
-const { collection, entryId, data: dataFromProps } = Astro.props as Props
+const { collection, entryId, data: dataFromProps } = Astro.props as Partial<Props>
+if (!dataFromProps?.path) {
+  return new Response(null, { status: 404, statusText: "Not Found" })
+}
+const invitationSlug =
+  collection === "airtable" ? entryId : undefined
 /** Re-fetch so dev picks up new frontmatter without a full server restart. */
-const data = await resolveInvitationFormData(collection, entryId, dataFromProps)
+const data = await resolveInvitationFormData(
+  collection ?? "airtable",
+  entryId ?? "",
+  dataFromProps,
+)
 const hasReferralField = data.fields.some((field) => field.type === "referral")
 
 const formBodyMarkdown = data.messages?.formBody?.trim()
@@ -96,10 +112,9 @@ const nameFields = data.nameFields ?? defaultNameFields(data.fields)
 let formLcpImage: Awaited<
   ReturnType<typeof buildFormSplitVisualImage>
 > | undefined
-if (data.image) {
-  const source = resolveFormEventImageSource(data.image)
-  formLcpImage = await buildFormSplitVisualImage(source)
-}
+formLcpImage = await resolveInvitationFormLcpImage(data, invitationSlug)
+
+const showSplitLayout = Boolean(formLcpImage)
 
 const tracking = invitationFormTracking(data.title)
 const formDescription = formMetaDescription(data)
@@ -178,7 +193,7 @@ const pageLcpImage = formLcpImage
     <main
       class:list={[
         "form-page",
-        data.image && "form-page--split",
+        showSplitLayout && "form-page--split",
         showHomeNav && "form-page--with-home-nav",
         showHomeNav && "form-page--venue-band",
         showHomeNav && "home-page",
@@ -254,8 +269,8 @@ const pageLcpImage = formLcpImage
       {showHomeNav ? <HomeContactFooter venue={venueConfig} /> : null}
       {
         showHomeNav ? null : (
-      <div class:list={[data.image ? "form-page__split" : "form-page__stack"]}>
-        {data.image ? (
+      <div class:list={[showSplitLayout ? "form-page__split" : "form-page__stack"]}>
+        {showSplitLayout ? (
           <>
             <div class="form-page__masthead form-page__split-masthead">
               <SiteBrand align="start" />
@@ -313,7 +328,7 @@ const pageLcpImage = formLcpImage
         <div
           class:list={[
             "form-page__panel",
-            data.image && "form-page__split-panel",
+            showSplitLayout && "form-page__split-panel",
           ]}
         >
           <div class="form-page__form">

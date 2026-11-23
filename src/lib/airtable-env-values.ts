@@ -5,6 +5,13 @@ export type AirtableCarteleraEnvValues = {
   viewId?: string
 }
 
+export type AirtablePromotersEnvValues = {
+  token: string
+  baseId: string
+  tableId: string
+  viewId?: string
+}
+
 export function resolveAirtableCarteleraConfigFromValues(
   values: Record<string, string | undefined>,
 ): AirtableCarteleraEnvValues | undefined {
@@ -23,6 +30,27 @@ export function resolveAirtableCarteleraConfigFromValues(
   }
 
   const viewId = (values.AIRTABLE_CARTELERA_VIEW_ID ?? "").trim()
+
+  return {
+    token,
+    baseId,
+    tableId,
+    ...(viewId ? { viewId } : {}),
+  }
+}
+
+export function resolveAirtablePromotersConfigFromValues(
+  values: Record<string, string | undefined>,
+): AirtablePromotersEnvValues | undefined {
+  const token = (values.AIRTABLE_TOKEN ?? "").trim()
+  const baseId = (values.AIRTABLE_BASE_ID ?? "").trim()
+  const tableId = (values.AIRTABLE_PROMOTERS_TABLE_ID ?? "").trim()
+
+  if (!token || !baseId || !tableId) {
+    return undefined
+  }
+
+  const viewId = (values.AIRTABLE_PROMOTERS_VIEW_ID ?? "").trim()
 
   return {
     token,

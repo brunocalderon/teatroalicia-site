@@ -58,7 +58,7 @@ export function readAirtableBoolean(
     return undefined
   }
   const value = raw.toLowerCase()
-  if (["true", "1", "yes", "si", "sí"].includes(value)) {
+  if (["true", "1", "yes", "si", "sí", "checked"].includes(value)) {
     return true
   }
   if (["false", "0", "no"].includes(value)) {

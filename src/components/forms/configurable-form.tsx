@@ -102,9 +102,12 @@ export function ConfigurableForm({
   const copy = useMemo(() => mergeMessages(messagesProp), [messagesProp])
   const displaySubmitLabel = submitLabel.trim() || copy.submit
 
-  const [urlSearchParams, setUrlSearchParams] = useState(
-    () => new URLSearchParams()
-  )
+  const [urlSearchParams, setUrlSearchParams] = useState(() => {
+    if (typeof window === "undefined") {
+      return new URLSearchParams()
+    }
+    return new URLSearchParams(window.location.search)
+  })
 
   useEffect(() => {
     const next = new URLSearchParams(window.location.search)
