@@ -69,12 +69,27 @@ describe("map-airtable-cartelera", () => {
     expect(mapped.data.eventId).toBe("el-club-de-los-viernes-2026-11-27")
     expect(mapped.data.eventStart).toBe("2026-11-27T20:30:00-03:00")
 
+    const fieldsWithSupplier = {
+      ...fields,
+      "Ticket Supplier": "passline",
+    }
+    const mappedWithSupplier = mapAirtableCarteleraRecord(
+      "reca8x",
+      fieldsWithSupplier,
+    )
+    expect(mappedWithSupplier.ok).toBe(true)
+    if (!mappedWithSupplier.ok) {
+      throw new Error("expected ok")
+    }
+    expect(mappedWithSupplier.data.ticketSupplier).toBe("passline")
+
     const [event] = await airtableCarteleraRowsToApiEvents(
-      [mapped.data],
+      [mappedWithSupplier.data],
       { now: new Date("2026-11-21T12:00:00-03:00") },
     )
     expect(event?.title).toBe("El Club de Los Viernes")
     expect(event?.ctaHref).toContain("passline.com")
+    expect(event?.ticketSupplier).toBe("passline")
   })
 
   it("parses list API response and maps both cartelera records", async () => {
@@ -93,6 +108,7 @@ describe("map-airtable-cartelera", () => {
     expect(rows[0]?.imageAlt).toBe("Murano: One More Night")
     expect(rows[0]?.imageUrl).toMatch(/^https:\/\/v5\.airtableusercontent\.com\//)
     expect(rows[0]?.imageUrl).not.toMatch(/\.jpg\s+\(/)
+    expect(rows[0]?.ticketSupplier).toBe("passline")
 
     const apiEvents = await airtableCarteleraRowsToApiEvents(rows, {
       now: new Date("2026-11-21T12:00:00-03:00"),

@@ -108,6 +108,11 @@ export function mapAirtableCarteleraRecord(
     "Ticket Link",
     "Ticket URL",
   ])
+  const ticketSupplier = readAirtableField(fields, [
+    "Ticket Supplier",
+    "ticketSupplier",
+    "Ticket supplier",
+  ])
   const invitationPath = readAirtableField(fields, [
     "invitationPath",
     "Invitation Path",
@@ -133,6 +138,7 @@ export function mapAirtableCarteleraRecord(
       eventStart,
       eventEnd,
       ticketUrl,
+      ticketSupplier,
       invitationPath,
       imageUrl,
       imageFilename,

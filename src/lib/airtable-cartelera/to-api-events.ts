@@ -38,6 +38,7 @@ export function airtableRowToHomeEventFeature(
       eventId: row.eventId,
       slug: row.slug,
     }),
+    ticketSupplier: row.ticketSupplier,
     ctaLabel,
     dateLine: schedule.dateLine,
     timeLine: schedule.timeLine,

@@ -173,7 +173,7 @@ const carteleraHasCarousel = events.length > 3
   import { initCarteleraPosterLightbox } from "@/lib/cartelera-poster-lightbox"
   import { initHomeFeaturedCarousel } from "@/lib/home-featured-carousel"
   import {
-    resolveTicketPlatformDestination,
+    resolveTicketCheckoutDestination,
     trackMetaTicketCheckoutClick,
   } from "@/lib/meta-ticket-checkout"
   import { trackUmamiCarteleraTicketClick } from "@/lib/track-umami-cartelera-ticket"
@@ -215,7 +215,10 @@ const carteleraHasCarousel = events.length > 3
     trackMetaTicketCheckoutClick({
       content_name: eventTitle,
       content_ids: [contentId],
-      destination: resolveTicketPlatformDestination(target.href),
+      destination: resolveTicketCheckoutDestination(
+        target.href,
+        target.dataset.ticketSupplier,
+      ),
     })
   })
 </script>

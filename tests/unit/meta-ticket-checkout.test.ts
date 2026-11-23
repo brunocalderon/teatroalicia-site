@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest"
 
 import {
   metaTicketCheckoutContentId,
+  resolveTicketCheckoutDestination,
   resolveTicketPlatformDestination,
 } from "@/lib/meta-ticket-checkout"
 
@@ -31,5 +32,23 @@ describe("meta-ticket-checkout", () => {
     expect(
       resolveTicketPlatformDestination("https://tickets.example.com/show"),
     ).toBe("tickets")
+  })
+
+  it("prefers Airtable Ticket Supplier over URL host", () => {
+    expect(
+      resolveTicketCheckoutDestination(
+        "https://www.passline.com/eventos/show",
+        "livepass",
+      ),
+    ).toBe("livepass")
+  })
+
+  it("falls back to URL host when Ticket Supplier is empty", () => {
+    expect(
+      resolveTicketCheckoutDestination(
+        "https://www.passline.com/eventos/show",
+        "  ",
+      ),
+    ).toBe("passline")
   })
 })

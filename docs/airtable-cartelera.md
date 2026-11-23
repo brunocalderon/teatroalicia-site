@@ -36,6 +36,7 @@ Each `records[]` entry:
 | `Start` | Yes | `eventStart` (es_CL string or ISO) |
 | `End` | No | `eventEnd` |
 | `Purchase Link` | No | Ticket CTA URL |
+| `Ticket Supplier` | No | Meta `TicketingOutboundClick` `destination` (falls back to ticket URL host when empty) |
 | `Image` | No | Poster (`filename (https://…)` → mirrored locally at build) |
 | `Event Kind` | No | Schema.org event type |
 | `Publish` | No | When `false`, row is hidden |

@@ -7,6 +7,8 @@ export type AirtableCarteleraRow = {
   eventStart: string
   eventEnd?: string
   ticketUrl?: string
+  /** Airtable `Ticket Supplier` — Meta TicketingOutboundClick `destination`. */
+  ticketSupplier?: string
   invitationPath?: string
   imageUrl?: string
   /** Original attachment filename from Airtable `Image` (for mirroring). */
@@ -25,6 +27,7 @@ export type CarteleraApiEvent = {
   dateLine: string
   timeLine: string
   eventCampaign: string
+  ticketSupplier?: string
   imageAlt?: string
   image?: HomeEventFeatureImage
 }

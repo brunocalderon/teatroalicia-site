@@ -31,6 +31,18 @@ export function resolveTicketPlatformDestination(href: string): string {
   }
 }
 
+/** Meta `destination` for ticket CTAs — Airtable `Ticket Supplier` when set, else URL host. */
+export function resolveTicketCheckoutDestination(
+  href: string,
+  ticketSupplier?: string,
+): string {
+  const fromAirtable = ticketSupplier?.trim()
+  if (fromAirtable) {
+    return fromAirtable
+  }
+  return resolveTicketPlatformDestination(href)
+}
+
 export const META_TICKETING_OUTBOUND_CLICK_EVENT = "TicketingOutboundClick"
 
 export type MetaTicketCheckoutClickPayload = {

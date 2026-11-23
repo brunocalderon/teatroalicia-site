@@ -13,6 +13,7 @@ export const airtableCarteleraFieldsSchema = z
   .object({
     Image: z.string().min(1).optional(),
     "Purchase Link": z.string().min(1).optional(),
+    "Ticket Supplier": z.string().min(1).optional(),
     Slug: slugSchema.optional(),
     "Event Name": z.string().min(1).optional(),
     Start: z.string().min(1).optional(),

@@ -6,6 +6,7 @@
       "fields": {
         "Image": "murano.jpg (https://v5.airtableusercontent.com/v3/example/murano.jpg)",
         "Purchase Link": "https://www.passline.com/eventos/murano-one-more-night",
+        "Ticket Supplier": "passline",
         "Slug": "murano",
         "Event Name": "Murano: One More Night",
         "Start": "20 de noviembre de 2026 8:30pm",
