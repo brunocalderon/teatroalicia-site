@@ -1,16 +1,8 @@
-import { copyFile, mkdtemp, rm } from "node:fs/promises"
-import { tmpdir } from "node:os"
+import { copyFile, mkdir, rm } from "node:fs/promises"
 import path from "node:path"
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
+import { afterEach, beforeEach, describe, expect, it } from "vitest"
 
-const mockCacheDir = vi.hoisted(() => ({ path: "" }))
-
-vi.mock("@/lib/airtable-cartelera/cartelera-poster-cache-path", () => ({
-  get CARTELERA_POSTER_CACHE_DIR() {
-    return mockCacheDir.path
-  },
-}))
-
+import { CARTELERA_POSTER_CACHE_DIR } from "@/lib/airtable-cartelera/cartelera-poster-cache-path"
 import {
   carteleraPosterImageBySlug,
   resetCarteleraPosterFileIndex,
@@ -21,23 +13,27 @@ const samplePosterPath = new URL(
   import.meta.url,
 )
 
+const TEST_SLUG = "vitest-cartelera-poster-slug"
+
 describe("carteleraPosterImageBySlug", () => {
+  const mirroredPosterPath = path.join(
+    CARTELERA_POSTER_CACHE_DIR,
+    `${TEST_SLUG}.jpg`,
+  )
+
   beforeEach(async () => {
     resetCarteleraPosterFileIndex()
-    mockCacheDir.path = await mkdtemp(path.join(tmpdir(), "ta-cartelera-poster-"))
-    await copyFile(samplePosterPath, path.join(mockCacheDir.path, "ecdlv.jpg"))
+    await mkdir(CARTELERA_POSTER_CACHE_DIR, { recursive: true })
+    await copyFile(samplePosterPath, mirroredPosterPath)
   })
 
   afterEach(async () => {
     resetCarteleraPosterFileIndex()
-    if (mockCacheDir.path) {
-      await rm(mockCacheDir.path, { recursive: true, force: true })
-      mockCacheDir.path = ""
-    }
+    await rm(mirroredPosterPath, { force: true })
   })
 
   it("loads mirrored poster metadata from disk when Vite glob is stale", async () => {
-    const metadata = await carteleraPosterImageBySlug("ecdlv")
+    const metadata = await carteleraPosterImageBySlug(TEST_SLUG)
     expect(metadata?.width).toBe(400)
     expect(metadata?.height).toBeGreaterThan(0)
   })

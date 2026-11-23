@@ -112,6 +112,24 @@ export function DateOfBirthField({
     })
   }
 
+  useEffect(() => {
+    const container = containerRef.current
+    if (!container) {
+      return
+    }
+
+    const onFocusOut = (event: FocusEvent) => {
+      const next = event.relatedTarget
+      if (next instanceof Node && container.contains(next)) {
+        return
+      }
+      scheduleBirthdayLeaveSideEffects()
+    }
+
+    container.addEventListener("focusout", onFocusOut)
+    return () => container.removeEventListener("focusout", onFocusOut)
+  })
+
   return (
     <div
       ref={containerRef}
@@ -120,13 +138,6 @@ export function DateOfBirthField({
           ? "form-birthday form-birthday--invalid"
           : "form-birthday"
       }
-      onFocusOut={(event) => {
-        const next = event.relatedTarget
-        if (next instanceof Node && containerRef.current?.contains(next)) {
-          return
-        }
-        scheduleBirthdayLeaveSideEffects()
-      }}
     >
       <input
         ref={hiddenRef}

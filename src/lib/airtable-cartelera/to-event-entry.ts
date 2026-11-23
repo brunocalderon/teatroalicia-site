@@ -17,5 +17,6 @@ export function airtableRowToEventEntryData(
     ticketUrl: row.ticketUrl,
     ticketLink: row.ticketUrl,
     imageAlt: row.imageAlt,
+    organizerIsVenue: false,
   }
 }

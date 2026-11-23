@@ -211,6 +211,12 @@ export const formEntrySchema = z
     ticketUrl: z.string().url().optional(),
     /** Alias for `ticketUrl` in form markdown (home CTA + offers). */
     ticketLink: z.string().url().optional(),
+    /** Airtable `Ticket Supplier` → Formgong hidden `provider`. */
+    ticketSupplier: z.string().min(1).optional(),
+    /** Airtable `Supplier Event ID` → Formgong hidden `event_id`. */
+    supplierEventId: z.string().min(1).optional(),
+    /** Airtable `Guest Pass Ticket ID` → Formgong hidden `ticket_id`. */
+    guestPassTicketId: z.string().min(1).optional(),
     /** Structured paid ticket offers with verified price data. */
     ticketOffers: z.array(formTicketOfferSchema).optional(),
     /** When true, schema includes guest-pass application (not free admission). */

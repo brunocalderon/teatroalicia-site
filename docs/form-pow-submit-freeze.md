@@ -41,6 +41,8 @@ After this change, PoW still uses CPU briefly (by design), but it completes and 
 | --- | --- |
 | PoW solver and pre-POST refresh | `src/lib/form-browser-signals.ts` |
 | Submit POST helper | `src/lib/form-submit.ts` |
-| `fg.js` (analytics / `_fg_*`) | Loaded on form Astro pages |
+| Formgong client signals (analytics / `_fg_*`) | `attachFormgongClientSignals` in `configurable-form.tsx` (no `fg.js`) |
 
-If `_fg_pow` already contains `~` (e.g. from `fg.js`), the refresh helper skips solving again.
+Do not load `fg.js` on form pages: it starts PoW mining on `keydown` / `focusin` and competes with the custom submit path, which can peg CPU (especially while React hydrates `/i/*` islands).
+
+If `_fg_pow` already contains `~`, the refresh helper skips solving again.

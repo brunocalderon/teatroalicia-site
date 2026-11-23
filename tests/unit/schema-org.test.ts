@@ -36,7 +36,11 @@ const muranoFormData = {
   submitLabel: "Enviar",
   thankYouPath: "/i/murano/gracias",
   organizerIsVenue: false,
-  fields: [{ name: "email", label: "Email", type: "email" as const }],
+  livestackFooter: true,
+  thankYouInstagram: true,
+  fields: [
+    { name: "email", label: "Email", type: "email" as const, required: true },
+  ],
 } satisfies FormEntryData
 
 describe("schema.org JSON-LD", () => {
@@ -107,7 +111,7 @@ describe("schema.org JSON-LD", () => {
     const graph = buildHomePageJsonLd({
       venue: venueConfig,
       pageTitle: "Teatro Alicia",
-      upcomingForms: [],
+      upcomingEvents: [],
     })
     const nodes = graph["@graph"] as Record<string, unknown>[]
     expect(nodes).toHaveLength(3)
@@ -135,12 +139,14 @@ describe("schema.org JSON-LD", () => {
             eventEnd: muranoFormData.eventEnd,
             eventKind: muranoFormData.eventKind,
             lang: muranoFormData.lang,
+            organizerIsVenue: false,
             invitation: {
               path: muranoFormData.path,
               token: muranoFormData.token,
               lang: muranoFormData.lang,
               submitLabel: muranoFormData.submitLabel,
               thankYouPath: muranoFormData.thankYouPath,
+              livestackFooter: true,
               fields: muranoFormData.fields,
               invitationOnly: muranoFormData.invitationOnly,
             },

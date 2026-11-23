@@ -36,7 +36,9 @@ Each `records[]` entry:
 | `Start` | Yes | `eventStart` (es_CL string or ISO) |
 | `End` | No | `eventEnd` |
 | `Purchase Link` | No | Ticket CTA URL |
-| `Ticket Supplier` | No | Meta `TicketingOutboundClick` `destination` (falls back to ticket URL host when empty) |
+| `Ticket Supplier` | No | Meta `TicketingOutboundClick` `destination` (falls back to ticket URL host when empty); Formgong hidden `provider` on guest-list forms |
+| `Supplier Event ID` | No | Formgong hidden `event_id` on guest-list forms |
+| `Guest Pass Ticket ID` | No | Formgong hidden `ticket_id` on guest-list forms |
 | `Guest List` | No | When on, build emits `/i/{Slug}` and cartelera may CTA to the guest-list form |
 | `Guest List Fields` | No | JSON array of form field definitions (see `form-schema` / murano invitation) |
 | (env) | — | All guest-list forms use `AIRTABLE_INVITATION_FORM_TOKEN`; intro/thank-you markdown in `content/i18n/guest-list-form-*.es.md` via `guest-list-form.es.ts` |

@@ -1,10 +1,8 @@
+import type { JsonLdObject } from "@/lib/schema-org/json-ld-types"
+
 type JsonLdPrimitive = string | number | boolean | null
 
 type JsonLdValue = JsonLdPrimitive | JsonLdObject | JsonLdValue[]
-
-interface JsonLdObject {
-  [key: string]: JsonLdValue | undefined
-}
 
 function stripUndefined(value: JsonLdValue): JsonLdValue {
   if (Array.isArray(value)) {

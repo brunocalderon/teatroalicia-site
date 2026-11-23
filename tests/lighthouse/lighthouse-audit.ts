@@ -3,7 +3,7 @@ import path from "node:path"
 import { fileURLToPath } from "node:url"
 
 import * as chromeLauncher from "chrome-launcher"
-import lighthouse from "lighthouse"
+import lighthouse, { type Result } from "lighthouse"
 
 import {
   lighthouseConfig,
@@ -22,7 +22,7 @@ export type LighthouseAuditResult = {
 }
 
 function categoryScorePercent(
-  lhr: Awaited<ReturnType<typeof lighthouse>>["lhr"],
+  lhr: Result,
   categoryId: LighthouseCategoryId,
 ): number {
   const category = lhr.categories[categoryId]

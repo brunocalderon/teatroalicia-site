@@ -8,6 +8,9 @@ const sampleRow: AirtableCarteleraRow = {
   title: "Murano: One More Night",
   eventId: "murano-one-more-night-2026-11-20",
   eventStart: "2026-11-20T20:30:00-03:00",
+  ticketSupplier: "passline",
+  supplierEventId: "evt_abc",
+  guestPassTicketId: "tkt_xyz",
   guestListEnabled: true,
   airtableRecordId: "recTest",
 }
@@ -24,6 +27,10 @@ describe("airtableRowToInvitationFormData", () => {
     expect(data.submitLabel).toBe("Solicitar mi acceso")
     expect(data.token).toBe("fk_test_token")
     expect(data.messages?.formBody).toContain("Alicia Prime")
+    expect(data.invitationOnly).toBe(true)
+    expect(data.ticketSupplier).toBe("passline")
+    expect(data.supplierEventId).toBe("evt_abc")
+    expect(data.guestPassTicketId).toBe("tkt_xyz")
   })
 
   it("uses env token for every guest-list form", () => {

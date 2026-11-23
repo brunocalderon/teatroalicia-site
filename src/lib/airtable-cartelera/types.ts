@@ -7,8 +7,12 @@ export type AirtableCarteleraRow = {
   eventStart: string
   eventEnd?: string
   ticketUrl?: string
-  /** Airtable `Ticket Supplier` — Meta TicketingOutboundClick `destination`. */
+  /** Airtable `Ticket Supplier` — Meta `destination` and Formgong hidden `provider`. */
   ticketSupplier?: string
+  /** Airtable `Supplier Event ID` — Formgong hidden `event_id`. */
+  supplierEventId?: string
+  /** Airtable `Guest Pass Ticket ID` — Formgong hidden `ticket_id`. */
+  guestPassTicketId?: string
   /** Airtable `Guest List` — exposes `/i/{slug}` when true. */
   guestListEnabled: boolean
   /** Raw `Guest List Fields` JSON from Airtable. */

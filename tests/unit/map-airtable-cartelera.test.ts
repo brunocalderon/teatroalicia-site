@@ -48,6 +48,25 @@ describe("map-airtable-cartelera", () => {
     expect(event?.image).toBeUndefined()
   })
 
+  it("maps guest-pass Formgong metadata columns", () => {
+    const mapped = mapAirtableCarteleraRecord("recGuestMeta", {
+      Slug: "murano",
+      "Event Name": "Murano",
+      Title: "murano-2026-11-20",
+      Start: "2026-11-20T21:00:00-03:00",
+      "Ticket Supplier": "passline",
+      "Supplier Event ID": "evt_123",
+      "Guest Pass Ticket ID": "tkt_456",
+    })
+    expect(mapped.ok).toBe(true)
+    if (!mapped.ok) {
+      throw new Error("expected ok")
+    }
+    expect(mapped.data.ticketSupplier).toBe("passline")
+    expect(mapped.data.supplierEventId).toBe("evt_123")
+    expect(mapped.data.guestPassTicketId).toBe("tkt_456")
+  })
+
   it("maps Guest List and Guest List Fields", () => {
     const mapped = mapAirtableCarteleraRecord("recGuest", {
       Slug: "murano",

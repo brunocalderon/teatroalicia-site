@@ -249,6 +249,10 @@ const pageLcpImage = formLcpImage
                       submitLabel={data.submitLabel}
                       thankYouPath={data.thankYouPath}
                       eventId={data.eventId}
+                      invitationOnly={data.invitationOnly}
+                      ticketSupplier={data.ticketSupplier}
+                      supplierEventId={data.supplierEventId}
+                      guestPassTicketId={data.guestPassTicketId}
                       nameFields={nameFields}
                       messages={data.messages}
                       marketingTracking={tracking}
@@ -340,6 +344,10 @@ const pageLcpImage = formLcpImage
               submitLabel={data.submitLabel}
               thankYouPath={data.thankYouPath}
               eventId={data.eventId}
+              invitationOnly={data.invitationOnly}
+              ticketSupplier={data.ticketSupplier}
+              supplierEventId={data.supplierEventId}
+              guestPassTicketId={data.guestPassTicketId}
               nameFields={nameFields}
               messages={data.messages}
               marketingTracking={tracking}
@@ -359,7 +367,7 @@ const pageLcpImage = formLcpImage
     </main>
     <script
       is:inline
-      set:html={`window.addEventListener("load",function(){var t=document.createElement("script");t.src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";t.async=true;t.defer=true;document.body.appendChild(t);var f=document.createElement("script");f.src="https://formgong.com/fg.js";f.async=true;document.body.appendChild(f);},{once:true});`}
+      set:html={`window.addEventListener("load",function(){var t=document.createElement("script");t.src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";t.async=true;t.defer=true;document.body.appendChild(t);},{once:true});`}
     />
 </Layout>
 

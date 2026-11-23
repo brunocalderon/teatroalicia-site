@@ -1,4 +1,4 @@
-import type { HomeEventFeatureData } from "@/components/home/home-event-feature.astro"
+import type { HomeEventFeatureData } from "@/lib/home-event-feature-data"
 import {
   appendHomeCarteleraUtm,
   homeCarteleraEventSlug,
@@ -73,9 +73,21 @@ export async function airtableCarteleraRowsToApiEvents(
 ): Promise<CarteleraApiEvent[]> {
   const now = options?.now ?? new Date()
   const imagesBySlug = options?.imagesBySlug
-  return filterUpcomingAirtableCarteleraRows(rows, now).map((row) =>
-    airtableRowToHomeEventFeature(row, {
+  return filterUpcomingAirtableCarteleraRows(rows, now).map((row) => {
+    const feature = airtableRowToHomeEventFeature(row, {
       image: imagesBySlug?.get(row.slug),
-    }),
-  )
+    })
+    return {
+      title: feature.title,
+      ctaHref: feature.ctaHref,
+      ctaExternal: feature.ctaExternal,
+      ctaLabel: feature.ctaLabel,
+      dateLine: feature.dateLine,
+      timeLine: feature.timeLine,
+      eventCampaign: feature.eventCampaign ?? "",
+      ticketSupplier: feature.ticketSupplier,
+      imageAlt: feature.imageAlt,
+      image: feature.image,
+    }
+  })
 }

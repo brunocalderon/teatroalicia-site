@@ -14,18 +14,19 @@ Ship multi-field request forms with:
 - Astro for the static page shell; React for interactive UI
 - Cloudflare Turnstile on every form (production); optional file uploads (Turnstile still required)
 - Inline error messages **and** a same-origin thank-you redirect on success
-- Spam signals via Formgong `fg.js` (analytics + `_fg_*` fields) without handing submit to `fg.js` inline mode
+- Spam signals via `form-browser-signals.ts` (analytics + `_fg_*` fields; do not load `fg.js` — it mines PoW on first interaction and can peg CPU with React hydration)
 
 Shared helpers in this repo:
 
 | Piece | Location |
 | --- | --- |
-| PoW / `_fg_pow` | `src/lib/form-browser-signals.ts` |
+| PoW / `_fg_pow`, attribution, collect beacons | `src/lib/form-browser-signals.ts` (`attachFormgongClientSignals` on hydrated forms) |
 | POST + Turnstile utils | `src/lib/form-submit.ts` |
 | Thank-you URL + name normalize | `src/lib/form-thank-you.ts` |
 | Default UI copy | `src/lib/form-copy.ts` |
 | Turnstile widget | `src/components/forms/turnstile-field.tsx` |
 | Hidden `access_key` / honeypot | `src/components/forms/form-hidden-fields.tsx` |
+| Guest-list Formgong metadata (`provider`, `event_id`, `ticket_id`, `submit`) | `src/components/forms/guest-pass-formgong-fields.tsx` |
 | Markdown form configs + schema | `content/forms/*.md`, `src/lib/form-schema.ts`; guest-list events from Airtable (see `docs/airtable-cartelera.md`) |
 | Generic form renderer | `src/components/forms/configurable-form.tsx` |
 | Composable field types | `src/components/forms/fields/` (`registry.tsx`, per-type components) |
@@ -35,6 +36,8 @@ Shared helpers in this repo:
 ## Cartelera and guest-list (Airtable)
 
 Home cartelera and `/i/{slug}` guest-list forms are built from the Airtable **Events** table when `AIRTABLE_TOKEN`, `AIRTABLE_BASE_ID`, and cartelera table env are set. See `docs/airtable-cartelera.md` (`Guest List`, `Guest List Fields`, posters mirrored to `src/.cache/cartelera-posters/`). Shared guest-list copy: `content/i18n/guest-list-form-*.es.md`.
+
+Guest-list forms (`invitationOnly`) always POST hidden `submit=true`, plus `provider`, `event_id`, and `ticket_id` when the matching Airtable columns (`Ticket Supplier`, `Supplier Event ID`, `Guest Pass Ticket ID`) are set on the event row.
 
 ## Adding a form (default path)
 
@@ -88,7 +91,7 @@ Astro page
   ├─ <Layout>
   ├─ <MyForm client:only="react" />
   ├─ Turnstile script (explicit render)
-  └─ fg.js (analytics / _fg_* stamping; do NOT use data-fg-success/error)
+  └─ attachFormgongClientSignals (analytics / _fg_*; no fg.js)
          │
          ▼
 React <form action="https://formgong.com/submit" method="POST">
@@ -115,7 +118,7 @@ Do **not** put Turnstile **secrets** in client env; the secret lives only in the
 
 ## 3. Astro page shell
 
-Markdown-configured forms use `src/pages/[...formPath].astro`, which loads `fg.js` and Turnstile `api.js?render=explicit` on every form route (`ConfigurableForm` renders `TurnstileField`).
+Markdown-configured forms use `src/pages/[...formPath].astro`, which loads Turnstile `api.js?render=explicit` on every form route. `ConfigurableForm` calls `attachFormgongClientSignals` when the form mounts and mines PoW only on submit (`postForm`).
 
 For a **custom** React form (non-markdown), mirror that shell:
 
@@ -132,13 +135,12 @@ import Layout from "@/layouts/Layout.astro"
     async
     defer
   ></script>
-  <script src="https://formgong.com/fg.js" async></script>
 </Layout>
 ```
 
 - Prefer `client:only="react"` for browser-only APIs.
 - Load Turnstile with `?render=explicit` when using `TurnstileField` (`appearance: interaction-only` in production so the widget stays hidden unless Cloudflare requires a challenge).
-- Keep `fg.js` on the form page only, not on thank-you routes.
+- Do **not** load `fg.js` on form routes — use `attachFormgongClientSignals` instead (thank-you routes should not load third-party form scripts).
 
 ## 4. Form markup
 

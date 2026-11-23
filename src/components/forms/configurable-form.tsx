@@ -14,6 +14,7 @@ import {
 import { formCopy } from "@/lib/form-copy"
 import { defaultNameFields } from "@/lib/form-name-fields"
 import type { FormField, FormMessages } from "@/lib/form-schema"
+import { attachFormgongClientSignals } from "@/lib/form-browser-signals"
 import {
   FORM_SUBMIT_ACTION,
   getTurnstileResponseFromForm,
@@ -26,6 +27,7 @@ import {
   trimmedUrlParam,
   visibleFormFields,
 } from "@/lib/form-field-visibility"
+import { GuestPassFormgongFields } from "@/components/forms/guest-pass-formgong-fields"
 import { ReferralAttributionFields } from "@/components/forms/referral-attribution-fields"
 import {
   applyReferralAttributionToForm,
@@ -49,6 +51,10 @@ export type ConfigurableFormProps = {
   submitLabel: string
   thankYouPath: string
   eventId?: string
+  invitationOnly?: boolean
+  ticketSupplier?: string
+  supplierEventId?: string
+  guestPassTicketId?: string
   nameFields?: string[]
   messages?: FormMessages
   marketingTracking?: MarketingPageTracking
@@ -74,6 +80,10 @@ export function ConfigurableForm({
   submitLabel,
   thankYouPath,
   eventId,
+  invitationOnly,
+  ticketSupplier,
+  supplierEventId,
+  guestPassTicketId,
   nameFields: nameFieldsProp,
   messages: messagesProp,
   marketingTracking,
@@ -146,6 +156,13 @@ export function ConfigurableForm({
     }
     persistGuestPassAttributionForAnalytics(urlSearchParams, referralAttribution)
   }, [referralAttribution, urlSearchParams])
+
+  useEffect(() => {
+    if (!formNode || !accessKey) {
+      return
+    }
+    return attachFormgongClientSignals(formNode, accessKey)
+  }, [formNode, accessKey])
 
   const referralVisibilityContext = useMemo(
     () => ({ showGuestPassReferralRow, referralPromoterPending }),
@@ -360,6 +377,13 @@ export function ConfigurableForm({
         lang={lang}
         eventId={eventId}
       />
+      {invitationOnly ? (
+        <GuestPassFormgongFields
+          provider={ticketSupplier}
+          supplierEventId={supplierEventId}
+          guestPassTicketId={guestPassTicketId}
+        />
+      ) : null}
       {referralAttribution ? (
         <ReferralAttributionFields
           referralFieldName={

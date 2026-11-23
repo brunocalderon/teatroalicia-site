@@ -36,6 +36,8 @@ export function eventToSchemaFormData(event: EventEntryData): FormEntryData {
     submitLabel: "Submit",
     image: event.image,
     imageAlt: event.imageAlt,
+    livestackFooter: true,
+    thankYouInstagram: true,
     fields: [
       {
         name: "email",
@@ -57,12 +59,13 @@ export function eventToFormEntryData(
 
   const inv = event.invitation
   const path = resolveEventInvitationPath(event)
+  const thankYouPath = inv.thankYouPath ?? `${path}/gracias`
 
   return {
     title: event.title,
     description: event.description,
     path,
-    thankYouPath: inv.thankYouPath,
+    thankYouPath,
     eventId: event.eventId,
     eventStart: event.eventStart,
     eventEnd: event.eventEnd,
@@ -86,7 +89,8 @@ export function eventToFormEntryData(
     messages: inv.messages,
     image: event.image,
     imageAlt: event.imageAlt,
-    livestackFooter: inv.livestackFooter,
+    livestackFooter: inv.livestackFooter ?? true,
+    thankYouInstagram: true,
     fields: inv.fields,
   }
 }

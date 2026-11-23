@@ -52,7 +52,8 @@ async function loadCarteleraPosterMetadataFromDisk(
   const absolutePath = path.join(CARTELERA_POSTER_CACHE_DIR, fileName)
   try {
     const buffer = await readFile(absolutePath)
-    return await readImageMetadata(buffer, absolutePath)
+    const metadata = await readImageMetadata(buffer, absolutePath)
+    return { ...metadata, src: absolutePath } as ImageMetadata
   } catch {
     return undefined
   }

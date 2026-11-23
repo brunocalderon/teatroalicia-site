@@ -113,6 +113,16 @@ export function mapAirtableCarteleraRecord(
     "ticketSupplier",
     "Ticket supplier",
   ])
+  const supplierEventId = readAirtableField(fields, [
+    "Supplier Event ID",
+    "supplierEventId",
+    "Supplier event id",
+  ])
+  const guestPassTicketId = readAirtableField(fields, [
+    "Guest Pass Ticket ID",
+    "guestPassTicketId",
+    "Guest pass ticket id",
+  ])
   const guestListEnabled =
     readAirtableBoolean(fields, [
       "Guest List",
@@ -153,6 +163,8 @@ export function mapAirtableCarteleraRecord(
       eventEnd,
       ticketUrl,
       ticketSupplier,
+      supplierEventId,
+      guestPassTicketId,
       guestListEnabled,
       guestListFieldsRaw,
       invitationPath,

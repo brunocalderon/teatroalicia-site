@@ -25,7 +25,7 @@ Before adding or changing forms, read `docs/astro-form-request-forms.md` and `do
 
 - **No** `@formgong/astro` — HTML `POST` via React `fetch` + `FormData`, `Accept: application/json`
 - **No** `data-fg-success` / `data-fg-error` on the `<form>` if thank-you redirect is required (`fg.js` blocks navigation)
-- Load `https://formgong.com/fg.js` and Turnstile `api.js?render=explicit` on form pages only
+- Do **not** load `https://formgong.com/fg.js` (mines PoW on interaction); use `attachFormgongClientSignals` in `ConfigurableForm`. Load Turnstile `api.js?render=explicit` on form pages only
 - Use shared helpers: `form-browser-signals.ts`, `form-submit.ts`, `form-thank-you.ts`, `TurnstileField`, `FormHiddenFields`
 - Cartelera and guest-list `/i/:slug`: Airtable **Events** at build (`docs/airtable-cartelera.md`). Non-event forms: `content/forms/` (`path`, `token`, `fields`); see `docs/astro-form-request-forms.md`
 - Set `CLOUDFLARE_TURNSTILE_SITE_KEY` in env for all public Formgong forms (widget + token gate in production builds)

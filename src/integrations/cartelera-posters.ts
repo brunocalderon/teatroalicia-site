@@ -45,7 +45,14 @@ export function carteleraPostersIntegration(): AstroIntegration {
         const root = fileURLToPath(config.root)
         updateConfig({
           vite: {
-            plugins: [carteleraPosterSyncPlugin(root, config.mode)],
+            plugins: [
+              carteleraPosterSyncPlugin(
+                root,
+                process.env.NODE_ENV === "production"
+                  ? "production"
+                  : "development",
+              ),
+            ],
           },
         })
       },

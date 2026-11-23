@@ -23,7 +23,7 @@ export type HomeEventFeatureImage = {
 }
 
 export function widthsForHomeEventFeature(naturalWidth: number): number[] {
-  const widths = CANDIDATE_WIDTHS.filter((w) => w <= naturalWidth)
+  const widths: number[] = CANDIDATE_WIDTHS.filter((w) => w <= naturalWidth)
   if (widths.length === 0) {
     return [naturalWidth]
   }
