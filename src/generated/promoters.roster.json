@@ -98,6 +98,13 @@
     "guest_pass_enabled": true
   },
   {
+    "id": "javier-oyarzun",
+    "name": "Javier Oyarzún",
+    "active": true,
+    "ticket_sale_enabled": true,
+    "guest_pass_enabled": true
+  },
+  {
     "id": "leyla-ananias",
     "name": "Leyla Ananías",
     "active": true,
@@ -163,6 +170,13 @@
   {
     "id": "pauli-filler",
     "name": "Pauli Filler",
+    "active": true,
+    "ticket_sale_enabled": true,
+    "guest_pass_enabled": true
+  },
+  {
+    "id": "paulina-concha",
+    "name": "Paulina Concha",
     "active": true,
     "ticket_sale_enabled": true,
     "guest_pass_enabled": true
