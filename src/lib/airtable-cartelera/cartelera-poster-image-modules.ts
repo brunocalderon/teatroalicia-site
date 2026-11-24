@@ -9,13 +9,17 @@ import { CARTELERA_POSTER_CACHE_DIR } from "@/lib/airtable-cartelera/cartelera-p
  * Importers for files that existed when Vite first scanned the cache directory.
  * Posters mirrored later (dev / first build) are loaded via dynamic import below.
  */
+/** Keep in sync with `CARTELERA_POSTER_CACHE_DIR` (`generated/cache/cartelera-posters`). */
+const carteleraPosterCacheViteGlob =
+  "../../../generated/cache/cartelera-posters"
+
 const cachedPosterImporters = import.meta.glob<ImageMetadata>(
-  "../../.cache/cartelera-posters/*.{apng,avif,gif,jpg,jpeg,png,webp}",
+  "../../../generated/cache/cartelera-posters/*.{apng,avif,gif,jpg,jpeg,png,webp}",
   { import: "default" },
 )
 
 const globKeyForFile = (fileName: string) =>
-  `../../.cache/cartelera-posters/${fileName}`
+  `${carteleraPosterCacheViteGlob}/${fileName}`
 
 let posterFileNameBySlug: Map<string, string> | undefined
 
@@ -77,7 +81,7 @@ export async function carteleraPosterImageBySlug(
   try {
     const mod = await import(
       /* @vite-ignore */
-      `../../.cache/cartelera-posters/${fileName}`
+      `${carteleraPosterCacheViteGlob}/${fileName}`
     )
     const loaded = mod.default as ImageMetadata
     if (

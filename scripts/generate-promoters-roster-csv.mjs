@@ -19,7 +19,7 @@ function escapeCsvCell(value) {
 }
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), "..")
-const rosterPath = path.join(root, "src", "generated", "promoters.roster.json")
+const rosterPath = path.join(root, "generated", "snapshots", "promoters.roster.json")
 const outPath = path.join(root, "content", "promoters.roster.csv")
 
 /** @type {import("../src/lib/promoters-roster-types.ts").PromoterRosterEntry[]} */

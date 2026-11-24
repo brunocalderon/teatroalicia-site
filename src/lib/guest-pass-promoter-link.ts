@@ -1,4 +1,4 @@
-import publicPromoters from "@/generated/promoters.public.json"
+import publicPromoters from "@snapshots/promoters.public.json"
 import type { Promoter } from "@/lib/promoters"
 import { promoterRefQueryParam } from "@/lib/promoters"
 import { canonicalPageUrl } from "@/lib/schema-org/canonical-origin"

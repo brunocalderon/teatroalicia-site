@@ -1,5 +1,5 @@
-import publicPromoters from "@/generated/promoters.public.json"
-import promotersRoster from "@/generated/promoters.roster.json"
+import publicPromoters from "@snapshots/promoters.public.json"
+import promotersRoster from "@snapshots/promoters.roster.json"
 import type { PromoterRosterEntry } from "@/lib/promoters-roster-types"
 
 /** Client-safe promoter record (production bundle). */

@@ -1,8 +1,9 @@
 # build output
 dist/
 
-# Airtable cartelera posters (mirrored at build; optimized to dist/_astro/)
-src/.cache/cartelera-posters/
+# Ephemeral build cache (committed snapshots live in generated/snapshots/)
+generated/cache/
+src/.cache/
 
 # lighthouse vitest reports
 tests/lighthouse/reports/

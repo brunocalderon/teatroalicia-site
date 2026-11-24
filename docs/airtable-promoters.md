@@ -1,6 +1,6 @@
 # Airtable promoters roster
 
-Guest-pass promoter roster is snapshotted from the **Promoters** table at build time (`npm run generate:promoters`, also `prebuild`). Production and dev read `src/generated/promoters.roster.json`; the client bundle uses `src/generated/promoters.public.json` (`active` + `Guest Passes Enabled` only).
+Guest-pass promoter roster is snapshotted from the **Promoters** table at build time (`npm run generate:promoters`, also `prebuild`). Production and dev read `generated/snapshots/promoters.roster.json`; the client bundle uses `generated/snapshots/promoters.public.json` (imported via `@snapshots/`) (`active` + `Guest Passes Enabled` only).
 
 ## Environment
 

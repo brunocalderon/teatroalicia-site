@@ -4,7 +4,7 @@ When `AIRTABLE_TOKEN`, `AIRTABLE_BASE_ID`, and `AIRTABLE_TABLE_ID` (or optional 
 
 ## Build-time fetch
 
-The `carteleraPostersIntegration` hook mirrors upcoming poster attachments into `src/.cache/cartelera-posters/` (gitignored) at `astro:build:start` and `astro:server:start` when Airtable env is set. `index.astro` loads those modules via `import.meta.glob`, and `buildCarteleraPosterFeatureImage` uses `getImage` so responsive WebP/JPEG variants land in `dist/_astro/` (`<picture>` WebP + JPEG fallback). The home page still calls `fetchAirtableCarteleraRows` for list/JSON-LD data. Production HTML never loads `airtableusercontent.com` images. Rebuild to refresh cartelera after Airtable changes.
+The `carteleraPostersIntegration` hook mirrors upcoming poster attachments into `generated/cache/cartelera-posters/` (gitignored) at `astro:build:start` and `astro:server:start` when Airtable env is set. `index.astro` loads those modules via `import.meta.glob`, and `buildCarteleraPosterFeatureImage` uses `getImage` so responsive WebP/JPEG variants land in `dist/_astro/` (`<picture>` WebP + JPEG fallback). The home page still calls `fetchAirtableCarteleraRows` for list/JSON-LD data. Production HTML never loads `airtableusercontent.com` images. Rebuild to refresh cartelera after Airtable changes.
 
 ## API request (build only)
 

@@ -9,6 +9,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      "@snapshots": path.resolve(__dirname, "./generated/snapshots"),
     },
   },
   test: {

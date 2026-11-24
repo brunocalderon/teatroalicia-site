@@ -31,7 +31,7 @@ function carteleraPosterSyncPlugin(root: string, mode: string): Plugin {
 
       const count = await syncCarteleraPostersFromAirtable(carteleraConfig)
       this.info(
-        `Mirrored ${count} cartelera poster(s) to src/.cache/cartelera-posters/`,
+        `Mirrored ${count} cartelera poster(s) to generated/cache/cartelera-posters/`,
       )
     },
   }
