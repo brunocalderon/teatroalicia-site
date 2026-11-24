@@ -10,6 +10,7 @@ import {
 import {
   UMAMI_INVITATION_FORM_VISIT_EVENT,
   buildUmamiInvitationFormVisitData,
+  buildUmamiInvitationReceivedData,
 } from "@/lib/umami-invitation-form-visit"
 import type { UmamiTrackEventData } from "@/lib/umami-track-event-data"
 
@@ -54,6 +55,16 @@ export function invitationFormTracking(
     pageType: "Invitation Form",
     umamiEventName: UMAMI_INVITATION_FORM_VISIT_EVENT,
     umamiEventData: buildUmamiInvitationFormVisitData(eventName, eventId),
+  }
+}
+
+export function thankYouFormTracking(
+  eventName: string,
+  eventId?: string,
+): MarketingPageTracking {
+  return {
+    ...marketingPageTracking.thankYou,
+    umamiEventData: buildUmamiInvitationReceivedData(eventName, eventId),
   }
 }
 

@@ -196,14 +196,10 @@ const carteleraHasCarousel = events.length > 3
     if (!target) {
       return
     }
-    const eventTitle = target.dataset.eventTitle ?? ""
-    const eventId =
-      target.dataset.eventId?.trim() ||
-      target.dataset.ticketContentId?.trim() ||
-      target.dataset.eventCampaign ||
-      ""
+    const eventName = target.dataset.eventTitle ?? ""
+    const eventId = target.dataset.eventId?.trim() ?? ""
     trackUmamiCarteleraTicketClick({
-      event_title: eventTitle,
+      event_name: eventName,
       event_id: eventId,
     })
 
@@ -218,7 +214,7 @@ const carteleraHasCarousel = events.length > 3
       target.dataset.eventCampaign ||
       "event"
     trackMetaTicketCheckoutClick({
-      content_name: eventTitle,
+      content_name: eventName,
       content_ids: [contentId],
       destination: resolveTicketCheckoutDestination(
         target.href,

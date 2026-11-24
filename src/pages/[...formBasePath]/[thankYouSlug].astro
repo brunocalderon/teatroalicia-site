@@ -14,7 +14,7 @@ import {
   parseThankYouParagraphs,
   thankYouRouteParams,
 } from "@/lib/form-thank-you"
-import { marketingPageTracking } from "@/lib/marketing-page-tracking"
+import { thankYouFormTracking } from "@/lib/marketing-page-tracking"
 import { renderFormBodyMarkdown } from "@/lib/render-form-body-markdown"
 import { isGuestPassPromoterLinksPath } from "@/lib/guest-pass-promoter-link"
 
@@ -72,6 +72,6 @@ const showThankYouInstagram =
   title={thankYouTitle}
   lang={data.lang}
   paragraphsHtml={thankYouParagraphsHtml}
-  marketingTracking={marketingPageTracking.thankYou}
+  marketingTracking={thankYouFormTracking(data.title, data.eventId)}
   thankYouInstagram={showThankYouInstagram}
 />
