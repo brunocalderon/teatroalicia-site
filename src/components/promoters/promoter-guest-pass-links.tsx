@@ -28,7 +28,6 @@ import "@/styles/global.css"
 
 type PromoterGuestPassLinksProps = {
   lang: string
-  eventTitle: string
   heading: string
   promoters: GuestPassPromoterLinkRow[]
 }
@@ -92,7 +91,6 @@ function PromoterCopyButton({
 
 export function PromoterGuestPassLinks({
   lang,
-  eventTitle,
   heading,
   promoters,
 }: PromoterGuestPassLinksProps) {
@@ -153,7 +151,6 @@ export function PromoterGuestPassLinks({
             />
           </a>
           <div className="flex min-w-0 flex-1 flex-col gap-1">
-            <p className="text-sm text-muted-foreground">{eventTitle}</p>
             <CardTitle className="text-xl font-medium tracking-wide">
               {heading}
             </CardTitle>

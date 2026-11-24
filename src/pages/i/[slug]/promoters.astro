@@ -6,7 +6,12 @@ import { guestPassPromoterLinkRows } from "@/lib/guest-pass-promoter-link"
 import { assertFormsCollectionIntegrity } from "@/lib/form-schema"
 import { isGuestPassInvitationPath } from "@/lib/guest-pass-referral-field"
 import { invitationSlugFromPath } from "@/lib/invitation-bundled-poster"
-import { loadInvitationFormEntries } from "@/lib/invitation-form-entries"
+import {
+  loadInvitationFormEntries,
+  type InvitationContentCollection,
+} from "@/lib/invitation-form-entries"
+import { resolveInvitationFormData } from "@/lib/resolve-invitation-form-entry"
+import type { FormEntryData } from "@/lib/form-schema"
 
 export async function getStaticPaths() {
   const forms = await getCollection("forms")
@@ -27,38 +32,45 @@ export async function getStaticPaths() {
       return {
         params: { slug },
         props: {
-          invitationPath: entry.data.path,
-          title: entry.data.title,
-          lang: entry.data.lang ?? "es",
+          collection: entry.collection,
+          entryId: entry.id,
+          data: entry.data,
         },
       }
     })
 }
 
 type Props = {
-  invitationPath: string
-  title: string
-  lang: string
+  collection: InvitationContentCollection
+  entryId: string
+  data: FormEntryData
 }
 
-const { invitationPath, title, lang } = Astro.props as Props
+const { collection, entryId, data: dataFromProps } = Astro.props as Props
+/** Same title as guest-list pages: Airtable `Event Name` → `FormEntryData.title`. */
+const data = await resolveInvitationFormData(collection, entryId, dataFromProps)
+const lang = data.lang ?? "es"
+const eventDisplayTitle = data.title
 const pageTitle =
-  lang === "es" ? `Enlaces de promotores · ${title}` : `Promoter links · ${title}`
+  lang === "es"
+    ? `Links RRPPs · ${eventDisplayTitle}`
+    : `Promoter links · ${eventDisplayTitle}`
 const pageDescription =
   lang === "es"
-    ? `Links para RRPPs · ${title}.`
-    : `Promoter links · ${title}.`
+    ? `Links para RRPPs · ${eventDisplayTitle}.`
+    : `Promoter links · ${eventDisplayTitle}.`
 const heading =
-  lang === "es" ? "Links para RRPPs" : "Promoter links"
+  lang === "es"
+    ? `Links RRPPs: ${eventDisplayTitle}`
+    : `Promoter links: ${eventDisplayTitle}`
 
-const promoters = guestPassPromoterLinkRows(invitationPath)
+const promoters = guestPassPromoterLinkRows(data.path)
 ---
 
 <PromoterLinksPage
   pageTitle={pageTitle}
   pageDescription={pageDescription}
   lang={lang}
-  eventTitle={title}
   heading={heading}
   promoters={promoters}
 />

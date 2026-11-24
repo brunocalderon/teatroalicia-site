@@ -11,7 +11,6 @@ export interface Props {
   pageTitle: string
   pageDescription: string
   lang: string
-  eventTitle: string
   heading: string
   promoters: GuestPassPromoterLinkRow[]
 }
@@ -20,7 +19,6 @@ const {
   pageTitle,
   pageDescription,
   lang,
-  eventTitle,
   heading,
   promoters,
 } = Astro.props
@@ -40,7 +38,6 @@ const backdropCss = sitePageBackdropCss("promoter-links-page")
         <PromoterGuestPassLinks
           client:load
           lang={lang}
-          eventTitle={eventTitle}
           heading={heading}
           promoters={promoters}
         />
