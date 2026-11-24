@@ -36,6 +36,7 @@ export function airtableRowToHomeEventFeature(
     title: row.title,
     ctaHref,
     ctaExternal: Boolean(ticketUrl),
+    eventId: row.eventId,
     eventCampaign: campaign,
     ticketContentId: metaTicketCheckoutContentId({
       eventId: row.eventId,
@@ -84,7 +85,9 @@ export async function airtableCarteleraRowsToApiEvents(
       ctaLabel: feature.ctaLabel,
       dateLine: feature.dateLine,
       timeLine: feature.timeLine,
+      eventId: feature.eventId ?? row.eventId,
       eventCampaign: feature.eventCampaign ?? "",
+      ticketContentId: feature.ticketContentId ?? "",
       ticketSupplier: feature.ticketSupplier,
       imageAlt: feature.imageAlt,
       image: feature.image,

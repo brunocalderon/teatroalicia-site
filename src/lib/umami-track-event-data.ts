@@ -1,0 +1,1 @@
+export type UmamiTrackEventData = Record<string, string | boolean>

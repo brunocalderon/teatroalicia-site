@@ -7,8 +7,14 @@ import {
   consumePendingMetaPixelUserData,
   persistMetaPixelUserData,
 } from "@/lib/meta-pixel-pending-storage"
+import {
+  UMAMI_INVITATION_FORM_VISIT_EVENT,
+  buildUmamiInvitationFormVisitData,
+} from "@/lib/umami-invitation-form-visit"
+import type { UmamiTrackEventData } from "@/lib/umami-track-event-data"
 
 export { MARKETING_TRACKING_CITY }
+export { UMAMI_INVITATION_FORM_VISIT_EVENT, type UmamiTrackEventData }
 
 export type MarketingPageTracking = {
   contentName: string
@@ -18,6 +24,8 @@ export type MarketingPageTracking = {
   metaEvent?: "ViewContent" | "Lead"
   /** Defaults to `contentName` when omitted. */
   umamiEventName?: string
+  /** Merged with optional guest-pass promoter properties on `umami.track`. */
+  umamiEventData?: UmamiTrackEventData
 }
 
 export const marketingPageTracking = {
@@ -36,11 +44,16 @@ export const marketingPageTracking = {
   },
 } as const satisfies Record<string, MarketingPageTracking>
 
-export function invitationFormTracking(contentName: string): MarketingPageTracking {
+export function invitationFormTracking(
+  eventName: string,
+  eventId?: string,
+): MarketingPageTracking {
   return {
-    contentName,
+    contentName: eventName,
     contentCategory: "Event Invitation",
     pageType: "Invitation Form",
+    umamiEventName: UMAMI_INVITATION_FORM_VISIT_EVENT,
+    umamiEventData: buildUmamiInvitationFormVisitData(eventName, eventId),
   }
 }
 

@@ -44,12 +44,17 @@ const metaPayload = tracking
     )
   : "null"
 
+const umamiEventData = tracking?.umamiEventData
+  ? JSON.stringify(tracking.umamiEventData)
+  : ""
+
 const marketingConfig = JSON.stringify({
   facebookPixelId,
   umamiWebsiteId,
   metaEvent,
   metaPayload,
   umamiEventName,
+  umamiEventData,
   trackContent: Boolean(tracking),
   engageAfterLoadMs,
   interactionIdleTimeoutMs: MARKETING_INTERACTION_IDLE_TIMEOUT_MS,

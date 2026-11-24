@@ -116,7 +116,7 @@ formLcpImage = await resolveInvitationFormLcpImage(data, invitationSlug)
 
 const showSplitLayout = Boolean(formLcpImage)
 
-const tracking = invitationFormTracking(data.title)
+const tracking = invitationFormTracking(data.title, data.eventId)
 const formDescription = formMetaDescription(data)
 
 const eventImageUrl = formLcpImage

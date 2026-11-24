@@ -7,6 +7,8 @@ export type HomeEventFeatureData = {
   ctaLabel: string
   dateLine: string
   timeLine: string
+  /** Canonical event id (Airtable `eventId` / invitation `eventId`). */
+  eventId?: string
   /** `utm_campaign` slug for analytics. */
   eventCampaign?: string
   /** Meta `content_ids` for ticket checkout (slug + event date). */

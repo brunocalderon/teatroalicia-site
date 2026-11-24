@@ -34,7 +34,9 @@ export type CarteleraApiEvent = {
   ctaLabel: string
   dateLine: string
   timeLine: string
+  eventId: string
   eventCampaign: string
+  ticketContentId: string
   ticketSupplier?: string
   imageAlt?: string
   image?: HomeEventFeatureImage

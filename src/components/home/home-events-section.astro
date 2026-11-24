@@ -197,7 +197,11 @@ const carteleraHasCarousel = events.length > 3
       return
     }
     const eventTitle = target.dataset.eventTitle ?? ""
-    const eventId = target.dataset.eventCampaign ?? ""
+    const eventId =
+      target.dataset.eventId?.trim() ||
+      target.dataset.ticketContentId?.trim() ||
+      target.dataset.eventCampaign ||
+      ""
     trackUmamiCarteleraTicketClick({
       event_title: eventTitle,
       event_id: eventId,
@@ -210,7 +214,8 @@ const carteleraHasCarousel = events.length > 3
 
     const contentId =
       target.dataset.ticketContentId?.trim() ||
-      eventId ||
+      target.dataset.eventId?.trim() ||
+      target.dataset.eventCampaign ||
       "event"
     trackMetaTicketCheckoutClick({
       content_name: eventTitle,

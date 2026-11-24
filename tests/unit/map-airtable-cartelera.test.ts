@@ -126,6 +126,9 @@ describe("map-airtable-cartelera", () => {
     expect(event?.title).toBe("El Club de Los Viernes")
     expect(event?.ctaHref).toContain("passline.com")
     expect(event?.ticketSupplier).toBe("passline")
+    expect(event?.eventId).toBe("el-club-de-los-viernes-2026-11-27")
+    expect(event?.eventCampaign).toBe("el-club-de-los-viernes")
+    expect(event?.ticketContentId).toBe("ecdlv-2026-11-27")
   })
 
   it("parses list API response and maps both cartelera records", async () => {

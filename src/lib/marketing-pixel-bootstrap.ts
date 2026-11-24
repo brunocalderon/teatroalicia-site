@@ -10,16 +10,35 @@
   }
   var engaged = false
 
-  function defineUmamiPageView(eventName) {
+  function parseUmamiEventData(json) {
+    if (!json) return null
+    try {
+      var parsed = JSON.parse(json)
+      return parsed && typeof parsed === "object" ? parsed : null
+    } catch (e) {
+      return null
+    }
+  }
+
+  function mergeUmamiTrackData(baseData, promoterData) {
+    if (baseData && promoterData) {
+      return Object.assign({}, baseData, promoterData)
+    }
+    return baseData || promoterData || null
+  }
+
+  function defineUmamiPageView(eventName, umamiEventDataJson) {
     if (!eventName) return
+    var baseData = parseUmamiEventData(umamiEventDataJson)
     window.customPageViewTracking = function () {
       if (typeof window.umami !== "undefined" && window.umami.track) {
         var promoterData =
           typeof window.__umamiPromoterEventData === "function"
             ? window.__umamiPromoterEventData()
             : null
-        if (promoterData) {
-          window.umami.track(eventName, promoterData)
+        var payload = mergeUmamiTrackData(baseData, promoterData)
+        if (payload) {
+          window.umami.track(eventName, payload)
         } else {
           window.umami.track(eventName)
         }
@@ -67,7 +86,7 @@
     if (!websiteId || document.querySelector('script[data-marketing-umami="true"]')) {
       return
     }
-    defineUmamiPageView(config.umamiEventName)
+    defineUmamiPageView(config.umamiEventName, config.umamiEventData)
     var script = document.createElement("script")
     script.async = true
     script.defer = true
