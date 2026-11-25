@@ -695,6 +695,20 @@ html.home-poster-lightbox-open {
   flex-shrink: 0;
   width: 100%;
   aspect-ratio: 1;
+  overflow: hidden;
+}
+
+.home-feature__poster-fill {
+  position: absolute;
+  inset: -12%;
+  z-index: 0;
+  background-image: var(--home-feature-poster-fill);
+  background-position: center;
+  background-size: cover;
+  transform: scale(1.08);
+  filter: blur(18px);
+  opacity: 0.9;
+  pointer-events: none;
 }
 
 .home-feature__poster-skeleton {
@@ -758,7 +772,13 @@ button.home-feature__media {
   transition: transform 0.45s ease;
 }
 
+.home-feature__poster-frame--letterbox .home-feature__image {
+  object-fit: contain;
+}
+
 .home-feature__poster-frame picture {
+  position: relative;
+  z-index: 1;
   display: block;
   width: 100%;
   height: 100%;
@@ -771,6 +791,10 @@ button.home-feature__media {
     margin-inline: 0;
     aspect-ratio: 1;
     object-fit: cover;
+  }
+
+  .home-feature__poster-frame--letterbox .home-feature__image {
+    object-fit: contain;
   }
 }
 

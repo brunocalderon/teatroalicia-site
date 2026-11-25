@@ -17,6 +17,10 @@ const posterZoomSrc =
 const posterUsesPicture = Boolean(
   posterImage?.fallbackSrc && posterImage.fallbackSrcSet,
 )
+const posterNeedsLetterboxFill = Boolean(
+  posterImage && posterImage.width !== posterImage.height,
+)
+const posterFillUrl = posterImage?.src ?? ""
 const ctaLinkAttrs = event.ctaExternal
   ? { target: "_blank", rel: "noopener noreferrer" as const }
   : {}
@@ -36,11 +40,24 @@ const ctaLinkAttrs = event.ctaExternal
         data-event-title={event.title}
         aria-label={`Ampliar afiche de ${event.title}`}
       >
-        <div class="home-feature__poster-frame">
+        <div
+          class:list={[
+            "home-feature__poster-frame",
+            { "home-feature__poster-frame--letterbox": posterNeedsLetterboxFill },
+          ]}
+          style={
+            posterNeedsLetterboxFill
+              ? `--home-feature-poster-fill: url(${JSON.stringify(posterFillUrl)})`
+              : undefined
+          }
+        >
           <span
             class="home-feature__poster-skeleton"
             aria-hidden="true"
           />
+          {posterNeedsLetterboxFill ? (
+            <span class="home-feature__poster-fill" aria-hidden="true" />
+          ) : null}
           {posterUsesPicture && posterImage ? (
             <picture>
               <source
