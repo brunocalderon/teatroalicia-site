@@ -172,6 +172,7 @@ const carteleraHasCarousel = events.length > 3
 <script>
   import { initCarteleraPosterLightbox } from "@/lib/cartelera-poster-lightbox"
   import { initHomeFeaturedCarousel } from "@/lib/home-featured-carousel"
+  import { initHomeFeaturePosterFill } from "@/lib/home-feature-poster-fill"
   import {
     resolveTicketCheckoutDestination,
     trackMetaTicketCheckoutClick,
@@ -182,6 +183,7 @@ const carteleraHasCarousel = events.length > 3
   const carteleraRoot = cartelera ?? document
   initCarteleraPosterLightbox(carteleraRoot)
   initHomeFeaturedCarousel(carteleraRoot)
+  initHomeFeaturePosterFill(carteleraRoot)
 
   const list = document.querySelector(".home-featured__list")
   type CarteleraTicketClickEvent = Event & {

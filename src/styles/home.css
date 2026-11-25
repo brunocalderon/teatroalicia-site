@@ -698,17 +698,30 @@ html.home-poster-lightbox-open {
   overflow: hidden;
 }
 
-.home-feature__poster-fill {
-  position: absolute;
-  inset: -12%;
+.home-feature__poster-frame--letterbox {
+  display: grid;
+  place-items: center;
+}
+
+.home-feature__poster-frame--letterbox > .home-feature__poster-skeleton,
+.home-feature__poster-frame--letterbox > picture,
+.home-feature__poster-frame--letterbox > .home-feature__image:not(
+    .home-feature__image--fill
+  ) {
+  grid-area: 1 / 1;
+  width: 100%;
+  height: 100%;
+}
+
+.home-feature__poster-frame--letterbox > .home-feature__poster-skeleton {
   z-index: 0;
-  background-image: var(--home-feature-poster-fill);
-  background-position: center;
-  background-size: cover;
-  transform: scale(1.08);
-  filter: blur(18px);
-  opacity: 0.9;
-  pointer-events: none;
+}
+
+.home-feature__poster-frame--letterbox > picture,
+.home-feature__poster-frame--letterbox
+  > .home-feature__image:not(.home-feature__image--fill) {
+  position: relative;
+  z-index: 2;
 }
 
 .home-feature__poster-skeleton {
@@ -719,7 +732,9 @@ html.home-poster-lightbox-open {
   animation: home-feature-poster-skeleton-pulse 1.35s ease-in-out infinite;
 }
 
-.home-feature__poster-frame:has(.home-feature__image[complete])
+.home-feature__poster-frame:has(
+    .home-feature__image:not(.home-feature__image--fill)[complete]
+  )
   .home-feature__poster-skeleton {
   visibility: hidden;
 }
@@ -772,7 +787,8 @@ button.home-feature__media {
   transition: transform 0.45s ease;
 }
 
-.home-feature__poster-frame--letterbox .home-feature__image {
+.home-feature__poster-frame--letterbox
+  .home-feature__image:not(.home-feature__image--fill) {
   object-fit: contain;
 }
 
@@ -793,13 +809,36 @@ button.home-feature__media {
     object-fit: cover;
   }
 
-  .home-feature__poster-frame--letterbox .home-feature__image {
+  .home-feature__poster-frame--letterbox
+    .home-feature__image:not(.home-feature__image--fill) {
     object-fit: contain;
   }
 }
 
-.home-feature__media:hover .home-feature__image {
+.home-feature__media:hover
+  .home-feature__image:not(.home-feature__image--fill) {
   transform: scale(1.02);
+}
+
+.home-feature__poster-frame--letterbox > .home-feature__image--fill {
+  position: absolute;
+  inset: -12%;
+  z-index: 1;
+  box-sizing: border-box;
+  width: auto;
+  min-width: 124%;
+  height: 124%;
+  margin: auto;
+  max-width: none;
+  aspect-ratio: auto;
+  object-fit: cover;
+  object-position: center;
+  box-shadow: none;
+  transform: scale(1.08);
+  filter: blur(18px);
+  opacity: 0.9;
+  pointer-events: none;
+  transition: none;
 }
 
 .home-feature__placeholder {

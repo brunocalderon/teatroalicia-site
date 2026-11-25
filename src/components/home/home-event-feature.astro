@@ -1,5 +1,6 @@
 ---
 import type { HomeEventFeatureData } from "@/lib/home-event-feature-data"
+import { needsLetterboxPosterFill } from "@/lib/home-feature-poster-letterbox"
 
 export type { HomeEventFeatureData } from "@/lib/home-event-feature-data"
 
@@ -18,9 +19,9 @@ const posterUsesPicture = Boolean(
   posterImage?.fallbackSrc && posterImage.fallbackSrcSet,
 )
 const posterNeedsLetterboxFill = Boolean(
-  posterImage && posterImage.width !== posterImage.height,
+  posterImage &&
+    needsLetterboxPosterFill(posterImage.width, posterImage.height),
 )
-const posterFillUrl = posterImage?.src ?? ""
 const ctaLinkAttrs = event.ctaExternal
   ? { target: "_blank", rel: "noopener noreferrer" as const }
   : {}
@@ -45,18 +46,21 @@ const ctaLinkAttrs = event.ctaExternal
             "home-feature__poster-frame",
             { "home-feature__poster-frame--letterbox": posterNeedsLetterboxFill },
           ]}
-          style={
-            posterNeedsLetterboxFill
-              ? `--home-feature-poster-fill: url(${JSON.stringify(posterFillUrl)})`
-              : undefined
-          }
         >
           <span
             class="home-feature__poster-skeleton"
             aria-hidden="true"
           />
-          {posterNeedsLetterboxFill ? (
-            <span class="home-feature__poster-fill" aria-hidden="true" />
+          {posterNeedsLetterboxFill && posterImage ? (
+            <img
+              class="home-feature__image home-feature__image--fill"
+              data-home-feature-poster-fill
+              alt=""
+              aria-hidden="true"
+              width={posterImage.width}
+              height={posterImage.height}
+              decoding="async"
+            />
           ) : null}
           {posterUsesPicture && posterImage ? (
             <picture>
