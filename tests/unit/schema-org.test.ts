@@ -61,7 +61,7 @@ describe("schema.org JSON-LD", () => {
     const venue = buildVenueNode(venueConfig)
     expect(venue["@id"]).toBe(VENUE_ENTITY_ID)
     expect(venue.url).toBe("https://teatroalicia.com/")
-    expect(venue.email).toBe("contacto@teatroalicia.cl")
+    expect(venue.email).toBe("contacto@teatroalicia.com")
     expect(venue.keywords).toEqual(venueConfig.keywords)
     expect(venue).not.toHaveProperty("inLanguage")
     expect(venue).not.toHaveProperty("aggregateRating")
@@ -72,7 +72,6 @@ describe("schema.org JSON-LD", () => {
         "https://www.instagram.com/teatroalicia.scl/",
       ]),
     )
-    expect(venue.sameAs).not.toContain("https://teatroalicia.cl/")
     expect(venue.sameAs).not.toContain("https://teatroalicia.com/")
   })
 

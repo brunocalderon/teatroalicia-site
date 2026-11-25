@@ -34,7 +34,7 @@ function absoluteUrl(origin: string, pathname: string): string {
 export function ardPublisherAuthority(origin: string): string {
   const hostname = new URL(origin).hostname
   if (hostname === "127.0.0.1" || hostname === "localhost") {
-    return "teatroalicia.cl"
+    return "teatroalicia.com"
   }
   return hostname
 }
