@@ -202,6 +202,8 @@ const carteleraHasCarousel = events.length > 3
 
 <script>
   import { scheduleHomeCarteleraClientAfterLoad } from "@/lib/home-cartelera-client"
+  import { tryPrimeHomeFeaturedCarouselPosters } from "@/lib/home-featured-carousel-posters"
 
+  tryPrimeHomeFeaturedCarouselPosters()
   scheduleHomeCarteleraClientAfterLoad()
 </script>

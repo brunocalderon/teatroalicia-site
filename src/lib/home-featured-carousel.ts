@@ -1,3 +1,5 @@
+import { primeHomeFeaturedCarouselPosters } from "@/lib/home-featured-carousel-posters"
+
 export const HOME_FEATURED_CAROUSEL_DESKTOP_MQ = "(min-width: 56rem)"
 
 export const HOME_FEATURED_CAROUSEL_VISIBLE_COUNT = 3
@@ -87,6 +89,7 @@ export function initHomeFeaturedCarousel(root: ParentNode = document): void {
   }
 
   const cards = [...track.querySelectorAll<HTMLElement>(".home-feature")]
+  primeHomeFeaturedCarouselPosters(track)
   const maxIndex = getHomeFeaturedCarouselMaxIndex(cards.length)
   const desktopMq = window.matchMedia(HOME_FEATURED_CAROUSEL_DESKTOP_MQ)
 

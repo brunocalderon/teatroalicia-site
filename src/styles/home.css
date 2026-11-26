@@ -790,11 +790,13 @@ html.home-poster-lightbox-open {
   animation: home-feature-poster-skeleton-pulse 1.35s ease-in-out infinite;
 }
 
-.home-feature__poster-frame:has(
-    .home-feature__image:not(.home-feature__image--fill)[complete]
+.home-feature__poster-frame:is(
+    [data-poster-primed],
+    :has(.home-feature__image:not(.home-feature__image--fill)[complete])
   )
   .home-feature__poster-skeleton {
   visibility: hidden;
+  animation: none;
 }
 
 @keyframes home-feature-poster-skeleton-pulse {

@@ -1,5 +1,6 @@
 import { initCarteleraPosterLightbox } from "@/lib/cartelera-poster-lightbox"
 import { initHomeFeaturedCarousel } from "@/lib/home-featured-carousel"
+import { tryPrimeHomeFeaturedCarouselPosters } from "@/lib/home-featured-carousel-posters"
 import { initHomeFeaturePosterFill } from "@/lib/home-feature-poster-fill"
 import {
   resolveTicketCheckoutDestination,
@@ -19,6 +20,7 @@ export function initHomeCarteleraClient(): void {
   const cartelera = document.getElementById("cartelera")
   const carteleraRoot = cartelera ?? document
   initCarteleraPosterLightbox(carteleraRoot)
+  tryPrimeHomeFeaturedCarouselPosters(carteleraRoot)
   initHomeFeaturedCarousel(carteleraRoot)
   initHomeFeaturePosterFill(carteleraRoot)
 
