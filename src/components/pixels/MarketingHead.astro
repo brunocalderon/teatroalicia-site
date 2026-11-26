@@ -64,12 +64,6 @@ const marketingConfig = JSON.stringify({
 {
   facebookPixelId || umamiWebsiteId ? (
     <>
-      {umamiWebsiteId ? (
-        <script>
-          import { bindUmamiPromoterEventDataResolver } from "@/lib/marketing-umami-track"
-          bindUmamiPromoterEventDataResolver()
-        </script>
-      ) : null}
       <script
         is:inline
         type="application/json"

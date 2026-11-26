@@ -12,6 +12,11 @@ function hrefFromLinkTag(tag: string): string | undefined {
   return match?.[2]
 }
 
+function isRenderBlockingStylesheetLink(tag: string): boolean {
+  const rel = tag.match(/\brel\s*=\s*(["'])([^"']+)\1/i)?.[2]
+  return rel === "stylesheet"
+}
+
 function deferStylesheetLink(tag: string): string {
   const href = hrefFromLinkTag(tag)
   if (!href) {
@@ -22,6 +27,13 @@ function deferStylesheetLink(tag: string): string {
     `<link rel="preload" href="${href}" as="style" onload="this.onload=null;this.rel='stylesheet'">`,
     `<noscript><link rel="stylesheet" href="${href}"></noscript>`,
   ].join("")
+}
+
+function isInsideNoscript(html: string, matchOffset: number): boolean {
+  const before = html.slice(0, matchOffset)
+  const opens = (before.match(/<noscript\b/gi) ?? []).length
+  const closes = (before.match(/<\/noscript>/gi) ?? []).length
+  return opens > closes
 }
 
 async function listHtmlFiles(directory: string): Promise<string[]> {
@@ -54,9 +66,26 @@ export function deferCssIntegration(): AstroIntegration {
 
         for (const filePath of htmlFiles) {
           const original = await readFile(filePath, "utf8")
+          const invitationFormPage = original.includes('class="form-page')
+          /** Split forms ship inline critical layout CSS; defer bundled sheets for LCP. */
+          const keepBlockingStylesheetCount = invitationFormPage ? 0 : 1
+          let blockingStylesheetCount = 0
+          STYLESHEET_LINK.lastIndex = 0
           const transformed = original.replace(
             STYLESHEET_LINK,
-            (tag) => deferStylesheetLink(tag),
+            (tag, _quote, offset) => {
+              if (!isRenderBlockingStylesheetLink(tag)) {
+                return tag
+              }
+              if (isInsideNoscript(original, offset)) {
+                return tag
+              }
+              if (blockingStylesheetCount < keepBlockingStylesheetCount) {
+                blockingStylesheetCount += 1
+                return tag
+              }
+              return deferStylesheetLink(tag)
+            },
           )
           if (transformed !== original) {
             await writeFile(filePath, transformed, "utf8")

@@ -42,6 +42,13 @@
     "guest_pass_enabled": true
   },
   {
+    "id": "dukes",
+    "name": "Dukes",
+    "active": true,
+    "ticket_sale_enabled": true,
+    "guest_pass_enabled": true
+  },
+  {
     "id": "eduardo-caco-moreno",
     "name": "Eduardo Caco Moreno",
     "active": true,
@@ -58,6 +65,13 @@
   {
     "id": "emilia-castillo",
     "name": "Emilia Castillo",
+    "active": true,
+    "ticket_sale_enabled": true,
+    "guest_pass_enabled": true
+  },
+  {
+    "id": "en-terapia",
+    "name": "En Terapia",
     "active": true,
     "ticket_sale_enabled": true,
     "guest_pass_enabled": true

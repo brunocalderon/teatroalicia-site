@@ -10,6 +10,32 @@
   }
   var engaged = false
 
+  window.__umamiPromoterEventData = function () {
+    try {
+      var params = new URLSearchParams(window.location.search)
+      var e = (params.get("e") || "").trim()
+      if (e) {
+        return { promoter_id: e, promoter_name: "", promoter_verified: false }
+      }
+      var raw = window.sessionStorage.getItem(
+        "teatroalicia-guest-pass-attribution",
+      )
+      if (raw) {
+        var parsed = JSON.parse(raw)
+        if (parsed && typeof parsed.promoterId === "string") {
+          return {
+            promoter_id: parsed.promoterId,
+            promoter_name: parsed.promoterName || "",
+            promoter_verified: Boolean(parsed.verified),
+          }
+        }
+      }
+    } catch (err) {
+      return null
+    }
+    return null
+  }
+
   function parseUmamiEventData(json) {
     if (!json) return null
     try {
@@ -101,7 +127,27 @@
     document.head.appendChild(script)
   }
 
+  function preconnectMarketingOrigins() {
+    var origins = [
+      "https://connect.facebook.net",
+      "https://cloud.umami.is",
+      "https://gateway.umami.is",
+    ]
+    for (var i = 0; i < origins.length; i++) {
+      var o = origins[i]
+      if (document.querySelector('link[rel="preconnect"][href="' + o + '"]')) {
+        continue
+      }
+      var link = document.createElement("link")
+      link.rel = "preconnect"
+      link.href = o
+      link.crossOrigin = "anonymous"
+      document.head.appendChild(link)
+    }
+  }
+
   function runMarketingLoads() {
+    preconnectMarketingOrigins()
     if (config.facebookPixelId) {
       loadFacebookPixel(
         config.facebookPixelId,
@@ -144,8 +190,25 @@
   }
 
   function armAfterFullLoad(delayMs) {
+    function runWhenIdle() {
+      var idleTimeout = Math.max(
+        typeof config.interactionIdleTimeoutMs === "number"
+          ? config.interactionIdleTimeoutMs
+          : 2000,
+        typeof delayMs === "number" ? delayMs : 0,
+      )
+      if ("requestIdleCallback" in window) {
+        requestIdleCallback(engageMarketing, { timeout: idleTimeout })
+      } else {
+        setTimeout(engageMarketing, delayMs)
+      }
+    }
     function schedule() {
-      setTimeout(engageMarketing, delayMs)
+      var postLoadMs = Math.max(
+        typeof delayMs === "number" ? delayMs : 0,
+        6000,
+      )
+      setTimeout(runWhenIdle, postLoadMs)
     }
     if (document.readyState === "complete") {
       schedule()

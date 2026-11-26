@@ -32,10 +32,14 @@ const deferredHdLayersJson = JSON.stringify(deferredHdLayers)
 />
 <script>
   import { initDeferredHomeHeroSlides } from "@/lib/deferred-home-hero-slides"
+  import { scheduleAfterLoadIdle } from "@/lib/schedule-after-load-idle"
 
   const payload = document.getElementById("home-hero-deferred-hd")
   if (payload) {
     const deferredHdLayers = JSON.parse(payload.textContent ?? "[]") as string[]
-    initDeferredHomeHeroSlides(deferredHdLayers)
+    scheduleAfterLoadIdle(
+      () => initDeferredHomeHeroSlides(deferredHdLayers),
+      3_000,
+    )
   }
 </script>

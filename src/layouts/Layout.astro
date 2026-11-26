@@ -7,9 +7,9 @@ import type { MarketingPageTracking } from '@/lib/marketing-page-tracking';
 import {
 	formResourceHintOrigins,
 	homeMarketingResourceHintOrigins,
-	marketingResourceHintOrigins,
 } from '@/lib/third-party-resource-hints';
 import { MARKETING_ENGAGE_MS } from 'astro:env/client';
+import geistLatinWoff2 from '@fontsource-variable/geist/files/geist-latin-wght-normal.woff2?url';
 
 interface Props {
 	title?: string;
@@ -20,6 +20,8 @@ interface Props {
 	formThirdPartyHints?: boolean;
 	/** Post-load AVIF→WebP→JPEG backdrop swap (pairs with `sitePageBackdropCss`). */
 	deferredSiteBackdrop?: boolean;
+	/** Split invitation forms use the event poster as LCP — skip photographic backdrop swap. */
+	skipFormPhotographicBackdrop?: boolean;
 	lcpImage?: {
 		src: string;
 		srcSet: string;
@@ -38,6 +40,8 @@ interface Props {
 	marketingEngageAfterLoadMs?: number;
 	/** Optional Schema.org graph or node for `<script type="application/ld+json">`. */
 	jsonLd?: Record<string, unknown>;
+	/** Inline layout CSS in `<head>` (invitation-form LCP). */
+	headInlineCss?: string;
 }
 
 const {
@@ -47,10 +51,12 @@ const {
 	tracking,
 	formThirdPartyHints = false,
 	deferredSiteBackdrop = false,
+	skipFormPhotographicBackdrop = false,
 	lcpImage,
 	heroBackgroundPreload,
 	marketingEngageAfterLoadMs: marketingEngageAfterLoadMsProp,
 	jsonLd,
+	headInlineCss,
 } = Astro.props;
 
 const marketingEngageAfterLoadMs =
@@ -61,7 +67,8 @@ const marketingEngageAfterLoadMs =
 			: 0;
 
 const loadHdBackdropAfterPageLoad =
-	formThirdPartyHints || deferredSiteBackdrop;
+	(formThirdPartyHints && !skipFormPhotographicBackdrop) ||
+	deferredSiteBackdrop;
 ---
 
 <!doctype html>
@@ -69,25 +76,6 @@ const loadHdBackdropAfterPageLoad =
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<meta name="theme-color" content="#000000" />
-		<link rel="icon" href="/favicon.ico" sizes="any" />
-		<link rel="icon" type="image/png" href="/favicon.png" sizes="32x32" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-		<link rel="describedby" href="/llms.txt" type="text/plain" />
-		<link rel="ard" href="/.well-known/ard.json" type="application/ard+json" />
-		<title>{title}</title>
-		{description ? <meta name="description" content={description} /> : null}
-		<ResourceHints
-			origins={
-				formThirdPartyHints
-					? marketingResourceHintOrigins
-					: homeMarketingResourceHintOrigins
-			}
-		/>
-		{formThirdPartyHints ? (
-			<ResourceHints origins={formResourceHintOrigins} />
-		) : null}
 		{
 			lcpImage ? (
 				<link
@@ -95,12 +83,38 @@ const loadHdBackdropAfterPageLoad =
 					as="image"
 					type="image/webp"
 					href={lcpImage.src}
-					imagesrcset={lcpImage.srcSet}
-					imagesizes={lcpImage.sizes}
 					fetchpriority="high"
 				/>
 			) : null
 		}
+		<meta name="theme-color" content="#000000" />
+		<link rel="icon" href="/favicon.ico" sizes="any" />
+		<link rel="icon" type="image/png" href="/favicon.png" sizes="32x32" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+		{
+			!formThirdPartyHints ? (
+				<link
+					rel="preload"
+					href={geistLatinWoff2}
+					as="font"
+					type="font/woff2"
+					crossorigin="anonymous"
+				/>
+			) : null
+		}
+		<link rel="describedby" href="/llms.txt" type="text/plain" />
+		<link rel="ard" href="/.well-known/ard.json" type="application/ard+json" />
+		<title>{title}</title>
+		{description ? <meta name="description" content={description} /> : null}
+		{headInlineCss ? <style is:inline set:html={headInlineCss} /> : null}
+		<ResourceHints
+			origins={
+				formThirdPartyHints
+					? formResourceHintOrigins
+					: homeMarketingResourceHintOrigins
+			}
+		/>
 		{
 			heroBackgroundPreload ? (
 				<link
@@ -114,13 +128,9 @@ const loadHdBackdropAfterPageLoad =
 				/>
 			) : null
 		}
-		<MarketingHead
-			tracking={tracking}
-			engageAfterLoadMs={marketingEngageAfterLoadMs}
-		/>
-		{jsonLd ? <SchemaOrgJsonLd data={jsonLd} /> : null}
 	</head>
 	<body>
+		<slot />
 		{
 			loadHdBackdropAfterPageLoad ? (
 				<script
@@ -129,7 +139,11 @@ const loadHdBackdropAfterPageLoad =
 				/>
 			) : null
 		}
-		<slot />
+		<MarketingHead
+			tracking={tracking}
+			engageAfterLoadMs={marketingEngageAfterLoadMs}
+		/>
+		{jsonLd ? <SchemaOrgJsonLd data={jsonLd} /> : null}
 	</body>
 </html>
 

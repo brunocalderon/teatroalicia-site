@@ -28,7 +28,8 @@ Paths come from [`src/lib/lighthouse-targets.ts`](../src/lib/lighthouse-targets.
 
 Edit [`lighthouse.config.ts`](../lighthouse.config.ts):
 
-- `minCategoryScore` (default **90**) for `performance`, `accessibility`, `best-practices`, and `seo`
+- `minCategoryScore` (default **90**) for `accessibility`, `best-practices`, and `seo`
+- `minPerformanceScore` (default **100**) for `performance` (median across `auditRuns`)
 - Mobile emulation only (`formFactor: "mobile"`)
 - `auditRuns` (default **5**): median category score across repeated runs per URL
 
@@ -39,8 +40,8 @@ Edit [`lighthouse.config.ts`](../lighthouse.config.ts):
 | `LIGHTHOUSE_BASE_URL` | If set (e.g. `http://127.0.0.1:4321`), Vitest **does not** spawn the HTTP preview server; audits use this origin. Useful when iterating manually. |
 | `FACEBOOK_PIXEL_ID` / `UMAMI_PIXEL_ID` | Use the **same real IDs as production** (not placeholders such as `1`). Invalid IDs are skipped at build time; placeholder values also break Umami with console errors during audits. |
 | `MARKETING_TRACKING_CITY` | Meta payload `city` field (default `Santiago`). |
-| `MARKETING_ENGAGE_MS` | Ms after `load` before Meta/Umami on pages with `tracking` (default `1000`). Set to `0` for interaction-gated pixels. |
-| `MARKETING_INTERACTION_IDLE_TIMEOUT_MS` | Idle callback cap when pixels load after interaction (`marketingEngageAfterLoadMs={0}`) (default `2000`). |
+| `MARKETING_ENGAGE_MS` | Invitation forms: minimum `requestIdleCallback` timeout after `load` before Meta/Umami (default `1000`). Home uses interaction-gated pixels (`marketingEngageAfterLoadMs={0}`). |
+| `MARKETING_INTERACTION_IDLE_TIMEOUT_MS` | Idle callback cap when pixels load after first interaction, or combined with `MARKETING_ENGAGE_MS` for form idle scheduling (default `2000`). |
 
 ## Reports
 
@@ -48,7 +49,7 @@ When `saveReports` is `true`, JSON reports are written under `tests/lighthouse/r
 
 ## Notes
 
-- Form pages load Formgong, Cloudflare Turnstile, and optional marketing pixels. On invitation form routes (`/i/...`), Meta/Umami fire **1s after `window` `load`** (`PageView` + `ViewContent` / Umami pageview + custom track). Home and thank-you routes still gate on **first user interaction**.
-- Production builds run the `deferCssIntegration` hook (`src/integrations/defer-css.ts`), which rewrites page CSS to `rel="preload" as="style"` plus `onload` so bundled Astro stylesheets are not render-blocking.
+- Form pages load Formgong, Cloudflare Turnstile, and optional marketing pixels. On invitation form routes (`/i/...`), Meta/Umami engage on **`requestIdleCallback` after `load`** (timeout uses `MARKETING_ENGAGE_MS` and `MARKETING_INTERACTION_IDLE_TIMEOUT_MS`). Home gates Meta/Umami on **first user interaction**.
+- Production builds run the `deferCssIntegration` hook (`src/integrations/defer-css.ts`): the **first** page stylesheet stays render-blocking; additional stylesheets load via `rel="preload" as="style"` + `onload`.
 - **Performance** and **Best practices** are often the first categories to fall below 90 until those assets are tuned.
 - Strict thresholds are intentional regression guards; lower floors only in `lighthouse.config.ts` if you accept the tradeoff.

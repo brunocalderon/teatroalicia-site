@@ -21,13 +21,23 @@ describe("Lighthouse category scores", () => {
     const { scores, reportJson } = await runLighthouseAudit(url)
     const min = lighthouseConfig.minCategoryScore
 
-    const failingCategories = lighthouseConfig.categories.filter(
-      (id) => scores[id] < min,
-    )
+    const minPerformance =
+      "minPerformanceScore" in lighthouseConfig
+        ? lighthouseConfig.minPerformanceScore
+        : min
 
-    const failures = failingCategories.map(
-      (id) => `${id}: ${scores[id]} (min ${min})`,
-    )
+    const failingCategories = lighthouseConfig.categories.filter((id) => {
+      if (id === "performance" && minPerformance > min) {
+        return scores[id] < minPerformance
+      }
+      return scores[id] < min
+    })
+
+    const failures = failingCategories.map((id) => {
+      const floor =
+        id === "performance" && minPerformance > min ? minPerformance : min
+      return `${id}: ${scores[id]} (min ${floor})`
+    })
 
     const auditHints = failingCategories.flatMap((categoryId) =>
       formatFailingCategoryAudits(

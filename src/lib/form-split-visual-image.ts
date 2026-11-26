@@ -5,7 +5,7 @@ import type { ImageMetadata } from "astro"
 export const FORM_SPLIT_VISUAL_SIZES =
   "(max-width: 55.99rem) calc(100vw - 3.5rem), (min-width: 56rem) min(28rem, 42vw)"
 
-const CANDIDATE_WIDTHS = [352, 480, 640, 768] as const
+const CANDIDATE_WIDTHS = [320, 352, 480, 640, 768] as const
 const WEBP_QUALITY = 72
 
 export type FormSplitVisualImage = {
@@ -45,6 +45,7 @@ export async function buildFormSplitVisualImage(
 
   const srcSet = variants.map((v) => `${v.src} ${v.width}w`).join(", ")
   const lcpVariant =
+    variants.find((v) => v.width === 320) ??
     variants.find((v) => v.width === 352) ??
     variants.find((v) => v.width === 480) ??
     variants[variants.length - 1]!

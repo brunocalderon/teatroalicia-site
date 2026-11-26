@@ -40,9 +40,7 @@ import {
   displayGuestPassReferralFromSearchParams,
 } from "@/lib/promoters"
 import type { MarketingPageTracking } from "@/lib/marketing-page-tracking"
-
-import "@/styles/form.css"
-import "@/styles/global.css"
+import { bindUmamiPromoterEventDataResolver } from "@/lib/marketing-umami-track"
 
 export type ConfigurableFormProps = {
   token: string
@@ -126,6 +124,10 @@ export function ConfigurableForm({
     )
   }, [])
 
+  useEffect(() => {
+    bindUmamiPromoterEventDataResolver()
+  }, [])
+
   const hasReferralField = useMemo(
     () => fields.some((field) => field.type === "referral"),
     [fields],
@@ -161,7 +163,37 @@ export function ConfigurableForm({
     if (!formNode || !accessKey) {
       return
     }
-    return attachFormgongClientSignals(formNode, accessKey)
+
+    let attached = false
+    const arm = () => {
+      if (attached) {
+        return
+      }
+      attached = true
+      return attachFormgongClientSignals(formNode, accessKey)
+    }
+
+    let detach: (() => void) | undefined
+    const onFirstFocus = () => {
+      detach = arm()
+      formNode.removeEventListener("focusin", onFirstFocus)
+    }
+    formNode.addEventListener("focusin", onFirstFocus)
+
+    const idle = window.requestIdleCallback?.(
+      () => {
+        detach = arm()
+      },
+      { timeout: 12_000 },
+    )
+
+    return () => {
+      formNode.removeEventListener("focusin", onFirstFocus)
+      if (typeof idle === "number") {
+        window.cancelIdleCallback?.(idle)
+      }
+      detach?.()
+    }
   }, [formNode, accessKey])
 
   const referralVisibilityContext = useMemo(
