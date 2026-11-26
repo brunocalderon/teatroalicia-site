@@ -467,7 +467,7 @@ html.has-guest-pass-ref .form-fieldset > .form-field.form-field--referral {
 
   .form-submit-sticky .form-submit {
     margin-top: 0;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
     pointer-events: none;
   }
 
