@@ -5,6 +5,8 @@ import HomeEventFeature, {
 import HomeMarketingSlideshow from "@/components/home/home-marketing-slideshow.astro"
 import type { HomeContent } from "@/lib/home-content-schema"
 import type { HomeHeroSlideBackground } from "@/lib/home-marketing-image"
+import { HOME_FEATURED_CAROUSEL_VISIBLE_COUNT } from "@/lib/home-featured-carousel"
+import { homeEventPosterLoadingInCarousel } from "@/lib/home-event-poster-loading"
 
 interface Props {
   events: HomeEventFeatureData[]
@@ -67,7 +69,11 @@ const carteleraHasCarousel = events.length > 3
                   data-home-featured-carousel-track
                 >
                   {events.map((event, index) => (
-                    <HomeEventFeature event={event} enterIndex={index} />
+                    <HomeEventFeature
+                      event={event}
+                      enterIndex={index}
+                      posterLoading={homeEventPosterLoadingInCarousel(true)}
+                    />
                   ))}
                 </div>
               </div>
@@ -93,6 +99,31 @@ const carteleraHasCarousel = events.length > 3
                   </svg>
                 </span>
               </button>
+              <div
+                class="home-featured__indicators"
+                aria-hidden="true"
+                data-home-featured-carousel-indicators
+              >
+                <div class="home-featured__indicators-track">
+                  {events.map((_, indicatorIndex) => (
+                    <span
+                      class="home-featured__indicator"
+                      data-home-featured-carousel-indicator={indicatorIndex}
+                    />
+                  ))}
+                  <div
+                    class="home-featured__indicators-glide"
+                    data-home-featured-carousel-indicator-glide
+                  >
+                    {Array.from(
+                      { length: HOME_FEATURED_CAROUSEL_VISIBLE_COUNT },
+                      () => (
+                        <span class="home-featured__indicator home-featured__indicator--glide" />
+                      ),
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
           ) : (
             <div class="home-featured__list">

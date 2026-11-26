@@ -8,9 +8,16 @@ interface Props {
   event: HomeEventFeatureData
   /** Stagger index for cartelera card entrance (0-based). */
   enterIndex?: number
+  /**
+   * Carousel posters sit in a translated track; lazy loading can reload them
+   * when they re-enter the layout viewport after a slide.
+   */
+  posterLoading?: "lazy" | "eager"
 }
 
-const { event, enterIndex = 0 } = Astro.props
+const { event, enterIndex = 0, posterLoading = "lazy" } = Astro.props
+const posterFetchPriority =
+  posterLoading === "eager" && enterIndex === 0 ? "high" : undefined
 const posterAlt = event.imageAlt?.trim() || ""
 const posterImage = event.image
 const posterZoomSrc =
@@ -77,7 +84,8 @@ const ctaLinkAttrs = event.ctaExternal
                 width={posterImage.width}
                 height={posterImage.height}
                 alt={posterAlt}
-                loading="lazy"
+                loading={posterLoading}
+                fetchpriority={posterFetchPriority}
                 decoding="async"
               />
             </picture>
@@ -90,7 +98,8 @@ const ctaLinkAttrs = event.ctaExternal
               width={posterImage.width}
               height={posterImage.height}
               alt={posterAlt}
-              loading="lazy"
+              loading={posterLoading}
+              fetchpriority={posterFetchPriority}
               decoding="async"
             />
           ) : null}

@@ -2,6 +2,7 @@
 
 import { describe, expect, it } from "vitest"
 
+import { homeEventPosterLoadingInCarousel } from "@/lib/home-event-poster-loading"
 import { distinctPosterUrlsInFrame } from "@/lib/home-feature-poster-letterbox"
 import {
   initHomeFeaturePosterFill,
@@ -39,6 +40,11 @@ function buildLetterboxFrame(): HTMLElement {
 }
 
 describe("cartelera poster image load", () => {
+  it("uses eager loading for translated carousel posters", () => {
+    expect(homeEventPosterLoadingInCarousel(true)).toBe("eager")
+    expect(homeEventPosterLoadingInCarousel(false)).toBe("lazy")
+  })
+
   it("ships fill img without its own src or srcset (main owns srcset)", () => {
     const frame = buildLetterboxFrame()
     const fill = frame.querySelector<HTMLImageElement>(
