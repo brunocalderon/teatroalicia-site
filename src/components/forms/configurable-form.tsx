@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 import { FormFomoToasts } from "@/components/forms/form-fomo-toasts"
+import { FormMobileStickySubmit } from "@/components/forms/form-mobile-sticky-submit"
+import { FormSubmitButton } from "@/components/forms/form-submit-button"
 import { ComposableFormField } from "@/components/forms/fields/composable-form-field"
 import {
   normalizeConfiguredFields,
@@ -90,6 +92,7 @@ export function ConfigurableForm({
   marketingTracking,
 }: ConfigurableFormProps) {
   const formRef = useRef<HTMLFormElement>(null)
+  const fieldsetRef = useRef<HTMLFieldSetElement>(null)
   const [formNode, setFormNode] = useState<HTMLFormElement | null>(null)
   const bindFormRef = useCallback((node: HTMLFormElement | null) => {
     formRef.current = node
@@ -112,6 +115,10 @@ export function ConfigurableForm({
   )
   const copy = useMemo(() => mergeMessages(messagesProp), [messagesProp])
   const displaySubmitLabel = submitLabel.trim() || copy.submit
+  const mobileStickyVisibilityField = useMemo(
+    () => (fields.some((field) => field.name === "lastName") ? "lastName" : undefined),
+    [fields],
+  )
 
   const [urlSearchParams, setUrlSearchParams] = useState(() => {
     if (typeof window === "undefined") {
@@ -400,6 +407,15 @@ export function ConfigurableForm({
   return (
     <>
       <FormFomoToasts enabled={fomoToastsEnabled} form={formNode} />
+      <FormMobileStickySubmit
+        fieldsetRef={fieldsetRef}
+        visibilityAnchorFieldName={mobileStickyVisibilityField}
+        submitLabel={displaySubmitLabel}
+        sendingLabel={copy.sending}
+        isSending={isSubmitting}
+        disabled={!accessKey}
+        suppress={isSubmitting}
+      />
       <form
         ref={bindFormRef}
         id={accessKey ? `fg-${accessKey}` : undefined}
@@ -428,7 +444,7 @@ export function ConfigurableForm({
         />
       ) : null}
 
-      <fieldset className="form-fieldset" inert={isSubmitting}>
+      <fieldset ref={fieldsetRef} className="form-fieldset" inert={isSubmitting}>
         {visibleFields.map((field) => (
           <ComposableFormField
             key={field.name}
@@ -455,30 +471,10 @@ export function ConfigurableForm({
           </p>
         ) : null}
 
-        <button
-          type="submit"
-          className="form-submit"
+        <FormSubmitButton
+          label={isSubmitting ? copy.sending : displaySubmitLabel}
           disabled={!accessKey}
-        >
-          <span className="form-submit__inner">
-            <span className="form-submit__label">
-              {isSubmitting ? copy.sending : displaySubmitLabel}
-            </span>
-            <svg
-              className="form-submit__icon"
-              aria-hidden="true"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M5 12h14" />
-              <path d="m12 5 7 7-7 7" />
-            </svg>
-          </span>
-        </button>
+        />
       </fieldset>
     </form>
     </>

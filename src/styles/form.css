@@ -431,6 +431,62 @@ html.has-guest-pass-ref .form-fieldset > .form-field.form-field--referral {
   }
 }
 
+.form-submit-sticky {
+  display: none;
+}
+
+@media (max-width: 55.99rem) {
+  .form-submit-sticky {
+    display: block;
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: 1000;
+    isolation: isolate;
+    box-sizing: border-box;
+    padding: 0.75rem 1.75rem env(safe-area-inset-bottom, 0px);
+    background: linear-gradient(
+      to top,
+      color-mix(in srgb, #0a0a0a 96%, transparent) 55%,
+      color-mix(in srgb, #0a0a0a 72%, transparent) 85%,
+      transparent
+    );
+    opacity: 0;
+    transform: translate3d(0, 100%, 0);
+    pointer-events: none;
+    transition:
+      opacity 0.36s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .form-submit-sticky--visible {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    pointer-events: none;
+  }
+
+  .form-submit-sticky .form-submit {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    pointer-events: none;
+  }
+
+  .form-submit-sticky--visible .form-submit {
+    pointer-events: auto;
+  }
+}
+
+@media (max-width: 55.99rem) and (prefers-reduced-motion: reduce) {
+  .form-submit-sticky {
+    transform: none;
+    transition: opacity 0.2s ease;
+  }
+
+  .form-submit-sticky--visible {
+    transform: none;
+  }
+}
+
 .form-phone {
   position: relative;
   width: 100%;
