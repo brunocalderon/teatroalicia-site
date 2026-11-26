@@ -1,3 +1,5 @@
+import { assertAirtableApiCallAllowed } from "./airtable-live-fetch.ts"
+
 export type AirtableApiRecord = {
   id: string
   createdTime?: string
@@ -24,6 +26,8 @@ export type FetchAirtableRecordsOptions = {
 export async function fetchAirtableRecords(
   options: FetchAirtableRecordsOptions,
 ): Promise<AirtableApiRecord[]> {
+  assertAirtableApiCallAllowed()
+
   const records: AirtableApiRecord[] = []
   const search = new URLSearchParams()
 

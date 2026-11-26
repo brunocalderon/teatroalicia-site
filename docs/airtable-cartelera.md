@@ -4,7 +4,7 @@ When `AIRTABLE_TOKEN`, `AIRTABLE_BASE_ID`, and `AIRTABLE_TABLE_ID` (or optional 
 
 ## Build-time fetch
 
-The `carteleraPostersIntegration` hook mirrors upcoming poster attachments into `generated/cache/cartelera-posters/` (gitignored) at `astro:build:start` and `astro:server:start` when Airtable env is set. `index.astro` loads those modules via `import.meta.glob`, and `buildCarteleraPosterFeatureImage` uses `getImage` so responsive WebP/JPEG variants land in `dist/_astro/` (`<picture>` WebP + JPEG fallback). The home page still calls `fetchAirtableCarteleraRows` for list/JSON-LD data. Production HTML never loads `airtableusercontent.com` images. Rebuild to refresh cartelera after Airtable changes.
+The `carteleraPostersIntegration` hook mirrors upcoming poster attachments into `generated/cache/cartelera-posters/` (gitignored) at **production** `astro build` start when Airtable env is set (not on `astro dev`). Local dev reads `generated/snapshots/cartelera.events.json` and existing poster cache; refresh both with `npm run sync:airtable` when you want live data. `index.astro` loads mirrored posters via `import.meta.glob`, and `buildCarteleraPosterFeatureImage` uses `getImage` so responsive WebP/JPEG variants land in `dist/_astro/` (`<picture>` WebP + JPEG fallback). `carteleraPostersIntegration` performs the **only** live Events table list during `astro build` (writes `generated/cache/cartelera.events.json`); `index.astro` and guest-list routes read that cache. Dev uses `generated/snapshots/cartelera.events.json`. Production HTML never loads `airtableusercontent.com` images. Rebuild to refresh cartelera after Airtable changes.
 
 ## API request (build only)
 

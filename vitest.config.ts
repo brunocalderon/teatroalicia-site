@@ -14,5 +14,8 @@ export default defineConfig({
   },
   test: {
     include: ["tests/unit/**/*.test.ts"],
+    env: {
+      AIRTABLE_LIVE_FETCH: "1",
+    },
   },
 })

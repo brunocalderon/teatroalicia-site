@@ -1,6 +1,6 @@
 import type { CollectionEntry } from "astro:content"
 
-import { fetchAirtableCarteleraRows } from "@/lib/airtable-cartelera/fetch-events"
+import { loadAirtableCarteleraRows } from "@/lib/airtable-cartelera/load-cartelera-rows"
 import { airtableRowToInvitationFormData } from "@/lib/airtable-cartelera/to-invitation-form"
 import { resolveAirtableCarteleraConfig } from "@/lib/airtable-env"
 import { resolveAirtableInvitationFormToken } from "@/lib/airtable-invitation-env"
@@ -47,7 +47,7 @@ async function invitationEntriesFromAirtable(): Promise<InvitationFormEntry[]> {
     return []
   }
 
-  const rows = await fetchAirtableCarteleraRows(carteleraConfig)
+  const rows = await loadAirtableCarteleraRows(carteleraConfig)
   return rows
     .filter((row) => row.guestListEnabled)
     .map((row) => ({

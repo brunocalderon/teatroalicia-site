@@ -5,16 +5,18 @@ import { CARTELERA_POSTER_CACHE_DIR } from "@/lib/airtable-cartelera/cartelera-p
 import { resetCarteleraPosterFileIndex } from "@/lib/airtable-cartelera/cartelera-poster-image-modules"
 import { fetchAirtableCarteleraRows } from "@/lib/airtable-cartelera/fetch-events"
 import { mirrorAirtableCarteleraPoster } from "@/lib/airtable-cartelera/mirror-cartelera-poster"
+import type { AirtableCarteleraRow } from "@/lib/airtable-cartelera/types"
 import type { AirtableCarteleraEnvValues } from "@/lib/airtable-env-values"
 
 export async function syncCarteleraPostersFromAirtable(
   config: AirtableCarteleraEnvValues,
+  rows?: readonly AirtableCarteleraRow[],
 ): Promise<number> {
-  const rows = await fetchAirtableCarteleraRows(config)
+  const resolvedRows = rows ?? (await fetchAirtableCarteleraRows(config))
   const activeSlugs = new Set<string>()
 
   await Promise.all(
-    rows.map(async (row) => {
+    resolvedRows.map(async (row) => {
       const remoteUrl = row.imageUrl?.trim()
       if (!remoteUrl) {
         return

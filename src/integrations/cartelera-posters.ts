@@ -4,6 +4,8 @@ import type { AstroIntegration } from "astro"
 import type { Plugin } from "vite"
 import { loadEnv } from "vite"
 
+import { writeCarteleraEventsBuildCache } from "../lib/airtable-cartelera/cartelera-events-snapshot"
+import { fetchAirtableCarteleraRows } from "../lib/airtable-cartelera/fetch-events"
 import { syncCarteleraPostersFromAirtable } from "../lib/airtable-cartelera/sync-cartelera-posters"
 import { resolveAirtableCarteleraConfigFromValues } from "../lib/airtable-env-values"
 
@@ -20,6 +22,11 @@ function carteleraPosterSyncPlugin(root: string, mode: string): Plugin {
       }
       synced = true
 
+      // Poster mirroring uses live Airtable — production builds only (`astro build`).
+      if (mode !== "production") {
+        return
+      }
+
       const fileEnv = loadEnv(mode, root, "")
       const carteleraConfig = resolveAirtableCarteleraConfigFromValues({
         ...process.env,
@@ -29,9 +36,14 @@ function carteleraPosterSyncPlugin(root: string, mode: string): Plugin {
         return
       }
 
-      const count = await syncCarteleraPostersFromAirtable(carteleraConfig)
+      const rows = await fetchAirtableCarteleraRows(carteleraConfig)
+      writeCarteleraEventsBuildCache(rows)
+      const count = await syncCarteleraPostersFromAirtable(
+        carteleraConfig,
+        rows,
+      )
       this.info(
-        `Mirrored ${count} cartelera poster(s) to generated/cache/cartelera-posters/`,
+        `Cached ${rows.length} cartelera row(s) and mirrored ${count} poster(s) for build`,
       )
     },
   }

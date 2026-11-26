@@ -14,7 +14,7 @@ import {
   buildHomeVenuePhotoImage,
   HOME_HERO_SLIDE_PATHS,
 } from "@/lib/home-marketing-image"
-import { fetchAirtableCarteleraRows } from "@/lib/airtable-cartelera/fetch-events"
+import { loadAirtableCarteleraRows } from "@/lib/airtable-cartelera/load-cartelera-rows"
 import {
   airtableCarteleraRowsToApiEvents,
   filterUpcomingAirtableCarteleraRows,
@@ -65,7 +65,7 @@ let upcomingEventsForSchema: Array<{
 }> = []
 
 if (airtableCarteleraConfig) {
-  const airtableRows = await fetchAirtableCarteleraRows(airtableCarteleraConfig)
+  const airtableRows = await loadAirtableCarteleraRows(airtableCarteleraConfig)
   const upcomingRows = filterUpcomingAirtableCarteleraRows(airtableRows)
   const imagesBySlug = new Map<string, HomeEventFeatureImage>()
   for (const row of airtableRows) {
