@@ -42,6 +42,9 @@ import {
 import type { MarketingPageTracking } from "@/lib/marketing-page-tracking"
 import { bindUmamiPromoterEventDataResolver } from "@/lib/marketing-umami-track"
 
+import "@/styles/form.css"
+import "@/styles/global.css"
+
 export type ConfigurableFormProps = {
   token: string
   fields: FormField[]

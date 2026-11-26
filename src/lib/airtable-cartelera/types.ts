@@ -17,6 +17,8 @@ export type AirtableCarteleraRow = {
   guestListEnabled: boolean
   /** Raw `Guest List Fields` JSON from Airtable. */
   guestListFieldsRaw?: string
+  /** Optional rich-text intro for `/i/{slug}` (replaces default guest-list copy). */
+  eventDescription?: string
   invitationPath?: string
   imageUrl?: string
   /** Original attachment filename from Airtable `Image` (for mirroring). */

@@ -66,9 +66,10 @@ export function deferCssIntegration(): AstroIntegration {
 
         for (const filePath of htmlFiles) {
           const original = await readFile(filePath, "utf8")
-          const invitationFormPage = original.includes('class="form-page')
-          /** Split forms ship inline critical layout CSS; defer bundled sheets for LCP. */
-          const keepBlockingStylesheetCount = invitationFormPage ? 0 : 1
+          if (original.includes('class="form-page')) {
+            continue
+          }
+          const keepBlockingStylesheetCount = 1
           let blockingStylesheetCount = 0
           STYLESHEET_LINK.lastIndex = 0
           const transformed = original.replace(

@@ -18,6 +18,7 @@ export const airtableCarteleraFieldsSchema = z
     "Guest Pass Ticket ID": z.string().min(1).optional(),
     "Guest List": z.union([z.boolean(), z.string()]).optional(),
     "Guest List Fields": z.string().min(1).optional(),
+    "Event Description": z.string().min(1).optional(),
     Slug: slugSchema.optional(),
     "Event Name": z.string().min(1).optional(),
     Start: z.string().min(1).optional(),

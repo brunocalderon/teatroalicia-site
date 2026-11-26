@@ -47,6 +47,8 @@ export const formFieldSchema = z
     }
   })
 
+export const formBodyFormatSchema = z.enum(["markdown", "html"])
+
 export const formMessagesSchema = z
   .object({
     submit: z.string().optional(),
@@ -55,6 +57,8 @@ export const formMessagesSchema = z
     turnstileRequired: z.string().optional(),
     connectionFailed: z.string().optional(),
     formBody: z.string().optional(),
+    /** When `html`, `formBody` is emitted as-is (Airtable Event Description). Default `markdown`. */
+    formBodyFormat: formBodyFormatSchema.optional(),
     thankYouTitle: z.string().optional(),
     thankYouBody: z.string().optional(),
   })

@@ -345,6 +345,92 @@ html.has-guest-pass-ref .form-fieldset > .form-field.form-field--referral {
   background-color: color-mix(in srgb, var(--form-submit-bg) 90%, #000);
 }
 
+@media (min-width: 56rem) {
+  .form-submit:not(:disabled) {
+    transition:
+      background-color 0.22s ease,
+      border-color 0.22s ease;
+  }
+}
+
+@keyframes form-submit-bg-wave {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@media (min-width: 56rem) and (prefers-reduced-motion: no-preference) {
+  .form-fieldset > button.form-submit:not(:disabled),
+  .form-submit:not(:disabled) {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background-color: #ece7e0;
+    background-image: none;
+    transition:
+      border-color 0.22s ease,
+      filter 0.22s ease,
+      transform 0.22s ease,
+      box-shadow 0.22s ease;
+  }
+
+  .form-submit:not(:disabled)::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(
+      100deg,
+      #e3dcd4 0%,
+      #f7f3ed 18%,
+      #fffdfa 36%,
+      #ddd4c8 52%,
+      #faf6ef 70%,
+      #f0e9e1 86%,
+      #e3dcd4 100%
+    );
+    background-size: 280% 100%;
+    animation: form-submit-bg-wave 4.8s ease-in-out infinite;
+  }
+
+  .form-submit__inner {
+    position: relative;
+    z-index: 1;
+  }
+
+  .form-submit:not(:disabled):hover {
+    background-color: #ece7e0;
+    filter: brightness(0.96);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px color-mix(in srgb, #000 22%, transparent);
+  }
+
+  .form-submit:not(:disabled):hover::before {
+    animation-duration: 3.2s;
+  }
+
+  .form-submit:not(:disabled):active {
+    filter: brightness(0.92);
+    transform: translateY(0);
+    box-shadow: 0 2px 8px color-mix(in srgb, #000 16%, transparent);
+  }
+
+  .form-submit__icon {
+    transition: transform 0.22s ease;
+  }
+
+  .form-submit:not(:disabled):hover .form-submit__icon {
+    transform: translateX(2px);
+  }
+}
+
 .form-phone {
   position: relative;
   width: 100%;

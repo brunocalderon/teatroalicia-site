@@ -1,7 +1,7 @@
 ---
 import { getCollection, getEntry, render } from "astro:content"
 
-import { renderFormBodyMarkdown } from "@/lib/render-form-body-markdown"
+import { resolveFormIntroBodyHtml } from "@/lib/render-form-body-markdown"
 
 import { ConfigurableForm } from "@/components/forms/configurable-form"
 import LivestackBrand from "@/components/livestack-brand.astro"
@@ -33,13 +33,11 @@ import { venueConfig } from "../../content/venue"
 import { sitePageBackdropCss } from "@/lib/site-page-backdrop-css"
 import { MARKETING_ENGAGE_MS } from "astro:env/client"
 import { buildContactBandPhotoImage } from "@/lib/home-marketing-image"
-import "@/styles/form.css"
 import "@/styles/home-footer.css"
 import "@/styles/home-venue-band.css"
 
 import { invitationFormTracking } from "@/lib/marketing-page-tracking"
 import { isGuestPassPromoterLinksPath } from "@/lib/guest-pass-promoter-link"
-import { formPageCriticalCss } from "@/lib/form-page-critical-css"
 
 const CONTACT_PAGE_BAND_IMAGE = "/images/alicia-home-4.jpg"
 
@@ -92,7 +90,10 @@ const hasReferralField = data.fields.some((field) => field.type === "referral")
 
 const formBodyMarkdown = data.messages?.formBody?.trim()
 const formBodyHtml = formBodyMarkdown
-  ? await renderFormBodyMarkdown(formBodyMarkdown)
+  ? await resolveFormIntroBodyHtml(
+      formBodyMarkdown,
+      data.messages?.formBodyFormat ?? "markdown",
+    )
   : undefined
 
 let renderedBody: Awaited<ReturnType<typeof render>> | null = null
@@ -136,7 +137,7 @@ const formJsonLd = buildInvitationPageJsonLd({
 
 const showHomeNav = data.path === "/contacto"
 const formPageBackdropCss = sitePageBackdropCss("form-page", {
-  omitFixedBackdrop: showHomeNav || showSplitLayout,
+  omitFixedBackdrop: showHomeNav,
 })
 
 let contactBandPhoto: Awaited<
@@ -169,11 +170,9 @@ const pageLcpImage = formLcpImage
   lang={data.lang}
   tracking={tracking}
   formThirdPartyHints
-  skipFormPhotographicBackdrop={showSplitLayout}
   lcpImage={pageLcpImage}
   marketingEngageAfterLoadMs={MARKETING_ENGAGE_MS}
   jsonLd={formJsonLd}
-  headInlineCss={showSplitLayout ? formPageCriticalCss : undefined}
 >
     {
       hasReferralField ? (
@@ -194,16 +193,10 @@ const pageLcpImage = formLcpImage
         <HomeHeader carteleraHref="/#cartelera" />
       ) : null
     }
-    <div
-      class:list={[
-        !showHomeNav && showSplitLayout && "form-page-shell form-page form-page--split",
-      ]}
-      style={!showHomeNav && showSplitLayout ? undefined : "display: contents"}
-    >
     <main
       class:list={[
-        (!showHomeNav && showSplitLayout) ? "form-page__main" : "form-page",
-        showSplitLayout && showHomeNav && "form-page--split",
+        "form-page",
+        showSplitLayout && "form-page--split",
         showHomeNav && "form-page--with-home-nav",
         showHomeNav && "form-page--venue-band",
         showHomeNav && "home-page",
@@ -252,7 +245,7 @@ const pageLcpImage = formLcpImage
                   }
                   <div class="form-page__form">
                     <ConfigurableForm
-                      client:visible={{ rootMargin: "0px 0px 0px 0px" }}
+                      client:visible={{ rootMargin: "200px" }}
                       token={data.token}
                       fields={data.fields}
                       lang={data.lang}
@@ -286,18 +279,26 @@ const pageLcpImage = formLcpImage
       <div class:list={[showSplitLayout ? "form-page__split" : "form-page__stack"]}>
         {showSplitLayout ? (
           <>
+            <div class="form-page__masthead form-page__split-masthead">
+              <SiteBrand align="start" />
+              <header class="form-page__header">
+                <h1>{data.title}</h1>
+              </header>
+            </div>
             <div class="form-page__split-lead">
               <figure class="form-page__visual form-page__split-visual">
                 {
                   formLcpImage ? (
                     <img
                       src={formLcpImage.src}
+                      srcset={formLcpImage.srcSet}
+                      sizes={formLcpImage.sizes}
                       alt={data.imageAlt ?? data.title}
                       width={formLcpImage.width}
                       height={formLcpImage.height}
                       loading="eager"
                       fetchpriority="high"
-                      decoding="async"
+                      decoding="sync"
                     />
                   ) : null
                 }
@@ -311,12 +312,6 @@ const pageLcpImage = formLcpImage
                   />
                 ) : null
               }
-            </div>
-            <div class="form-page__masthead form-page__split-masthead">
-              <SiteBrand align="start" />
-              <header class="form-page__header">
-                <h1>{data.title}</h1>
-              </header>
             </div>
           </>
         ) : (
@@ -337,47 +332,15 @@ const pageLcpImage = formLcpImage
             }
           </>
         )}
-        {!showSplitLayout ? (
-          <div class="form-page__panel">
-            <div class="form-page__form">
-              <ConfigurableForm
-                client:visible={{ rootMargin: "0px 0px 0px 0px" }}
-                token={data.token}
-                fields={data.fields}
-                lang={data.lang}
-                submitLabel={data.submitLabel}
-                thankYouPath={data.thankYouPath}
-                eventId={data.eventId}
-                invitationOnly={data.invitationOnly}
-                ticketSupplier={data.ticketSupplier}
-                supplierEventId={data.supplierEventId}
-                guestPassTicketId={data.guestPassTicketId}
-                nameFields={nameFields}
-                messages={data.messages}
-                marketingTracking={tracking}
-              >
-                <FormPageSkeleton
-                  slot="fallback"
-                  fields={data.fields}
-                  lang={data.lang}
-                />
-              </ConfigurableForm>
-            </div>
-          </div>
-        ) : null}
-      </div>
-        )
-      }
-      {data.livestackFooter && (!showSplitLayout || showHomeNav) ? (
-        <LivestackBrand />
-      ) : null}
-    </main>
-    {
-      !showHomeNav && showSplitLayout ? (
-        <div class="form-page__panel form-page__split-panel">
+        <div
+          class:list={[
+            "form-page__panel",
+            showSplitLayout && "form-page__split-panel",
+          ]}
+        >
           <div class="form-page__form">
             <ConfigurableForm
-              client:visible={{ rootMargin: "0px 0px 0px 0px" }}
+              client:visible={{ rootMargin: "200px" }}
               token={data.token}
               fields={data.fields}
               lang={data.lang}
@@ -400,14 +363,11 @@ const pageLcpImage = formLcpImage
             </ConfigurableForm>
           </div>
         </div>
-      ) : null
-    }
-    {
-      !showHomeNav && showSplitLayout && data.livestackFooter ? (
-        <LivestackBrand />
-      ) : null
-    }
-    </div>
+      </div>
+        )
+      }
+      {data.livestackFooter ? <LivestackBrand /> : null}
+    </main>
     <script
       is:inline
       set:html={`(function(){function l(){var t=document.createElement("script");t.src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";t.async=true;t.defer=true;document.body.appendChild(t);}function s(){if("requestIdleCallback"in window)requestIdleCallback(l,{timeout:4e3});else setTimeout(l,0);}if(document.readyState==="complete")s();else window.addEventListener("load",s,{once:true});})();`}
@@ -435,19 +395,6 @@ const pageLcpImage = formLcpImage
     border-radius: 1rem;
   }
 
-  .form-page-shell {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    flex: 1 1 auto;
-    width: 100%;
-    min-width: 0;
-  }
-
-  .form-page__main {
-    display: contents;
-  }
-
   .form-page__split {
     display: flex;
     flex-direction: column;
@@ -467,7 +414,7 @@ const pageLcpImage = formLcpImage
   /* Mobile masthead spacing is set in the max-width breakpoint. Desktop uses `row-gap: 2rem`. */
 
   @media (min-width: 56rem) {
-    .form-page--split.form-page-shell {
+    .form-page--split .form-page__split {
       display: grid;
       grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
       grid-template-rows: auto auto;
@@ -475,10 +422,6 @@ const pageLcpImage = formLcpImage
       row-gap: 2rem;
       align-content: start;
       align-items: start;
-    }
-
-    .form-page--split .form-page__split {
-      display: contents;
     }
 
     .form-page--split .form-page__split-masthead {
@@ -502,8 +445,12 @@ const pageLcpImage = formLcpImage
       grid-column: 2;
       grid-row: 2;
       align-self: start;
-      content-visibility: auto;
-      contain-intrinsic-size: auto 720px;
+      position: sticky;
+      top: 2rem;
+      z-index: 2;
+      max-height: calc(100dvh - 4rem);
+      overflow-y: auto;
+      overscroll-behavior: contain;
     }
   }
 
@@ -530,10 +477,6 @@ const pageLcpImage = formLcpImage
 
     .form-page--split .form-page__split-panel {
       margin-top: 0.75rem;
-    }
-
-    .form-page--split .form-page__split-lead {
-      min-height: 86vh;
     }
 
     .form-page--split .form-page__split-masthead h1 {

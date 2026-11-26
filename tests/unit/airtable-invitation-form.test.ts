@@ -33,6 +33,20 @@ describe("airtableRowToInvitationFormData", () => {
     expect(data.guestPassTicketId).toBe("tkt_xyz")
   })
 
+  it("uses Event Description as HTML for form intro when set", () => {
+    const html = "<h3>Solo para este show</h3><p>Texto del evento.</p>"
+    const data = airtableRowToInvitationFormData(
+      {
+        ...sampleRow,
+        eventDescription: html,
+      },
+      { formToken: "fk_test_token" },
+    )
+    expect(data.messages?.formBody).toBe(html)
+    expect(data.messages?.formBodyFormat).toBe("html")
+    expect(data.messages?.formBody).not.toContain("Alicia Prime")
+  })
+
   it("uses env token for every guest-list form", () => {
     const data = airtableRowToInvitationFormData(sampleRow, {
       formToken: "fk_from_env",

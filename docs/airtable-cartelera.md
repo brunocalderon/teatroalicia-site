@@ -41,6 +41,7 @@ Each `records[]` entry:
 | `Guest Pass Ticket ID` | No | Formgong hidden `ticket_id` on guest-list forms |
 | `Guest List` | No | When on, build emits `/i/{Slug}` and cartelera may CTA to the guest-list form |
 | `Guest List Fields` | No | JSON array of form field definitions (see `form-schema` / murano invitation) |
+| `Event Description` | No | Long text / HTML — raw markup for the split-layout intro on `/i/{slug}` when non-empty (not run through the markdown renderer; default copy stays markdown in `guest-list-form-intro.es.md`) |
 | (env) | — | All guest-list forms use `AIRTABLE_INVITATION_FORM_TOKEN`; intro/thank-you markdown in `content/i18n/guest-list-form-*.es.md` via `guest-list-form.es.ts` |
 | `Image` | No | Poster (`filename (https://…)` → mirrored locally at build) |
 | `Event Kind` | No | Schema.org event type |

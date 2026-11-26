@@ -13,6 +13,8 @@ export function airtableRowToInvitationFormData(
   options: { formToken: string },
 ): FormEntryData {
   const path = defaultAirtableInvitationPath(row.slug)
+  const eventDescription = row.eventDescription?.trim()
+  const formIntro = eventDescription || guestListFormEs.formIntroMarkdown
 
   return {
     title: row.title,
@@ -41,7 +43,8 @@ export function airtableRowToInvitationFormData(
       sending: guestListFormEs.messages.sending,
       turnstileRequired: guestListFormEs.messages.turnstileRequired,
       connectionFailed: guestListFormEs.messages.connectionFailed,
-      formBody: guestListFormEs.formIntroMarkdown,
+      formBody: formIntro,
+      ...(eventDescription ? { formBodyFormat: "html" as const } : {}),
       thankYouBody: guestListFormEs.thankYouMarkdown,
     },
     fields: parseAirtableInvitationFormFields(row.guestListFieldsRaw),
