@@ -3,9 +3,8 @@ import { getCollection, getEntry, render } from "astro:content"
 
 import { resolveFormIntroBodyHtml } from "@/lib/render-form-body-markdown"
 
-import { ConfigurableForm } from "@/components/forms/configurable-form"
+import InvitationFormPanel from "@/components/forms/invitation-form-panel.astro"
 import LivestackBrand from "@/components/livestack-brand.astro"
-import FormPageSkeleton from "@/components/forms/form-page-skeleton.astro"
 import SiteBrand from "@/components/site-brand.astro"
 import FormPageIntro from "@/components/forms/form-page-intro.astro"
 import HomeContactFooter from "@/components/home/home-contact-footer.astro"
@@ -111,6 +110,7 @@ if (!formBodyMarkdown && collection === "forms" && entryId) {
 const showFormIntro = Boolean(formBodyHtml || renderedBody)
 
 const nameFields = data.nameFields ?? defaultNameFields(data.fields)
+const guestListClosed = data.guestListClosed === true
 
 let formLcpImage: Awaited<
   ReturnType<typeof buildFormSplitVisualImage>
@@ -244,28 +244,11 @@ const pageLcpImage = formLcpImage
                     ) : null
                   }
                   <div class="form-page__form">
-                    <ConfigurableForm
-                      client:visible={{ rootMargin: "200px" }}
-                      token={data.token}
-                      fields={data.fields}
-                      lang={data.lang}
-                      submitLabel={data.submitLabel}
-                      thankYouPath={data.thankYouPath}
-                      eventId={data.eventId}
-                      invitationOnly={data.invitationOnly}
-                      ticketSupplier={data.ticketSupplier}
-                      supplierEventId={data.supplierEventId}
-                      guestPassTicketId={data.guestPassTicketId}
+                    <InvitationFormPanel
+                      data={data}
                       nameFields={nameFields}
-                      messages={data.messages}
                       marketingTracking={tracking}
-                    >
-                      <FormPageSkeleton
-                        slot="fallback"
-                        fields={data.fields}
-                        lang={data.lang}
-                      />
-                    </ConfigurableForm>
+                    />
                   </div>
                 </div>
               </div>
@@ -339,28 +322,11 @@ const pageLcpImage = formLcpImage
           ]}
         >
           <div class="form-page__form">
-            <ConfigurableForm
-              client:visible={{ rootMargin: "200px" }}
-              token={data.token}
-              fields={data.fields}
-              lang={data.lang}
-              submitLabel={data.submitLabel}
-              thankYouPath={data.thankYouPath}
-              eventId={data.eventId}
-              invitationOnly={data.invitationOnly}
-              ticketSupplier={data.ticketSupplier}
-              supplierEventId={data.supplierEventId}
-              guestPassTicketId={data.guestPassTicketId}
+            <InvitationFormPanel
+              data={data}
               nameFields={nameFields}
-              messages={data.messages}
               marketingTracking={tracking}
-            >
-              <FormPageSkeleton
-                slot="fallback"
-                fields={data.fields}
-                lang={data.lang}
-              />
-            </ConfigurableForm>
+            />
           </div>
         </div>
       </div>
@@ -368,10 +334,14 @@ const pageLcpImage = formLcpImage
       }
       {data.livestackFooter ? <LivestackBrand /> : null}
     </main>
-    <script
-      is:inline
-      set:html={`(function(){function l(){var t=document.createElement("script");t.src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";t.async=true;t.defer=true;document.body.appendChild(t);}function s(){if("requestIdleCallback"in window)requestIdleCallback(l,{timeout:4e3});else setTimeout(l,0);}if(document.readyState==="complete")s();else window.addEventListener("load",s,{once:true});})();`}
-    />
+    {
+      guestListClosed ? null : (
+        <script
+          is:inline
+          set:html={`(function(){function l(){var t=document.createElement("script");t.src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";t.async=true;t.defer=true;document.body.appendChild(t);}function s(){if("requestIdleCallback"in window)requestIdleCallback(l,{timeout:4e3});else setTimeout(l,0);}if(document.readyState==="complete")s();else window.addEventListener("load",s,{once:true});})();`}
+        />
+      )
+    }
 </Layout>
 
 <style is:global set:html={formPageBackdropCss}></style>

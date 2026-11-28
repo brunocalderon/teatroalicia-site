@@ -225,6 +225,8 @@ export const formEntrySchema = z
     ticketOffers: z.array(formTicketOfferSchema).optional(),
     /** When true, schema includes guest-pass application (not free admission). */
     invitationOnly: z.boolean().optional(),
+    /** Airtable guest-list off: show closed copy instead of Formgong (build-time only). */
+    guestListClosed: z.boolean().optional(),
     isAccessibleForFree: z.boolean().optional(),
     typicalAgeRange: z.string().optional(),
     eventMaximumAttendeeCapacity: z.number().int().positive().optional(),

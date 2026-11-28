@@ -53,4 +53,19 @@ describe("airtableRowToInvitationFormData", () => {
     })
     expect(data.token).toBe("fk_from_env")
   })
+
+  it("marks guest list closed when Guest List is off", () => {
+    const data = airtableRowToInvitationFormData(
+      { ...sampleRow, guestListEnabled: false },
+      { formToken: "fk_test" },
+    )
+    expect(data.guestListClosed).toBe(true)
+  })
+
+  it("keeps guest list open when Guest List is on", () => {
+    const data = airtableRowToInvitationFormData(sampleRow, {
+      formToken: "fk_test",
+    })
+    expect(data.guestListClosed).toBe(false)
+  })
 })

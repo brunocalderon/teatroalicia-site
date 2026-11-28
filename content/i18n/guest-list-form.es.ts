@@ -21,4 +21,10 @@ export const guestListFormEs = {
     formBody: formIntroMarkdown,
     thankYouBody: thankYouMarkdown,
   },
+  /** Shown when Airtable `Guest List` is off but `/i/:slug` remains published. */
+  closed: {
+    message:
+      "El formulario de pase invitado está cerrado. Por ahora no recibimos nuevas solicitudes.",
+    purchaseCta: "Comprar entradas",
+  },
 } as const

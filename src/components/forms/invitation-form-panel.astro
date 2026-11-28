@@ -1,0 +1,46 @@
+---
+import { ConfigurableForm } from "@/components/forms/configurable-form"
+import FormPageSkeleton from "@/components/forms/form-page-skeleton.astro"
+import GuestListClosedPanel from "@/components/forms/guest-list-closed-panel.astro"
+import type { FormEntryData } from "@/lib/form-schema"
+import type { MarketingPageTracking } from "@/lib/marketing-page-tracking"
+
+type Props = {
+  data: FormEntryData
+  nameFields: string[]
+  marketingTracking: MarketingPageTracking
+}
+
+const { data, nameFields, marketingTracking } = Astro.props
+const guestListClosed = data.guestListClosed === true
+const purchaseUrl = data.ticketUrl ?? data.ticketLink
+---
+
+{
+  guestListClosed ? (
+    <GuestListClosedPanel purchaseUrl={purchaseUrl} />
+  ) : (
+    <ConfigurableForm
+      client:visible={{ rootMargin: "200px" }}
+      token={data.token}
+      fields={data.fields}
+      lang={data.lang}
+      submitLabel={data.submitLabel}
+      thankYouPath={data.thankYouPath}
+      eventId={data.eventId}
+      invitationOnly={data.invitationOnly}
+      ticketSupplier={data.ticketSupplier}
+      supplierEventId={data.supplierEventId}
+      guestPassTicketId={data.guestPassTicketId}
+      nameFields={nameFields}
+      messages={data.messages}
+      marketingTracking={marketingTracking}
+    >
+      <FormPageSkeleton
+        slot="fallback"
+        fields={data.fields}
+        lang={data.lang}
+      />
+    </ConfigurableForm>
+  )
+}

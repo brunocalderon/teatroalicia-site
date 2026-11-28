@@ -31,6 +31,7 @@ export function airtableRowToInvitationFormData(
     supplierEventId: row.supplierEventId,
     guestPassTicketId: row.guestPassTicketId,
     invitationOnly: true,
+    guestListClosed: !row.guestListEnabled,
     organizerIsVenue: false,
     livestackFooter: true,
     thankYouInstagram: true,
