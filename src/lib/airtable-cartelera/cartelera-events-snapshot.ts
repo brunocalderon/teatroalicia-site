@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, writeFileSync } from "node:fs"
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs"
 import path from "node:path"
 
 import type { AirtableCarteleraRow } from "@/lib/airtable-cartelera/types"
@@ -54,6 +54,7 @@ function writeCarteleraEventsToPath(
   filePath: string,
   rows: AirtableCarteleraRow[],
 ): void {
+  mkdirSync(path.dirname(filePath), { recursive: true })
   writeFileSync(filePath, `${JSON.stringify(rows, null, 2)}\n`)
 }
 
