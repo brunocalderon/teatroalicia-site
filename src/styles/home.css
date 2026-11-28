@@ -1078,7 +1078,9 @@ button.home-feature__media {
   line-height: 0;
 }
 
-.home-btn__ticket-icon {
+.home-btn__ticket-icon,
+.home-btn__info-icon,
+.home-btn__arrow-icon {
   width: 1.125rem;
   height: 1.125rem;
 }

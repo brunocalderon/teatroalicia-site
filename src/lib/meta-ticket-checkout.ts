@@ -43,6 +43,18 @@ export function resolveTicketCheckoutDestination(
   return resolveTicketPlatformDestination(href)
 }
 
+/** User-facing supplier name for ticket redirect copy (e.g. passline → Passline). */
+export function formatTicketSupplierDisplay(
+  href: string,
+  ticketSupplier?: string,
+): string {
+  const raw = resolveTicketCheckoutDestination(href, ticketSupplier)
+  if (!raw) {
+    return ""
+  }
+  return raw.charAt(0).toUpperCase() + raw.slice(1).toLowerCase()
+}
+
 export const META_TICKETING_OUTBOUND_CLICK_EVENT = "TicketingOutboundClick"
 
 export type MetaTicketCheckoutClickPayload = {
