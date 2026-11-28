@@ -32,21 +32,23 @@ export async function getStaticPaths() {
     invitationEntries.map((entry) => ({ id: entry.id, data: entry.data })),
   )
 
-  return invitationEntries.map((entry) => {
-    const { formBasePath, thankYouSlug } = thankYouRouteParams(
-      entry.data.path,
-      entry.data.thankYouPath,
-    )
+  return invitationEntries
+    .filter((entry) => entry.data.guestListClosed !== true)
+    .map((entry) => {
+      const { formBasePath, thankYouSlug } = thankYouRouteParams(
+        entry.data.path,
+        entry.data.thankYouPath,
+      )
 
-    return {
-      params: { formBasePath, thankYouSlug },
-      props: {
-        collection: entry.collection,
-        entryId: entry.id,
-        data: entry.data,
-      },
-    }
-  })
+      return {
+        params: { formBasePath, thankYouSlug },
+        props: {
+          collection: entry.collection,
+          entryId: entry.id,
+          data: entry.data,
+        },
+      }
+    })
 }
 
 type Props = {

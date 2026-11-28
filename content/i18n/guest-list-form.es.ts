@@ -23,8 +23,13 @@ export const guestListFormEs = {
   },
   /** Shown when Airtable `Guest List` is off but `/i/:slug` remains published. */
   closed: {
-    message:
-      "El formulario de pase invitado está cerrado. Por ahora no recibimos nuevas solicitudes.",
+    heading: "¡Por hoy, cerramos la lista de invitados!",
+    bodyLead:
+      "Ya no estamos recibiendo solicitudes de invitación para esta fecha, pero sigue atento a ",
+    bodyBrand: "Alicia Prime",
+    bodyTail:
+      " para disfrutar de nuevas invitaciones exclusivas, beneficios y experiencias en Teatro Alicia.",
+    signoff: "¡Nos vemos en Alicia!",
     purchaseCta: "Comprar entradas",
   },
 } as const

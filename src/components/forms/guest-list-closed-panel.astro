@@ -9,6 +9,7 @@ type Props = {
 
 const { purchaseUrl } = Astro.props
 const purchaseHref = purchaseUrl?.trim()
+const { closed } = guestListFormEs
 ---
 
 <div
@@ -16,7 +17,12 @@ const purchaseHref = purchaseUrl?.trim()
   role="status"
   aria-live="polite"
 >
-  <p class="form-guest-list-closed__message">{guestListFormEs.closed.message}</p>
+  <h2 class="form-guest-list-closed__heading">{closed.heading}</h2>
+  <p class="form-guest-list-closed__message">
+    {closed.bodyLead}<em class="form-guest-list-closed__brand">{closed.bodyBrand}</em
+    >{closed.bodyTail}
+  </p>
+  <p class="form-guest-list-closed__signoff">{closed.signoff}</p>
   {
     purchaseHref ? (
       <a
@@ -26,7 +32,7 @@ const purchaseHref = purchaseUrl?.trim()
         rel="noopener noreferrer"
       >
         <span class="form-submit__inner">
-          <span class="form-submit__label">{guestListFormEs.closed.purchaseCta}</span>
+          <span class="form-submit__label">{closed.purchaseCta}</span>
           <svg
             class="form-submit__icon"
             aria-hidden="true"

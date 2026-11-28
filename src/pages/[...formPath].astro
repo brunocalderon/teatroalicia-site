@@ -37,6 +37,7 @@ import "@/styles/home-venue-band.css"
 
 import { invitationFormTracking } from "@/lib/marketing-page-tracking"
 import { isGuestPassPromoterLinksPath } from "@/lib/guest-pass-promoter-link"
+import { isGuestPassInvitationPath } from "@/lib/guest-pass-referral-field"
 
 const CONTACT_PAGE_BAND_IMAGE = "/images/alicia-home-4.jpg"
 
@@ -57,14 +58,16 @@ export async function getStaticPaths() {
     invitationEntries.map((entry) => ({ id: entry.id, data: entry.data })),
   )
 
-  return invitationEntries.map((entry) => ({
-    params: { formPath: entry.data.path.replace(/^\//, "") },
-    props: {
-      collection: entry.collection,
-      entryId: entry.id,
-      data: entry.data,
-    },
-  }))
+  return invitationEntries
+    .filter((entry) => !isGuestPassInvitationPath(entry.data.path))
+    .map((entry) => ({
+      params: { formPath: entry.data.path.replace(/^\//, "") },
+      props: {
+        collection: entry.collection,
+        entryId: entry.id,
+        data: entry.data,
+      },
+    }))
 }
 
 type Props = {

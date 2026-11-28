@@ -1,0 +1,13 @@
+---
+import GuestListClosedPanel from "@/components/forms/guest-list-closed-panel.astro"
+import type { FormEntryData } from "@/lib/form-schema"
+
+type Props = {
+  data: FormEntryData
+}
+
+const { data } = Astro.props
+const purchaseUrl = data.ticketUrl ?? data.ticketLink
+---
+
+<GuestListClosedPanel purchaseUrl={purchaseUrl} />

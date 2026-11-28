@@ -1,6 +1,6 @@
 import type { CollectionEntry } from "astro:content"
 
-import { airtableRowHasGuestListRoute } from "@/lib/airtable-cartelera/guest-list-route"
+import { resolveGuestListRouteKind } from "@/lib/airtable-cartelera/guest-list-route"
 import { loadAirtableCarteleraRows } from "@/lib/airtable-cartelera/load-cartelera-rows"
 import { airtableRowToInvitationFormData } from "@/lib/airtable-cartelera/to-invitation-form"
 import { resolveAirtableCarteleraConfig } from "@/lib/airtable-env"
@@ -50,7 +50,7 @@ async function invitationEntriesFromAirtable(): Promise<InvitationFormEntry[]> {
 
   const rows = await loadAirtableCarteleraRows(carteleraConfig)
   return rows
-    .filter((row) => airtableRowHasGuestListRoute(row))
+    .filter((row) => resolveGuestListRouteKind(row) !== "none")
     .map((row) => ({
       id: row.slug,
       collection: "airtable",

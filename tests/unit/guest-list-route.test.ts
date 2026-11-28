@@ -1,7 +1,23 @@
 import { describe, expect, it } from "vitest"
 
-import { airtableRowHasGuestListRoute } from "@/lib/airtable-cartelera/guest-list-route"
+import {
+  airtableRowHasGuestListRoute,
+  airtableRowHasGuestPassConfig,
+  resolveGuestListRouteKind,
+} from "@/lib/airtable-cartelera/guest-list-route"
 import type { AirtableCarteleraRow } from "@/lib/airtable-cartelera/types"
+
+const configuredFields =
+  '[{"name":"email","type":"email","label":"Email","required":true}]'
+
+const fullConfig: Pick<
+  AirtableCarteleraRow,
+  "supplierEventId" | "guestListFieldsRaw" | "guestPassTicketId"
+> = {
+  supplierEventId: "evt_abc",
+  guestListFieldsRaw: configuredFields,
+  guestPassTicketId: "tkt_xyz",
+}
 
 const baseRow: AirtableCarteleraRow = {
   slug: "sample",
@@ -12,23 +28,91 @@ const baseRow: AirtableCarteleraRow = {
   airtableRecordId: "recSample",
 }
 
-describe("airtableRowHasGuestListRoute", () => {
-  it("includes rows when Guest List is enabled", () => {
+describe("airtableRowHasGuestPassConfig", () => {
+  it("requires supplier event id, fields JSON, and guest pass ticket id", () => {
     expect(
-      airtableRowHasGuestListRoute({ ...baseRow, guestListEnabled: true }),
+      airtableRowHasGuestPassConfig({ ...baseRow, ...fullConfig }),
     ).toBe(true)
+    expect(
+      airtableRowHasGuestPassConfig({
+        ...baseRow,
+        ...fullConfig,
+        supplierEventId: "",
+      }),
+    ).toBe(false)
+    expect(
+      airtableRowHasGuestPassConfig({
+        ...baseRow,
+        ...fullConfig,
+        guestListFieldsRaw: "  ",
+      }),
+    ).toBe(false)
+    expect(
+      airtableRowHasGuestPassConfig({
+        ...baseRow,
+        ...fullConfig,
+        guestPassTicketId: undefined,
+      }),
+    ).toBe(false)
+  })
+})
+
+describe("resolveGuestListRouteKind", () => {
+  it("returns invite when Guest List is on and config is complete", () => {
+    expect(
+      resolveGuestListRouteKind({
+        ...baseRow,
+        ...fullConfig,
+        guestListEnabled: true,
+      }),
+    ).toBe("invite")
   })
 
-  it("includes rows with configured fields when Guest List is off", () => {
+  it("returns redirect when Guest List is off and config is complete", () => {
+    expect(
+      resolveGuestListRouteKind({ ...baseRow, ...fullConfig }),
+    ).toBe("redirect")
+  })
+
+  it("returns none when all three config fields are empty", () => {
+    expect(resolveGuestListRouteKind(baseRow)).toBe("none")
+  })
+
+  it("returns none for Guest List on without full config", () => {
+    expect(
+      resolveGuestListRouteKind({
+        ...baseRow,
+        guestListEnabled: true,
+        guestListFieldsRaw: configuredFields,
+      }),
+    ).toBe("none")
+  })
+
+  it("returns none for partial config when Guest List is off", () => {
+    expect(
+      resolveGuestListRouteKind({
+        ...baseRow,
+        guestListFieldsRaw: configuredFields,
+      }),
+    ).toBe("none")
+  })
+})
+
+describe("airtableRowHasGuestListRoute", () => {
+  it("is true for invite and redirect kinds", () => {
     expect(
       airtableRowHasGuestListRoute({
         ...baseRow,
-        guestListFieldsRaw: '[{"name":"email","type":"email","label":"Email"}]',
+        ...fullConfig,
+        guestListEnabled: true,
       }),
     ).toBe(true)
+    expect(airtableRowHasGuestListRoute({ ...baseRow, ...fullConfig })).toBe(
+      true,
+    )
   })
 
-  it("excludes rows with no guest list configuration", () => {
+  it("is false for none", () => {
     expect(airtableRowHasGuestListRoute(baseRow)).toBe(false)
   })
 })

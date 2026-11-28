@@ -39,8 +39,8 @@ Each `records[]` entry:
 | `Ticket Supplier` | No | Meta `TicketingOutboundClick` `destination` (falls back to ticket URL host when empty); Formgong hidden `provider` on guest-list forms |
 | `Supplier Event ID` | No | Formgong hidden `event_id` on guest-list forms |
 | `Guest Pass Ticket ID` | No | Formgong hidden `ticket_id` on guest-list forms |
-| `Guest List` | No | When on, `/i/{Slug}` shows the Formgong form; when off but `Guest List Fields` is set, the same route shows closed copy and a **Comprar entradas** button to `Purchase Link` |
-| `Guest List Fields` | No | JSON array of form field definitions (see `form-schema` / murano invitation) |
+| `Guest List` | No | With full guest-pass config (all three columns below), when on `/i/{Slug}` is the open invite form; when off it is the closed **Comprar entradas** panel (no thank-you route) |
+| `Guest List Fields` | No | JSON array of form field definitions (see `form-schema` / murano invitation); must be set with `Supplier Event ID` and `Guest Pass Ticket ID` for any `/i/{slug}` page |
 | `Event Description` | No | Long text / HTML — raw markup for the split-layout intro on `/i/{slug}` when non-empty (not run through the markdown renderer; default copy stays markdown in `guest-list-form-intro.es.md`) |
 | (env) | — | All guest-list forms use `AIRTABLE_INVITATION_FORM_TOKEN`; intro/thank-you markdown in `content/i18n/guest-list-form-*.es.md` via `guest-list-form.es.ts` |
 | `Image` | No | Poster (`filename (https://…)` → mirrored locally at build) |
@@ -52,6 +52,21 @@ Cartelera events are always Spanish (`lang: es`); there is no `Language` column 
 Legacy column names (`eventStart`, `ticketLink`, `Event ID`, etc.) are still accepted.
 
 Fixture: `tests/fixtures/airtable-cartelera-list-response.json`.
+
+## Guest-list routes (`/i/{slug}`)
+
+Classifier: `src/lib/airtable-cartelera/guest-list-route.ts` (`resolveGuestListRouteKind`).
+
+| Guest List | `Supplier Event ID` + `Guest List Fields` + `Guest Pass Ticket ID` | Build |
+| --- | --- | --- |
+| on | all set | `src/pages/i/[slug]/index.astro` → `src/components/guest-list/guest-list-invite.experience.astro` (Formgong + Turnstile) |
+| off | all set | same index → `src/components/guest-list/guest-list-redirect.experience.astro` (closed copy + purchase CTA) |
+| off | all empty | no route (404) |
+| any other combination | — | no route (404) |
+
+Thank-you (`/i/{slug}/gracias`) builds only for **invite** rows. Promoter links (`/i/{slug}/promoters`) build for invite and redirect rows.
+
+Non–guest-pass markdown forms stay on `src/pages/[...formPath].astro`.
 
 ## Related
 

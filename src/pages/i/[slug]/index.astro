@@ -1,0 +1,89 @@
+---
+import { getCollection } from "astro:content"
+
+import GuestListInvitationPage from "@/components/forms/guest-list-invitation-page.astro"
+import type { GuestListRouteKind } from "@/lib/airtable-cartelera/guest-list-route"
+import { prepareGuestListInvitationPage } from "@/lib/guest-list/prepare-guest-list-invitation-page"
+import { invitationSlugFromPath } from "@/lib/invitation-bundled-poster"
+import {
+  loadInvitationFormEntries,
+  type InvitationContentCollection,
+} from "@/lib/invitation-form-entries"
+import { isGuestPassInvitationPath } from "@/lib/guest-pass-referral-field"
+import {
+  assertFormsCollectionIntegrity,
+  warnFormSchemaOrgFields,
+  type FormEntryData,
+} from "@/lib/form-schema"
+
+import GuestListInviteExperience from "@/components/guest-list/guest-list-invite.experience.astro"
+import GuestListRedirectExperience from "@/components/guest-list/guest-list-redirect.experience.astro"
+
+export async function getStaticPaths() {
+  const forms = await getCollection("forms")
+  const invitationEntries = await loadInvitationFormEntries(forms)
+  assertFormsCollectionIntegrity(
+    invitationEntries.map((entry) => ({ id: entry.id, data: entry.data })),
+  )
+
+  warnFormSchemaOrgFields(
+    invitationEntries.map((entry) => ({ id: entry.id, data: entry.data })),
+  )
+
+  return invitationEntries
+    .filter((entry) => isGuestPassInvitationPath(entry.data.path))
+    .map((entry) => {
+      const slug = invitationSlugFromPath(entry.data.path)
+      if (!slug) {
+        throw new Error(
+          `Guest-pass path missing slug: ${entry.data.path} (${entry.id})`,
+        )
+      }
+      const kind: GuestListRouteKind =
+        entry.data.guestListClosed === true ? "redirect" : "invite"
+      return {
+        params: { slug },
+        props: {
+          kind,
+          collection: entry.collection,
+          entryId: entry.id,
+          data: entry.data,
+        },
+      }
+    })
+}
+
+type Props = {
+  kind: GuestListRouteKind
+  collection: InvitationContentCollection
+  entryId: string
+  data: FormEntryData
+}
+
+const { kind, collection, entryId, data: dataFromProps } = Astro.props
+
+const pageContext = await prepareGuestListInvitationPage({
+  collection,
+  entryId,
+  dataFromProps,
+  invitationSlug: entryId,
+})
+---
+
+<GuestListInvitationPage
+  {...pageContext}
+  showFormIntro={kind === "invite" && pageContext.showFormIntro}
+  loadTurnstileAfterLoad={kind === "invite"}
+>
+  {
+    kind === "invite" ? (
+      <GuestListInviteExperience
+        data={pageContext.data}
+        nameFields={pageContext.nameFields}
+        marketingTracking={pageContext.tracking}
+      />
+    ) : (
+      <GuestListRedirectExperience data={pageContext.data} />
+    )
+  }
+</GuestListInvitationPage>
