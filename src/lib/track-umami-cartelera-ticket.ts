@@ -1,6 +1,7 @@
 import { getUmamiPromoterEventData } from "@/lib/umami-referral-event-data"
 
 export const UMAMI_CARTELERA_TICKET_EVENT = "Home Cartelera Ticket Click"
+export const UMAMI_EVENT_PAGE_TICKET_EVENT = "Event Page Ticket Click"
 
 export type UmamiCarteleraTicketPayload = {
   event_name: string
@@ -13,6 +14,7 @@ type UmamiClient = {
 
 export function trackUmamiCarteleraTicketClick(
   payload: UmamiCarteleraTicketPayload,
+  umamiEventName: string = UMAMI_CARTELERA_TICKET_EVENT,
 ): void {
   if (typeof window === "undefined") {
     return
@@ -27,7 +29,7 @@ export function trackUmamiCarteleraTicketClick(
   )
 
   const eventId = payload.event_id.trim()
-  umami.track(UMAMI_CARTELERA_TICKET_EVENT, {
+  umami.track(umamiEventName, {
     event_name: payload.event_name,
     ...(eventId ? { event_id: eventId } : {}),
     ...(promoter

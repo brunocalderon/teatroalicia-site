@@ -137,18 +137,21 @@ const posterZoomSrc = posterImage
       ) : null
     }
   </div>
-  {
-    hasPoster ? (
-      <script>
-        import { initCarteleraPosterLightbox } from "@/lib/cartelera-poster-lightbox"
+  <script>
+    import { initCarteleraTicketCtaTracking } from "@/lib/cartelera-ticket-cta-tracking"
+    import { UMAMI_EVENT_PAGE_TICKET_EVENT } from "@/lib/track-umami-cartelera-ticket"
+    import { initCarteleraPosterLightbox } from "@/lib/cartelera-poster-lightbox"
 
-        const root = document.querySelector(".event-detail-page")
-        if (root) {
-          initCarteleraPosterLightbox(root, { mobileOnly: false })
-        }
-      </script>
-    ) : null
-  }
+    const root = document.querySelector(".event-detail-page")
+    if (root) {
+      initCarteleraTicketCtaTracking(root, {
+        umamiEventName: UMAMI_EVENT_PAGE_TICKET_EVENT,
+      })
+      if (root.querySelector("[data-cartelera-poster-zoom]")) {
+        initCarteleraPosterLightbox(root, { mobileOnly: false })
+      }
+    }
+  </script>
 </Layout>
 
 <style is:global set:html={backdropCss}></style>

@@ -5,7 +5,10 @@ import {
 } from "@/lib/home-cartelera-utm"
 import type { AirtableCarteleraRow } from "@/lib/airtable-cartelera/types"
 import { formatEventSchedule } from "@/lib/format-event-display"
-import { formatTicketSupplierDisplay } from "@/lib/meta-ticket-checkout"
+import {
+  formatTicketSupplierDisplay,
+  metaTicketCheckoutContentId,
+} from "@/lib/meta-ticket-checkout"
 
 type Props = {
   row: AirtableCarteleraRow
@@ -26,6 +29,10 @@ const ticketHref = ticketUrl
 const ticketSupplierLabel = ticketHref
   ? formatTicketSupplierDisplay(ticketHref, row.ticketSupplier)
   : undefined
+const ticketContentId = metaTicketCheckoutContentId({
+  eventId: row.eventId,
+  slug: row.slug,
+})
 ---
 
 <div class="event-detail-panel">
@@ -56,6 +63,8 @@ const ticketSupplierLabel = ticketHref
           data-cartelera-ticket-cta
           data-event-id={row.eventId}
           data-event-title={row.title}
+          data-event-campaign={campaign}
+          data-ticket-content-id={ticketContentId}
           data-ticket-supplier={row.ticketSupplier ?? ""}
         >
           <span class="event-detail-panel__ticket-glyph" aria-hidden="true">
