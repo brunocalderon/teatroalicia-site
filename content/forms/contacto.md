@@ -6,7 +6,6 @@ token: fk_zZUtvyQUW7BMjkvvipf5EsLj
 lang: es
 submitLabel: Enviar mensaje
 livestackFooter: false
-thankYouInstagram: false
 messages:
   submit: Enviar
   sending: Enviando…

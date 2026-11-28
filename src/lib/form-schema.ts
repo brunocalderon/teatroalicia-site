@@ -339,12 +339,34 @@ export function assertFormsCollectionIntegrity(entries: FormCollectionEntry[]): 
   }
 }
 
+/** Guest-list and event frontmatter routes; general forms (e.g. contacto) omit event JSON-LD by design. */
+function formExpectsEventJsonLd(
+  data: Pick<FormEntryData, "path" | "eventStart" | "eventId" | "invitationOnly">,
+): boolean {
+  if (data.invitationOnly === true) {
+    return true
+  }
+  if (data.path.startsWith("/i/")) {
+    return true
+  }
+  if (data.eventId?.trim()) {
+    return true
+  }
+  if (data.eventStart?.trim()) {
+    return true
+  }
+  return false
+}
+
 /**
  * Logs Schema.org warnings (does not fail the build).
  * Call from static path generation after integrity checks.
  */
 export function warnFormSchemaOrgFields(entries: FormCollectionEntry[]): void {
   for (const entry of entries) {
+    if (!formExpectsEventJsonLd(entry.data)) {
+      continue
+    }
     const { eventStart, eventId, path } = entry.data
     if (!eventStart?.trim()) {
       console.warn(
