@@ -17,4 +17,6 @@ export type HomeEventFeatureData = {
   ticketSupplier?: string
   imageAlt?: string
   image?: HomeEventFeatureImage
+  /** `/eventos/{eventId}` when Airtable `Event Description` is set. */
+  detailHref?: string
 }

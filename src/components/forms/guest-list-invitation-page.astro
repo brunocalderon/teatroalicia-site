@@ -1,8 +1,5 @@
 ---
-import LivestackBrand from "@/components/livestack-brand.astro"
-import SiteBrand from "@/components/site-brand.astro"
-import FormPageIntro from "@/components/forms/form-page-intro.astro"
-import Layout from "@/layouts/Layout.astro"
+import FormSplitPage from "@/components/forms/form-split-page.astro"
 import type { GuestListInvitationPageContext } from "@/lib/guest-list/prepare-guest-list-invitation-page"
 import { MARKETING_ENGAGE_MS } from "astro:env/client"
 
@@ -26,19 +23,26 @@ const {
 } = Astro.props
 ---
 
-<Layout
+<FormSplitPage
   title={data.title}
   description={formDescription}
   lang={data.lang}
   tracking={tracking}
-  formThirdPartyHints
-  lcpImage={pageLcpImage}
-  marketingEngageAfterLoadMs={MARKETING_ENGAGE_MS}
   jsonLd={formJsonLd}
+  pageLcpImage={pageLcpImage}
+  pageBackdropCss={formPageBackdropCss}
+  showSplitLayout={showSplitLayout}
+  splitVisualImage={formLcpImage}
+  showIntro={showFormIntro}
+  introHtml={formBodyHtml}
+  imageAlt={data.imageAlt ?? data.title}
+  livestackFooter={data.livestackFooter ?? false}
+  formThirdPartyHints
+  marketingEngageAfterLoadMs={MARKETING_ENGAGE_MS}
 >
   {
     hasReferralField ? (
-      <>
+      <Fragment slot="head">
         <style
           is:inline
           set:html={`.form-fieldset > .form-field.form-field--referral{display:none}html.has-guest-pass-ref .form-fieldset > .form-field.form-field--referral{display:flex;height:2.625rem;min-height:2.625rem;max-height:2.625rem}html.has-guest-pass-ref .form-referral-item{box-sizing:border-box;height:2.625rem;max-height:2.625rem;overflow:hidden;flex-wrap:nowrap}`}
@@ -47,291 +51,17 @@ const {
           is:inline
           set:html={`(function(){var e=(new URLSearchParams(location.search).get("e")||"").trim();if(e)document.documentElement.classList.add("has-guest-pass-ref");})();`}
         />
-      </>
+      </Fragment>
     ) : null
   }
-  <main
-    class:list={["form-page", showSplitLayout && "form-page--split"]}
-  >
-    <div class:list={[showSplitLayout ? "form-page__split" : "form-page__stack"]}>
-      {
-        showSplitLayout ? (
-          <>
-            <div class="form-page__masthead form-page__split-masthead">
-              <SiteBrand align="start" />
-              <header class="form-page__header">
-                <h1>{data.title}</h1>
-              </header>
-            </div>
-            <div class="form-page__split-lead">
-              <figure class="form-page__visual form-page__split-visual">
-                {
-                  formLcpImage ? (
-                    <img
-                      src={formLcpImage.src}
-                      srcset={formLcpImage.srcSet}
-                      sizes={formLcpImage.sizes}
-                      alt={data.imageAlt ?? data.title}
-                      width={formLcpImage.width}
-                      height={formLcpImage.height}
-                      loading="eager"
-                      fetchpriority="high"
-                      decoding="sync"
-                    />
-                  ) : null
-                }
-              </figure>
-              {
-                showFormIntro ? (
-                  <FormPageIntro
-                    formBodyHtml={formBodyHtml}
-                    renderedBody={null}
-                    split
-                  />
-                ) : null
-              }
-            </div>
-          </>
-        ) : (
-          <>
-            <div class="form-page__masthead">
-              <SiteBrand align="start" />
-              <header class="form-page__header">
-                <h1>{data.title}</h1>
-              </header>
-            </div>
-            {
-              showFormIntro ? (
-                <FormPageIntro
-                  formBodyHtml={formBodyHtml}
-                  renderedBody={null}
-                />
-              ) : null
-            }
-          </>
-        )
-      }
-      <div
-        class:list={[
-          "form-page__panel",
-          showSplitLayout && "form-page__split-panel",
-        ]}
-      >
-        <div class="form-page__form">
-          <slot />
-        </div>
-      </div>
-    </div>
-    {data.livestackFooter ? <LivestackBrand /> : null}
-  </main>
+  <slot />
   {
     loadTurnstileAfterLoad ? (
       <script
+        slot="foot"
         is:inline
         set:html={`(function(){function l(){var t=document.createElement("script");t.src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";t.async=true;t.defer=true;document.body.appendChild(t);}function s(){if("requestIdleCallback"in window)requestIdleCallback(l,{timeout:4e3});else setTimeout(l,0);}if(document.readyState==="complete")s();else window.addEventListener("load",s,{once:true});})();`}
       />
     ) : null
   }
-</Layout>
-
-<style is:global set:html={formPageBackdropCss}></style>
-
-<style>
-  .form-page {
-    width: min(75rem, calc(100% - 4rem));
-    max-width: 100%;
-    margin-block: 2rem;
-    margin-inline: auto;
-    min-height: calc(100dvh - 4rem);
-    padding: 2rem 1.5rem 3rem;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    overflow-x: clip;
-    background-color: color-mix(in srgb, #0a0a0a 90%, transparent);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid color-mix(in srgb, #f5f5f5 10%, transparent);
-    border-radius: 1rem;
-  }
-
-  .form-page__split {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    flex: 1 1 auto;
-    width: 100%;
-    min-width: 0;
-  }
-
-  .form-page__split-lead {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    min-width: 0;
-  }
-
-  @media (min-width: 56rem) {
-    .form-page--split .form-page__split {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
-      grid-template-rows: auto auto;
-      column-gap: 3rem;
-      row-gap: 2rem;
-      align-content: start;
-      align-items: start;
-    }
-
-    .form-page--split .form-page__split-masthead {
-      grid-column: 1 / -1;
-      grid-row: 1;
-      margin-top: 0;
-      margin-bottom: 0;
-    }
-
-    .form-page--split .form-page__split-masthead h1 {
-      white-space: nowrap;
-    }
-
-    .form-page__split-lead {
-      grid-column: 1;
-      grid-row: 2;
-      align-self: start;
-    }
-
-    .form-page__split-panel {
-      grid-column: 2;
-      grid-row: 2;
-      align-self: start;
-      position: sticky;
-      top: 2rem;
-      z-index: 2;
-      max-height: calc(100dvh - 4rem);
-      overflow-y: auto;
-      overscroll-behavior: contain;
-    }
-  }
-
-  @media (max-width: 55.99rem) {
-    .form-page {
-      width: calc(100% - 1.5rem);
-      margin-block: 0.75rem;
-      margin-inline: auto;
-      min-height: calc(100dvh - 1.5rem);
-      padding: 1.25rem 1rem 2rem;
-    }
-
-    .form-page.form-page--split {
-      padding-top: 1rem;
-    }
-
-    .form-page--split .form-page__split-masthead {
-      flex-direction: row;
-      align-items: center;
-      gap: 0.875rem 1rem;
-      margin-top: 0;
-      margin-bottom: 1rem;
-    }
-
-    .form-page--split .form-page__split-panel {
-      margin-top: 0.75rem;
-    }
-
-    .form-page--split .form-page__split-masthead h1 {
-      font-size: clamp(1.125rem, 5vw, 1.5rem);
-      line-height: 1.2;
-      overflow-wrap: anywhere;
-    }
-
-    .form-page__visual img {
-      width: 100%;
-      height: auto;
-    }
-
-    .form-page__split-panel,
-    .form-page__form {
-      width: 100%;
-      max-width: 100%;
-      min-width: 0;
-    }
-  }
-
-  .form-page__masthead {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 1rem 1.5rem;
-    min-width: 0;
-    margin-bottom: 0;
-  }
-
-  .form-page__masthead .form-page__header {
-    flex: 1;
-    min-width: 0;
-  }
-
-  .form-page__masthead h1 {
-    margin: 0;
-    font-size: clamp(1.25rem, 3vw, 1.75rem);
-    font-weight: 500;
-    letter-spacing: 0.03em;
-    line-height: 1.25;
-  }
-
-  .form-page--split .form-page__masthead h1 {
-    margin-bottom: 0;
-  }
-
-  .form-page__visual {
-    margin: 0;
-    display: flex;
-    width: 100%;
-    min-height: 0;
-  }
-
-  .form-page__visual img {
-    display: block;
-    box-sizing: border-box;
-    width: 100%;
-    height: auto;
-    max-height: min(70dvh, 42rem);
-    object-fit: contain;
-    object-position: center;
-    border-radius: 0.75rem;
-    border: 1px solid color-mix(in srgb, #f5f5f5 18%, transparent);
-  }
-
-  .form-page__panel {
-    min-width: 0;
-  }
-
-  .form-page__form {
-    width: 100%;
-    min-width: 0;
-    max-width: 100%;
-    container-type: inline-size;
-    container-name: form-panel;
-  }
-
-  .form-page__stack {
-    display: block;
-    flex: 1 1 auto;
-    width: 100%;
-    min-width: 0;
-  }
-
-  .form-page:not(.form-page--split) {
-    max-width: 52rem;
-  }
-
-  .form-page__header h1 {
-    margin: 0 0 1rem;
-    font-size: clamp(1.5rem, 4vw, 2rem);
-    font-weight: 500;
-    letter-spacing: 0.04em;
-  }
-
-  .form-page__masthead .form-page__header h1 {
-    margin: 0;
-  }
-</style>
+</FormSplitPage>

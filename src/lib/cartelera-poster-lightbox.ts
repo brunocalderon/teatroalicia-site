@@ -64,7 +64,16 @@ export function closeCarteleraPosterLightbox(root: ParentNode = document): void 
   }
 }
 
-export function initCarteleraPosterLightbox(root: ParentNode = document): void {
+export type CarteleraPosterLightboxOptions = {
+  /** Cartelera cards: mobile only; event detail enables desktop zoom. */
+  mobileOnly?: boolean
+}
+
+export function initCarteleraPosterLightbox(
+  root: ParentNode = document,
+  options?: CarteleraPosterLightboxOptions,
+): void {
+  const mobileOnly = options?.mobileOnly ?? true
   const lightbox = getLightbox(root)
   if (!lightbox) {
     return
@@ -77,7 +86,7 @@ export function initCarteleraPosterLightbox(root: ParentNode = document): void {
     }
 
     const trigger = target.closest<HTMLElement>(OPEN_TRIGGER_SELECTOR)
-    if (trigger && isMobileViewport()) {
+    if (trigger && (!mobileOnly || isMobileViewport())) {
       event.preventDefault()
       const src = trigger.dataset.zoomSrc?.trim()
       if (!src) {

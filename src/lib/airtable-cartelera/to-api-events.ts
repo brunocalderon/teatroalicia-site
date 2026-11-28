@@ -10,6 +10,7 @@ import type { HomeEventFeatureImage } from "@/lib/home-event-feature-image"
 import { defaultAirtableInvitationPath } from "@/lib/airtable-cartelera/to-invitation-form"
 import { metaTicketCheckoutContentId } from "@/lib/meta-ticket-checkout"
 import { isCarteleraEventVisible } from "@/lib/schema-org/event-datetime"
+import { eventDetailPath } from "@/lib/events/event-detail-path"
 
 export function airtableRowToHomeEventFeature(
   row: AirtableCarteleraRow,
@@ -31,6 +32,9 @@ export function airtableRowToHomeEventFeature(
   const ctaLabel = ticketUrl
     ? "Comprar tickets"
     : "Solicitar acceso"
+  const detailHref = row.eventDescription?.trim()
+    ? eventDetailPath(row.eventId)
+    : undefined
 
   return {
     title: row.title,
@@ -48,6 +52,7 @@ export function airtableRowToHomeEventFeature(
     timeLine: schedule.timeLine,
     imageAlt: row.imageAlt,
     image: options?.image,
+    detailHref,
   }
 }
 
@@ -91,6 +96,7 @@ export async function airtableCarteleraRowsToApiEvents(
       ticketSupplier: feature.ticketSupplier,
       imageAlt: feature.imageAlt,
       image: feature.image,
+      detailHref: feature.detailHref,
     }
   })
 }

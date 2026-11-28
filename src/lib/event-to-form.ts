@@ -1,3 +1,4 @@
+import { eventDetailPath } from "@/lib/events/event-detail-path"
 import type { FormEntryData } from "@/lib/form-schema"
 import {
   type EventEntryData,
@@ -11,11 +12,13 @@ export function eventToSchemaFormData(event: EventEntryData): FormEntryData {
     return invited
   }
 
+  const path = eventDetailPath(event.eventId)
+
   return {
     title: event.title,
     description: event.description,
-    path: `/e/${event.slug}`,
-    thankYouPath: `/e/${event.slug}/gracias`,
+    path,
+    thankYouPath: path,
     eventId: event.eventId,
     eventStart: event.eventStart,
     eventEnd: event.eventEnd,

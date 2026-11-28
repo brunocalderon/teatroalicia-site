@@ -1,0 +1,47 @@
+---
+import EventDetailPage from "@/components/events/event-detail-page.astro"
+import EventDetailExperience from "@/components/events/event-detail-experience.astro"
+import { loadAirtableCarteleraRows } from "@/lib/airtable-cartelera/load-cartelera-rows"
+import type { AirtableCarteleraRow } from "@/lib/airtable-cartelera/types"
+import { resolveAirtableCarteleraConfig } from "@/lib/airtable-env"
+import { prepareEventDetailPage } from "@/lib/events/prepare-event-detail-page"
+
+export async function getStaticPaths() {
+  const carteleraConfig = resolveAirtableCarteleraConfig()
+  if (!carteleraConfig) {
+    return []
+  }
+
+  const rows = await loadAirtableCarteleraRows(carteleraConfig)
+  const seenEventIds = new Set<string>()
+
+  return rows.map((row) => {
+    const eventId = row.eventId.trim()
+    if (!eventId) {
+      throw new Error(
+        `Cartelera row missing eventId (slug: ${row.slug}, record: ${row.airtableRecordId})`,
+      )
+    }
+    if (seenEventIds.has(eventId)) {
+      throw new Error(`Duplicate cartelera eventId: ${eventId}`)
+    }
+    seenEventIds.add(eventId)
+
+    return {
+      params: { id: eventId },
+      props: { row },
+    }
+  })
+}
+
+type Props = {
+  row: AirtableCarteleraRow
+}
+
+const { row } = Astro.props
+const pageContext = await prepareEventDetailPage(row)
+---
+
+<EventDetailPage {...pageContext}>
+  <EventDetailExperience row={pageContext.row} />
+</EventDetailPage>

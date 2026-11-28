@@ -42,4 +42,5 @@ export type CarteleraApiEvent = {
   ticketSupplier?: string
   imageAlt?: string
   image?: HomeEventFeatureImage
+  detailHref?: string
 }

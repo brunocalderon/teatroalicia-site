@@ -1,0 +1,351 @@
+---
+import LivestackBrand from "@/components/livestack-brand.astro"
+import SiteBrand from "@/components/site-brand.astro"
+import FormPageIntro from "@/components/forms/form-page-intro.astro"
+import Layout from "@/layouts/Layout.astro"
+import type { MarketingPageTracking } from "@/lib/marketing-page-tracking"
+import type { JsonLdGraphDocument } from "@/lib/schema-org/json-ld-types"
+import { MARKETING_ENGAGE_MS } from "astro:env/client"
+
+type SplitVisualImage = {
+  src: string
+  srcSet: string
+  sizes: string
+  width: number
+  height: number
+}
+
+type Props = {
+  title: string
+  description: string
+  lang: string
+  tracking: MarketingPageTracking
+  jsonLd?: JsonLdGraphDocument
+  pageLcpImage?: Pick<SplitVisualImage, "src" | "srcSet" | "sizes">
+  pageBackdropCss: string
+  showSplitLayout: boolean
+  splitVisualImage?: SplitVisualImage
+  showIntro?: boolean
+  introHtml?: string
+  imageAlt?: string
+  livestackFooter?: boolean
+  formThirdPartyHints?: boolean
+  marketingEngageAfterLoadMs?: number
+}
+
+const {
+  title,
+  description,
+  lang,
+  tracking,
+  jsonLd,
+  pageLcpImage,
+  pageBackdropCss,
+  showSplitLayout,
+  splitVisualImage,
+  showIntro = false,
+  introHtml,
+  imageAlt,
+  livestackFooter = false,
+  formThirdPartyHints = false,
+  marketingEngageAfterLoadMs = MARKETING_ENGAGE_MS,
+} = Astro.props
+---
+
+<Layout
+  title={title}
+  description={description}
+  lang={lang}
+  tracking={tracking}
+  formThirdPartyHints={formThirdPartyHints}
+  lcpImage={pageLcpImage}
+  marketingEngageAfterLoadMs={marketingEngageAfterLoadMs}
+  jsonLd={jsonLd}
+>
+  <slot name="head" />
+  <main
+    class:list={["form-page", showSplitLayout && "form-page--split"]}
+  >
+    <div class:list={[showSplitLayout ? "form-page__split" : "form-page__stack"]}>
+      {
+        showSplitLayout ? (
+          <>
+            <div class="form-page__masthead form-page__split-masthead">
+              <SiteBrand align="start" />
+              <header class="form-page__header">
+                <h1>{title}</h1>
+              </header>
+            </div>
+            <div class="form-page__split-lead">
+              <figure class="form-page__visual form-page__split-visual">
+                {
+                  splitVisualImage ? (
+                    <img
+                      src={splitVisualImage.src}
+                      srcset={splitVisualImage.srcSet}
+                      sizes={splitVisualImage.sizes}
+                      alt={imageAlt ?? title}
+                      width={splitVisualImage.width}
+                      height={splitVisualImage.height}
+                      loading="eager"
+                      fetchpriority="high"
+                      decoding="sync"
+                    />
+                  ) : null
+                }
+              </figure>
+              {
+                showIntro && introHtml ? (
+                  <FormPageIntro
+                    formBodyHtml={introHtml}
+                    renderedBody={null}
+                    split
+                  />
+                ) : null
+              }
+            </div>
+          </>
+        ) : (
+          <>
+            <div class="form-page__masthead">
+              <SiteBrand align="start" />
+              <header class="form-page__header">
+                <h1>{title}</h1>
+              </header>
+            </div>
+            {
+              showIntro && introHtml ? (
+                <FormPageIntro
+                  formBodyHtml={introHtml}
+                  renderedBody={null}
+                />
+              ) : null
+            }
+          </>
+        )
+      }
+      <div
+        class:list={[
+          "form-page__panel",
+          showSplitLayout && "form-page__split-panel",
+        ]}
+      >
+        <div class="form-page__form">
+          <slot />
+        </div>
+      </div>
+    </div>
+    {livestackFooter ? <LivestackBrand /> : null}
+  </main>
+  <slot name="foot" />
+</Layout>
+
+<style is:global set:html={pageBackdropCss}></style>
+
+<style>
+  .form-page {
+    width: min(75rem, calc(100% - 4rem));
+    max-width: 100%;
+    margin-block: 2rem;
+    margin-inline: auto;
+    min-height: calc(100dvh - 4rem);
+    padding: 2rem 1.5rem 3rem;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    overflow-x: clip;
+    background-color: color-mix(in srgb, #0a0a0a 90%, transparent);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid color-mix(in srgb, #f5f5f5 10%, transparent);
+    border-radius: 1rem;
+  }
+
+  .form-page__split {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    flex: 1 1 auto;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .form-page__split-lead {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    min-width: 0;
+  }
+
+  .form-page--split .form-page__split-masthead {
+    padding-bottom: 1.25rem;
+    margin-bottom: 0.25rem;
+    border-bottom: 1px solid color-mix(in srgb, #f5f5f5 14%, transparent);
+  }
+
+  @media (min-width: 56rem) {
+    .form-page--split .form-page__split {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+      grid-template-rows: auto auto;
+      column-gap: 3rem;
+      row-gap: 2.25rem;
+      align-content: start;
+      align-items: start;
+    }
+
+    .form-page--split .form-page__split-masthead {
+      grid-column: 1 / -1;
+      grid-row: 1;
+      margin-top: 0;
+      margin-bottom: 0.25rem;
+      padding-bottom: 1.5rem;
+    }
+
+    .form-page--split .form-page__split-masthead h1 {
+      white-space: nowrap;
+    }
+
+    .form-page__split-lead {
+      grid-column: 1;
+      grid-row: 2;
+      align-self: start;
+    }
+
+    .form-page__split-panel {
+      grid-column: 2;
+      grid-row: 2;
+      align-self: start;
+      position: sticky;
+      top: 2rem;
+      z-index: 2;
+      max-height: calc(100dvh - 4rem);
+      overflow-y: auto;
+      overscroll-behavior: contain;
+    }
+  }
+
+  @media (max-width: 55.99rem) {
+    .form-page {
+      width: calc(100% - 1.5rem);
+      margin-block: 0.75rem;
+      margin-inline: auto;
+      min-height: calc(100dvh - 1.5rem);
+      padding: 1.25rem 1rem 2rem;
+    }
+
+    .form-page.form-page--split {
+      padding-top: 1rem;
+    }
+
+    .form-page--split .form-page__split-masthead {
+      flex-direction: row;
+      align-items: center;
+      gap: 0.875rem 1rem;
+      margin-top: 0;
+      margin-bottom: 1.25rem;
+      padding-bottom: 1rem;
+    }
+
+    .form-page--split .form-page__split-panel {
+      margin-top: 0.75rem;
+    }
+
+    .form-page--split .form-page__split-masthead h1 {
+      font-size: clamp(1.125rem, 5vw, 1.5rem);
+      line-height: 1.2;
+      overflow-wrap: anywhere;
+    }
+
+    .form-page__visual img {
+      width: 100%;
+      height: auto;
+    }
+
+    .form-page__split-panel,
+    .form-page__form {
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+    }
+  }
+
+  .form-page__masthead {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem 1.5rem;
+    min-width: 0;
+    margin-bottom: 0;
+  }
+
+  .form-page__masthead .form-page__header {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .form-page__masthead h1 {
+    margin: 0;
+    font-size: clamp(1.25rem, 3vw, 1.75rem);
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    line-height: 1.25;
+  }
+
+  .form-page--split .form-page__masthead h1 {
+    margin-bottom: 0;
+  }
+
+  .form-page__visual {
+    margin: 0;
+    display: flex;
+    width: 100%;
+    min-height: 0;
+  }
+
+  .form-page__visual img {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    height: auto;
+    max-height: min(70dvh, 42rem);
+    object-fit: contain;
+    object-position: center;
+    border-radius: 0.75rem;
+    border: 1px solid color-mix(in srgb, #f5f5f5 18%, transparent);
+  }
+
+  .form-page__panel {
+    min-width: 0;
+  }
+
+  .form-page__form {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    container-type: inline-size;
+    container-name: form-panel;
+  }
+
+  .form-page__stack {
+    display: block;
+    flex: 1 1 auto;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .form-page:not(.form-page--split) {
+    max-width: 52rem;
+  }
+
+  .form-page__header h1 {
+    margin: 0 0 1rem;
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+  }
+
+  .form-page__masthead .form-page__header h1 {
+    margin: 0;
+  }
+</style>

@@ -1,0 +1,165 @@
+---
+import {
+  appendHomeCarteleraUtm,
+  homeCarteleraEventSlug,
+} from "@/lib/home-cartelera-utm"
+import type { AirtableCarteleraRow } from "@/lib/airtable-cartelera/types"
+import { formatEventSchedule } from "@/lib/format-event-display"
+
+type Props = {
+  row: AirtableCarteleraRow
+}
+
+const { row } = Astro.props
+const schedule = formatEventSchedule(row.eventStart, row.eventEnd, {
+  date: "long",
+})
+const campaign = homeCarteleraEventSlug({
+  eventId: row.eventId,
+  slug: row.slug,
+})
+const ticketUrl = row.ticketUrl?.trim()
+const ticketHref = ticketUrl
+  ? appendHomeCarteleraUtm(ticketUrl, campaign)
+  : undefined
+---
+
+<div class="event-detail-panel">
+  <dl class="event-detail-panel__schedule">
+    <div class="event-detail-panel__schedule-row">
+      <dt class="event-detail-panel__label">Fecha</dt>
+      <dd class="event-detail-panel__value">{schedule.dateLine}</dd>
+    </div>
+    {
+      schedule.timeLine ? (
+        <div class="event-detail-panel__schedule-row">
+          <dt class="event-detail-panel__label">Horario</dt>
+          <dd class="event-detail-panel__value">{schedule.timeLine}</dd>
+        </div>
+      ) : null
+    }
+  </dl>
+
+  <div class="event-detail-panel__actions">
+    {
+      ticketHref ? (
+        <a
+          class="event-detail-panel__ticket"
+          href={ticketHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          data-cartelera-ticket-cta
+          data-event-id={row.eventId}
+          data-event-title={row.title}
+        >
+          Comprar entradas
+          <span class="event-detail-panel__ticket-icon" aria-hidden="true">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M5 12h14" />
+              <path d="m12 5 7 7-7 7" />
+            </svg>
+          </span>
+        </a>
+      ) : null
+    }
+  </div>
+</div>
+
+<style>
+  .event-detail-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .event-detail-panel__schedule {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .event-detail-panel__schedule-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .event-detail-panel__label {
+    margin: 0;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, #f5f5f5 65%, transparent);
+  }
+
+  .event-detail-panel__value {
+    margin: 0;
+    font-size: 1.0625rem;
+    line-height: 1.45;
+    color: #f2f0ef;
+    text-transform: capitalize;
+  }
+
+  .event-detail-panel__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+    align-items: stretch;
+  }
+
+  .event-detail-panel__ticket {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    align-self: stretch;
+    box-sizing: border-box;
+    min-height: 3rem;
+    padding: 0 1.75rem;
+    border-radius: 0;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: 1px solid var(--home-fg, #f2f0ef);
+    background: var(--home-fg, #f2f0ef);
+    color: #000;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease,
+      border-color 0.2s ease;
+  }
+
+  .event-detail-panel__ticket:hover {
+    background: transparent;
+    color: var(--home-fg, #f2f0ef);
+  }
+
+  .event-detail-panel__ticket:focus-visible {
+    outline: 2px solid var(--home-fg, #f2f0ef);
+    outline-offset: 3px;
+  }
+
+  .event-detail-panel__ticket-icon {
+    display: inline-flex;
+    flex-shrink: 0;
+    line-height: 0;
+  }
+
+</style>

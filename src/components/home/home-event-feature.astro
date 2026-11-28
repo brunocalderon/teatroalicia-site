@@ -161,5 +161,12 @@ const ctaLinkAttrs = event.ctaExternal
       }
       <span class="home-btn__label">{event.ctaLabel}</span>
     </a>
+  {
+    event.detailHref ? (
+        <a class="home-btn home-btn--outline" href={event.detailHref}>
+          Más información
+        </a>
+      ) : null
+    }
   </div>
 </article>

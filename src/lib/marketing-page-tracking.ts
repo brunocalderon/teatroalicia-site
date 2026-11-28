@@ -58,6 +58,19 @@ export function invitationFormTracking(
   }
 }
 
+export function eventDetailTracking(
+  eventName: string,
+  eventId?: string,
+): MarketingPageTracking {
+  return {
+    contentName: eventName,
+    contentCategory: "Event",
+    pageType: "Event Detail",
+    umamiEventName: "Event Detail Visit",
+    umamiEventData: buildUmamiInvitationFormVisitData(eventName, eventId),
+  }
+}
+
 export function thankYouFormTracking(
   eventName: string,
   eventId?: string,

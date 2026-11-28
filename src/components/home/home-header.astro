@@ -2,6 +2,7 @@
 import "@/styles/home-header.css"
 
 import SiteBrand from "@/components/site-brand.astro"
+import { loadHomeNavCarteleraItems } from "@/lib/home-nav-cartelera"
 
 interface Props {
   /** Cartelera anchor on `/`; hash on home. */
@@ -9,14 +10,59 @@ interface Props {
 }
 
 const { carteleraHref = "#cartelera" } = Astro.props
+const carteleraItems = await loadHomeNavCarteleraItems()
+const showCarteleraMenu = carteleraItems.length > 0
 ---
 
 <header class="home-header">
   <div class="home-header__bar">
     <SiteBrand align="start" />
     <nav class="home-nav" aria-label="Principal">
-      <a class="home-nav__link" href={carteleraHref}>Cartelera</a>
+      {
+        showCarteleraMenu ? (
+          <details class="home-nav__cartelera">
+            <summary class="home-nav__link home-nav__cartelera-trigger">
+              Cartelera
+              <span class="home-nav__chevron" aria-hidden="true" />
+            </summary>
+            <div class="home-nav__menu">
+              <a
+                class="home-nav__menu-link home-nav__menu-link--section"
+                href={carteleraHref}
+              >
+                Ver cartelera
+              </a>
+              <ul class="home-nav__menu-list">
+                {carteleraItems.map((item) => (
+                  <li>
+                    <a class="home-nav__menu-link" href={item.href}>
+                      <span class="home-nav__menu-title">{item.title}</span>
+                      {item.dateLine ? (
+                        <span class="home-nav__menu-date">{item.dateLine}</span>
+                      ) : null}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </details>
+        ) : (
+          <a class="home-nav__link" href={carteleraHref}>
+            Cartelera
+          </a>
+        )
+      }
       <a class="home-nav__link" href="/contacto">Contacto</a>
     </nav>
   </div>
 </header>
+
+{
+  showCarteleraMenu ? (
+    <script>
+      import { initHomeNavCarteleraDropdown } from "@/lib/home-nav-cartelera-client"
+
+      initHomeNavCarteleraDropdown()
+    </script>
+  ) : null
+}

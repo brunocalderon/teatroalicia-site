@@ -8,7 +8,10 @@ import { mapAirtableCarteleraRecord } from "@/lib/airtable-cartelera/map-record"
 import { airtableRowToEventEntryData } from "@/lib/airtable-cartelera/to-event-entry"
 import { eventToSchemaFormData } from "@/lib/event-to-form"
 import { buildEventFromForm } from "@/lib/schema-org/build-event"
-import { airtableCarteleraRowsToApiEvents } from "@/lib/airtable-cartelera/to-api-events"
+import {
+  airtableCarteleraRowsToApiEvents,
+  airtableRowToHomeEventFeature,
+} from "@/lib/airtable-cartelera/to-api-events"
 
 const carteleraListFixture = parseAirtableCarteleraListResponse(
   JSON.parse(
@@ -166,5 +169,21 @@ describe("map-airtable-cartelera", () => {
       data: eventToSchemaFormData(eventData),
     })
     expect(built?.event["@type"]).toEqual(["SocialEvent", "MusicEvent"])
+  })
+
+  it("exposes detailHref when Event Description is set", () => {
+    const mapped = mapAirtableCarteleraRecord("recDetail", {
+      Slug: "murano",
+      "Event Name": "Murano",
+      Title: "murano-2026-11-20",
+      Start: "2026-11-20T21:00:00-03:00",
+      "Event Description": "<p>Hola</p>",
+    })
+    expect(mapped.ok).toBe(true)
+    if (!mapped.ok) {
+      throw new Error("expected ok")
+    }
+  const feature = airtableRowToHomeEventFeature(mapped.data)
+    expect(feature.detailHref).toBe("/eventos/murano-2026-11-20")
   })
 })
