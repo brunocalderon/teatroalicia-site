@@ -184,7 +184,15 @@ const ctaLinkAttrs = event.ctaExternal
     </a>
   {
     event.detailHref ? (
-        <a class="home-btn home-btn--outline" href={event.detailHref}>
+        <a
+          class="home-btn home-btn--outline"
+          href={event.detailHref}
+          data-cartelera-event-detail-cta
+          data-event-title={event.title}
+          data-event-id={event.eventId ?? ""}
+          data-event-campaign={event.eventCampaign ?? ""}
+          data-ticket-content-id={event.ticketContentId ?? ""}
+        >
           <span class="home-btn__icon" aria-hidden="true">
             <svg
               xmlns="http://www.w3.org/2000/svg"

@@ -2,6 +2,7 @@ import { initCarteleraPosterLightbox } from "@/lib/cartelera-poster-lightbox"
 import { initHomeFeaturedCarousel } from "@/lib/home-featured-carousel"
 import { tryPrimeHomeFeaturedCarouselPosters } from "@/lib/home-featured-carousel-posters"
 import { initHomeFeaturePosterFill } from "@/lib/home-feature-poster-fill"
+import { initCarteleraEventDetailCtaTracking } from "@/lib/cartelera-event-detail-cta-tracking"
 import { initCarteleraTicketCtaTracking } from "@/lib/cartelera-ticket-cta-tracking"
 import { scheduleAfterLoadIdle } from "@/lib/schedule-after-load-idle"
 
@@ -19,6 +20,7 @@ export function initHomeCarteleraClient(): void {
   const list = document.querySelector(".home-featured__list")
   if (list) {
     initCarteleraTicketCtaTracking(list)
+    initCarteleraEventDetailCtaTracking(list)
   }
 }
 
