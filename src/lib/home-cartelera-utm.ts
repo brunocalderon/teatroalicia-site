@@ -4,6 +4,9 @@ const UTM_SOURCE = "teatroalicia_site"
 const UTM_MEDIUM = "referral"
 const UTM_CONTENT = "home_event_list"
 
+/** Guest-list closed **Comprar entradas** CTA (`utm_content`). */
+export const GUEST_LIST_TICKET_UTM_CONTENT = "guest_list_ticket_cta"
+
 /** Stable campaign slug for `utm_campaign` from event frontmatter. */
 export function homeCarteleraEventSlug(
   data: Pick<EventEntryData, "eventId" | "slug">,
@@ -24,6 +27,7 @@ export function homeCarteleraEventSlug(
 export function appendHomeCarteleraUtm(
   href: string,
   eventCampaign: string,
+  utmContent: string = UTM_CONTENT,
 ): string {
   const trimmed = href.trim()
   const isAbsolute = /^https?:\/\//i.test(trimmed)
@@ -32,7 +36,7 @@ export function appendHomeCarteleraUtm(
   url.searchParams.set("utm_source", UTM_SOURCE)
   url.searchParams.set("utm_medium", UTM_MEDIUM)
   url.searchParams.set("utm_campaign", eventCampaign)
-  url.searchParams.set("utm_content", UTM_CONTENT)
+  url.searchParams.set("utm_content", utmContent)
 
   if (isAbsolute) {
     return url.href

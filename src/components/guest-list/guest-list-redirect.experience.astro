@@ -7,7 +7,6 @@ type Props = {
 }
 
 const { data } = Astro.props
-const purchaseUrl = data.ticketUrl ?? data.ticketLink
 ---
 
-<GuestListClosedPanel purchaseUrl={purchaseUrl} />
+<GuestListClosedPanel data={data} />

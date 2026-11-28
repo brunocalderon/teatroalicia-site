@@ -13,12 +13,11 @@ type Props = {
 
 const { data, nameFields, marketingTracking } = Astro.props
 const guestListClosed = data.guestListClosed === true
-const purchaseUrl = data.ticketUrl ?? data.ticketLink
 ---
 
 {
   guestListClosed ? (
-    <GuestListClosedPanel purchaseUrl={purchaseUrl} />
+    <GuestListClosedPanel data={data} />
   ) : (
     <ConfigurableForm
       client:visible={{ rootMargin: "200px" }}

@@ -1,14 +1,16 @@
 ---
 import { guestListFormEs } from "../../../content/i18n/guest-list-form.es"
+import { resolveGuestListPurchaseHref } from "@/lib/guest-list/guest-list-purchase-href"
+import type { FormEntryData } from "@/lib/form-schema"
 
 import "@/styles/form.css"
 
 type Props = {
-  purchaseUrl?: string
+  data: Pick<FormEntryData, "ticketUrl" | "ticketLink" | "eventId" | "path">
 }
 
-const { purchaseUrl } = Astro.props
-const purchaseHref = purchaseUrl?.trim()
+const { data } = Astro.props
+const purchaseHref = resolveGuestListPurchaseHref(data)
 const { closed } = guestListFormEs
 ---
 
