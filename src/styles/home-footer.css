@@ -63,5 +63,9 @@
 
 .home-footer .livestack-brand {
   margin-top: 0;
+  margin-inline: auto;
+  box-sizing: border-box;
+  width: fit-content;
+  max-width: calc(100% - 2 * var(--home-gutter));
   padding: 2.5rem var(--home-gutter) 0;
 }
